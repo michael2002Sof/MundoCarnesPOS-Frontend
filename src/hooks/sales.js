@@ -73,3 +73,49 @@ export  function GetSessionById (id) {
         session, FetchSession
     }
 }
+
+export function GetInvoiceByCode (code) {
+    const [ invoice, setInvoice ] = useState()
+
+    const FetchInvoice = async () => {
+        try {
+            const res = await axiosInstance.get(`/posinnovate/app/sale/report/invoice/${code}`)
+            setInvoice(res.data)
+        } catch (error) {
+            usePersistentResponse(error)
+        }
+    }
+    useEffect (() => {
+        FetchInvoice()
+    }, [])
+
+    return {
+        invoice, FetchInvoice
+    }
+}
+
+export function GetAllCreditNote (code) {
+    const [ creditNotes, setCreditNotes ] = useState()
+
+
+    const FetchCreditNotes = async () => {
+        try {
+            const token = DecodeToken()
+            if (!token) return
+            const company = token.company
+            const res = await axiosInstance.get(`/posinnovate/app/sale/return/all/${company}`)
+            setCreditNotes(res.data)
+        } catch (error) {
+            usePersistentResponse(error)
+        }
+    }
+    useEffect (() => {
+        FetchCreditNotes()
+    }, [])
+
+    return {
+        creditNotes, FetchCreditNotes
+    }
+}
+
+

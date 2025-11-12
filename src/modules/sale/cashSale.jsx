@@ -1,5 +1,4 @@
-import { useState, useRef, useMemo, useEffect } from "react"
-import { useReactToPrint } from "react-to-print"
+import { useState, useMemo, useEffect } from "react"
 import { Barcode, Loader2, ShoppingCart, X} from "lucide-react"
 
 import { GetAllSalesPoint } from "../../hooks/sales"
@@ -7,11 +6,11 @@ import { GetAllProducts } from "../../hooks/products"
 import OpenCloseCash from "./cash sale/OpenCloseCash"
 import DecodeToken from "../../api/decode"
 import ClientSearch from "./cash sale/ClientSearch"
-import PrintableInvoice from "../../components/shared/PrintableInvoice"
 import usePersistentResponse from "../../utils/response_message"
 import handleInputChange from "../../utils/handleInputChange"
 import axiosInstance from "../../api/axiosintance"
 import { formatDecimal } from "../../utils/formatData"
+import InvoiceModal from "../../components/shared/invoiceModal"
 
 
 export default function CashSale() {
@@ -161,11 +160,14 @@ export default function CashSale() {
             repay: Math.max(0, prev.receipt - total),
         }));
     }, [isPayment.method, total]);
-
+   
     /*=======================================================================
-      GENERAR VENTA Y REGISTRARLA EN EL SISTEMA 
+      PROCESOS PARA IMPRIMIR FACTURA Y REGISTAR VENTA
     =========================================================================*/
+    const [showInvoice, setShowInvoice] = useState(false);
+    const [isInvoicePrinting, setIsInvoicePrinting] = useState(false);
     const [isLoaging, setIsLoading] = useState(false);
+
     // Confirmar pago: registrar venta + descontar stock + imprimir factura + limpiar carrito
     const handleConfirmPayment = async () => {
         if (isPayment.method === "cash" && isPayment.receipt < total) {
@@ -217,7 +219,7 @@ export default function CashSale() {
             const res = await axiosInstance.post("/posinnovate/app/sale/cash/invoice", data);
 
             // 🧾 Guardar datos y disparar impresión
-            setPrintInvoiceData(res.invoice);
+            setIsInvoicePrinting(res.invoice);
             console.log(res)
 
 
@@ -241,25 +243,9 @@ export default function CashSale() {
             });
         } finally {
             setIsLoading(false);
-
+            setShowInvoice(true);
         }
     };
-
-
-    /*=======================================================================
-      PROCESOS PARA IMPRIMIR FACTURA 
-    =========================================================================*/
-    const printRef = useRef()
-    const handlePrint = useReactToPrint({ contentRef: printRef })
-
-    useEffect(() => {
-        if (printInvoiceData) {
-            handlePrint();
-            console.log(printInvoiceData)
-        }
-    }, [printInvoiceData])
-
- 
 
     return (
         <>
@@ -420,17 +406,11 @@ export default function CashSale() {
                     </button>
                   </div>
                 </div>
-
-        
-
-                {/* Componente oculto para impresión */}
-                <div style={{ display: "none" }}>
-                  <div ref={printRef}>
-                    <PrintableInvoice invoice={printInvoiceData} />
-                  </div>
+            {showInvoice && (
+                <div className=" fixed inset-0 py-12 bg-black/70 flex justify-center items-center p-4 z-50">
+                    <InvoiceModal setShowInvoice={setShowInvoice}  invoice={isInvoicePrinting}/>
                 </div>
-
-
+            )}
         </>
     )
 }

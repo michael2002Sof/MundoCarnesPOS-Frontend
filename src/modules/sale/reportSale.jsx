@@ -3,6 +3,7 @@ import {
   Download,
   DollarSign,
   Target,
+  Package
 } from 'lucide-react';
 import { useReactToPrint } from 'react-to-print';
 import { ModulesHeader } from '../../components/shared/headers';
@@ -193,7 +194,7 @@ export default function ReportSale() {
         <p className="text-xs">Selecciona la fecha de las sesiones de caja</p>
         <input
           type="date"
-          className="px-4 py-2 border border-gray-300 text-black rounded-lg mt-4 focus:ring-2 focus:ring-blue-500"
+          className="px-4 py-2 border border-gray-300 rounded-lg mt-4 focus:ring-2 focus:ring-blue-500"
           value={filterFechaInicio}
           onChange={(e) => setFilterFechaInicio(e.target.value)}
         />
@@ -249,7 +250,7 @@ export default function ReportSale() {
                     </h3>
                     <p><span className="font-semibold">Ingreso en Efectivo:</span> {formatDecimal(s.total_cash, true)}</p>
                     <p><span className="font-semibold">Ingreso en Transferencias:</span> {formatDecimal(s.total_transfer, true)}</p>
-                    <p><strong>Sub Total Pagos:</strong>{formatDecimal(s.subtotal_method)}</p>
+                    <p><strong>Sub Total Pagos:</strong>{formatDecimal(s.subtotal_method, true)}</p>
                     <p><strong>Devoluciones:</strong>{formatDecimal(s.total_return, true)}</p>
                     <p className="text-lg font-bold mt-2 border-t border-[#841A1A]/20 pt-2">
                         <span className="font-semibold">Total (Efectivo + Transferencias):</span>{" "}
