@@ -1,6 +1,6 @@
 import { useState, useRef, useMemo, useEffect } from "react"
 import { useReactToPrint } from "react-to-print"
-import { Barcode, ShoppingCart, X} from "lucide-react"
+import { Barcode, Loader2, ShoppingCart, X} from "lucide-react"
 
 import { GetAllSalesPoint } from "../../hooks/sales"
 import { GetAllProducts } from "../../hooks/products"
@@ -165,50 +165,53 @@ export default function CashSale() {
     /*=======================================================================
       GENERAR VENTA Y REGISTRARLA EN EL SISTEMA 
     =========================================================================*/
+    const [isLoaging, setIsLoading] = useState(false);
     // Confirmar pago: registrar venta + descontar stock + imprimir factura + limpiar carrito
     const handleConfirmPayment = async () => {
         if (isPayment.method === "cash" && isPayment.receipt < total) {
             alert("El monto recibido es menor al total");
             return;
         }
+        setIsLoading(true);
+        
 
-            // 1️⃣ Crear la parte base de la factura
-            const invoiceData = {
-            company: token?.company,
-            sales_point: sp?.id,
-            cash_session: localStorage.getItem("SessionCashID"), // ID de caja abierta
-            seller: user,
-            customer: isSelectedClient?.id || null,
-            subtotal,
-            tax0: 0,
-            tax5: tax5Total,
-            tax19: tax19Total,
-            total,
-            payment_method: isPayment.method,
-            receipt: Number(isPayment.receipt),
-            repay: Number(isPayment.repay),
-            };
+        // 1️⃣ Crear la parte base de la factura
+        const invoiceData = {
+        company: token?.company,
+        sales_point: sp?.id,
+        cash_session: localStorage.getItem("SessionCashID"), // ID de caja abierta
+        seller: user,
+        customer: isSelectedClient?.id || null,
+        subtotal,
+        tax0: 0,
+        tax5: tax5Total,
+        tax19: tax19Total,
+        total,
+        payment_method: isPayment.method,
+        receipt: Number(isPayment.receipt),
+        repay: Number(isPayment.repay),
+        };
 
-            // 2️⃣ Crear los ítems
-            const itemsPayload = (activeTab?.cart || []).map((it) => ({
-                product_id: it.id,
-                product_name: it.name,
-                product_barcode: it.barcode,
-                quantity: it.isScale ? it.weight : it.quantity || 1,
-                unit_price: Number(it.price || it.base_price || 0),
-                tax0: Number(it.tax0 || 0),
-                tax5: Number(it.tax5 || 0),
-                tax19: Number(it.tax19 || 0),
-                total: Number(it.total || it.subtotal || 0),
-            }));
+        // 2️⃣ Crear los ítems
+        const itemsPayload = (activeTab?.cart || []).map((it) => ({
+            product_id: it.id,
+            product_name: it.name,
+            product_barcode: it.barcode,
+            quantity: it.isScale ? it.weight : it.quantity || 1,
+            unit_price: Number(it.price || it.base_price || 0),
+            tax0: Number(it.tax0 || 0),
+            tax5: Number(it.tax5 || 0),
+            tax19: Number(it.tax19 || 0),
+            total: Number(it.total || it.subtotal || 0),
+        }));
 
-            // 3️⃣ Combinar todo correctamente
-            const data = {
-                ...invoiceData,
-                invoiceItem: itemsPayload,
-            };
+        // 3️⃣ Combinar todo correctamente
+        const data = {
+            ...invoiceData,
+            invoiceItem: itemsPayload,
+        };
 
-            console.log("📦 Data final enviada:", data);
+        console.log("📦 Data final enviada:", data);
 
         try {
             const res = await axiosInstance.post("/posinnovate/app/sale/cash/invoice", data);
@@ -237,7 +240,8 @@ export default function CashSale() {
                 success: false,
             });
         } finally {
-            setShowPayment(false);
+            setIsLoading(false);
+
         }
     };
 
@@ -404,7 +408,16 @@ export default function CashSale() {
                     </section>
 
 
-                    <button onClick={() => handleConfirmPayment()} disabled={activeTab.cart.length === 0} className="mt-4 bg-amber-200 text-[#841A1A] p-2 rounded font-semibold w-full">Procesar Pago</button>
+                    <button onClick={() => handleConfirmPayment()} disabled={activeTab.cart.length === 0} className="mt-4 bg-amber-200 text-[#841A1A] p-2 rounded font-semibold w-full">
+                        {isLoaging ? 
+                            <div className="flex justify-center items-center gap-2">
+                                <Loader2 className="animate-spin mr-2 inline-block" />
+                                <p>Procesando...</p>
+                            </div> 
+                        : 
+                            <div>Confirmar Pago</div>
+                        }
+                    </button>
                   </div>
                 </div>
 

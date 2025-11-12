@@ -3,7 +3,6 @@ import {
   Download,
   DollarSign,
   Target,
-  Package
 } from 'lucide-react';
 import { useReactToPrint } from 'react-to-print';
 import { ModulesHeader } from '../../components/shared/headers';
@@ -93,6 +92,8 @@ const ReportTemplate = ({ session }) => {
             <h5 className="font-bold text-lg mb-2 text-center">Totales por Método de Pago</h5>
             <p><strong>Ingreso en Efectivo:</strong> {formatDecimal(session.total_cash, true)}</p>
             <p><strong>Ingreso en Transferencias:</strong> {formatDecimal(session.total_transfer, true)}</p>
+            <p><strong>Sub Total Pagos:</strong>{formatDecimal(session.subtotal_method)}</p>
+            <p><strong>Devoluciones:</strong>{formatDecimal(session.total_return, true)}</p>
             <p className="font-bold mt-2 border-t border-[#841A1A]/20 pt-2">
               <strong>Total Métodos de Pago:</strong>{" "}
               {formatDecimal(session.total_method, true)}
@@ -205,9 +206,9 @@ export default function ReportSale() {
         </h3>
 
         {loading ? (
-          <p className="text-gray-500">Cargando sesiones...</p>
+          <p>Cargando sesiones...</p>
         ) : sesiones.length === 0 ? (
-          <p className="text-gray-500">No hay sesiones registradas para esta fecha.</p>
+          <p>No hay sesiones registradas para esta fecha.</p>
         ) : (
           <div className="grid grid-cols-3 gap-4">
             {sesiones.map((s) => (
@@ -248,6 +249,8 @@ export default function ReportSale() {
                     </h3>
                     <p><span className="font-semibold">Ingreso en Efectivo:</span> {formatDecimal(s.total_cash, true)}</p>
                     <p><span className="font-semibold">Ingreso en Transferencias:</span> {formatDecimal(s.total_transfer, true)}</p>
+                    <p><strong>Sub Total Pagos:</strong>{formatDecimal(s.subtotal_method)}</p>
+                    <p><strong>Devoluciones:</strong>{formatDecimal(s.total_return, true)}</p>
                     <p className="text-lg font-bold mt-2 border-t border-[#841A1A]/20 pt-2">
                         <span className="font-semibold">Total (Efectivo + Transferencias):</span>{" "}
                         {formatDecimal(s.total_method, true)}
