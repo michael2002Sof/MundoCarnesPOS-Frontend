@@ -18,7 +18,13 @@ const ModuleItems = {
     "Inventario" : [
         {
             icon: <Package/>,
-            name: "Registrar Producto",
+            name: "Administrar Producto",
+            to: "/inventory/manage-product",
+            description: "Agrega nuevos productos, al inventario de la empresa de forma rápida y organizada"
+        },
+        {
+            icon: <Package/>,
+            name: "Administrar Bodegas",
             to: "/inventory/manage-product",
             description: "Agrega nuevos productos, al inventario de la empresa de forma rápida y organizada"
         },

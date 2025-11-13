@@ -182,7 +182,7 @@ export default function ManageProduct () {
                                 { icon: Package, name: "stock", label: "Cantidad Inicial", type: "number"},
                                 { icon: Package, name: "min_stock", label: "Cantidad Mínima", type: "number"},
                                 { icon: DollarSign, name: "base_price", label: "Precio (sin IVA)", type: "number"},
-                                { icon: Package, name: "unit_mesurement", label: "Inidad de Medida", type: "select", options: ["58 - Kilogramo", "94 - Unidad"]},
+                                { icon: Package, name: "unit_mesurement", label: "Inidad de Medida", type: "select", options: ["KLG", "GKM", "UND"]},
                                 { icon: Package, name: "category", label: "Categoria", type: "select", options: ["Carnes Excluidas"]},
                             ].map((field) => (
                                 <section key={field.name}>

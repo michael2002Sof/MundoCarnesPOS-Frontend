@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react"
-import { Bell, LogOut, Building2, User, Menu, X, ArrowLeft  } from "lucide-react"
+import { Bell, LogOut, Building2, User, Menu, X, ArrowLeft, HandCoins  } from "lucide-react"
 import { useNavigate, Link } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 
@@ -59,6 +59,10 @@ export function AppHeader({ onToggleSidebar, modules = [] }) {
           {/* Usuario */}
           <button className="p-2 rounded-lg cursor-pointer bg-white/10 hover:bg-white/20 transition-all">
             <User size={18} />
+          </button>
+          {/* Company */}
+          <button onClick={() => navigate("/account-sync")} className="p-2 rounded-lg cursor-pointer bg-white/10 hover:bg-white/20 transition-all">
+            <HandCoins size={18} />
           </button>
 
           {/* Company */}

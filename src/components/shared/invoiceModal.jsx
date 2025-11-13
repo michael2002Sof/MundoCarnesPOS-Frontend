@@ -1,8 +1,25 @@
-// src/components/point_sales/InvoicePrinter.jsx
-import React, { useRef } from "react";
+import React, { useRef, useEffect } from "react";
+import { useReactToPrint } from "react-to-print";
+import { formatDecimal } from "../../utils/formatData";
 
 export default function InvoicePrinter({ invoice, setShowInvoice }) {
-  const printRef = useRef(); // ✅ referencia agregada
+  const printRef = useRef();
+
+  const handlePrint = useReactToPrint({
+  contentRef: printRef,
+  documentTitle: `Factura-${invoice?.code || "POS"}`,
+  pageStyle: `
+    @page {
+      size: 80mm auto;
+      margin: 4mm;
+    }
+    body {
+      -webkit-print-color-adjust: exact;
+      print-color-adjust: exact;
+    }
+  `,
+});
+
 
   if (!invoice) return null;
 
@@ -14,7 +31,6 @@ export default function InvoicePrinter({ invoice, setShowInvoice }) {
     address,
     city,
     cell,
-    id,
     caja,
     created_at,
     client,
@@ -32,44 +48,22 @@ export default function InvoicePrinter({ invoice, setShowInvoice }) {
     repay,
   } = invoice;
 
-    const handlePrint = () => {
-    const iframe = document.createElement("iframe");
-    iframe.style.position = "absolute";
-    iframe.style.width = "0";
-    iframe.style.height = "0";
-    iframe.style.border = "0";
-    document.body.appendChild(iframe);
+  useEffect(() => {
+    console.log("Referencia lista:", printRef.current);
+  }, []);
 
-    const doc = iframe.contentWindow.document;
-    doc.write(`
-        <html>
-        <head>
-            <title>Factura POS</title>
-            <style>
-            @page { size: 80mm auto; margin: 0; }
-            body { width: 80mm; font-family: Arial, sans-serif; font-size: 11px; padding: 4px; }
-            </style>
-        </head>
-        <body>${printRef.current.innerHTML}</body>
-        </html>
-    `);
-    doc.close();
-
-    iframe.contentWindow.focus();
-    iframe.contentWindow.print();
-    setTimeout(() => document.body.removeChild(iframe), 1000);
-    };
-
+  // Detectar los IVAs activos antes del render
+  const showIVA0 = itemsProduct.some(it => it.tax0 === true);
+  const showIVA5 = itemsProduct.some(it => it.tax5 > 0);
+  const showIVA19 = itemsProduct.some(it => it.tax19 > 0);
 
   return (
     <div className="flex flex-col items-center bg-amber-50 p-12">
-      <div ref={printRef}>
+      {/* Contenido que se imprime */}
+      <div ref={printRef} className="bg-white p-2 rounded shadow">
         <div
           className="w-[80mm] text-[11px] text-gray-900 font-sans mx-auto flex flex-col items-center justify-center"
-          style={{
-            fontFamily: "Arial, sans-serif",
-            lineHeight: "1.4",
-          }}
+          style={{ fontFamily: "Arial, sans-serif", lineHeight: "1.4" }}
         >
           {/* 🏷️ Logo */}
           <img
@@ -110,6 +104,9 @@ export default function InvoicePrinter({ invoice, setShowInvoice }) {
                 <th className="text-left py-1">Producto</th>
                 <th className="text-right py-1 w-10">Cant</th>
                 <th className="text-right py-1 w-16">V.Unit</th>
+                {showIVA0 && <th className="text-right py-1 w-16">IVA 0%</th>}
+                {showIVA5 && <th className="text-right py-1 w-16">IVA 5%</th>}
+                {showIVA19 && <th className="text-right py-1 w-16">IVA 19%</th>}
                 <th className="text-right py-1 w-16">Total</th>
               </tr>
             </thead>
@@ -119,10 +116,25 @@ export default function InvoicePrinter({ invoice, setShowInvoice }) {
                   <td className="py-0.5">{it.product_name}</td>
                   <td className="text-right">{it.quantity}</td>
                   <td className="text-right">
-                    {Number(it.unit_price).toLocaleString("es-CO")}
+                    {formatDecimal(it.unit_price, true).toLocaleString("es-CO")}
                   </td>
+                  {showIVA0 && (
+                    <td className="text-right">
+                      {it.tax0 ? "$ 0" : "-"}
+                    </td>
+                  )}
+                  {showIVA5 && (
+                    <td className="text-right">
+                      {it.tax5 > 0 ? formatDecimal(it.tax5, true) : "-"}
+                    </td>
+                  )}
+                  {showIVA19 && (
                   <td className="text-right">
-                    {Number(it.total).toLocaleString("es-CO")}
+                    {it.tax19 > 0 ? formatDecimal(it.tax19, true) : "-"}
+                  </td>
+                  )}
+                  <td className="text-right">
+                    {formatDecimal(it.total, true)}
                   </td>
                 </tr>
               ))}
@@ -133,37 +145,37 @@ export default function InvoicePrinter({ invoice, setShowInvoice }) {
           <div className="w-full border-t border-gray-300 pt-1 text-[11px]">
             <div className="flex justify-between">
               <span>Subtotal:</span>
-              <span>{Number(subtotal).toLocaleString("es-CO")}</span>
+              <span>{formatDecimal(subtotal, true)}</span>
             </div>
-            {tax0 === 0 && (
+            {showIVA0 && (
               <div className="flex justify-between">
                 <span>IVA 0%:</span>
-                <span>{Number(tax0).toLocaleString("es-CO")}</span>
+                <span>{formatDecimal(tax0, true)}</span>
               </div>
             )}
-            {tax5 > 0 && (
+            {showIVA5 && (
               <div className="flex justify-between">
                 <span>IVA 5%:</span>
-                <span>{Number(tax5).toLocaleString("es-CO")}</span>
+                <span>{formatDecimal(tax5, true)}</span>
               </div>
             )}
-            {tax19 > 0 && (
+            {showIVA19 > 0 && (
               <div className="flex justify-between">
                 <span>IVA 19%:</span>
-                <span>{Number(tax19).toLocaleString("es-CO")}</span>
+                <span>{formatDecimal(tax19, true)}</span>
               </div>
             )}
             <div className="flex justify-between font-bold border-t border-gray-400 mt-1 pt-1 text-[12px]">
               <span>Total:</span>
-              <span>{Number(total).toLocaleString("es-CO")}</span>
+              <span>{formatDecimal(total, true)}</span>
             </div>
           </div>
 
-          {/* 💰 Métodos de pago */}
+          {/* 💰 Método de pago */}
           <div className="w-full mt-2 border-t border-gray-300 pt-1">
             <p><strong>Método:</strong> {method_payment === "cash" ? "Efectivo" : "Transferencia"}</p>
-            <p><strong>Recibido:</strong> {Number(receipt).toLocaleString("es-CO")}</p>
-            <p><strong>Cambio:</strong> {Number(repay).toLocaleString("es-CO")}</p>
+            <p><strong>Recibido:</strong> {formatDecimal(receipt, true)}</p>
+            <p><strong>Cambio:</strong> {formatDecimal(repay, true)}</p>
           </div>
 
           {/* 🧡 Mensaje final */}
@@ -176,6 +188,7 @@ export default function InvoicePrinter({ invoice, setShowInvoice }) {
         </div>
       </div>
 
+      {/* Botones */}
       <section className="flex gap-4 items-center justify-center">
         <button
           onClick={() => setShowInvoice(false)}
@@ -185,7 +198,7 @@ export default function InvoicePrinter({ invoice, setShowInvoice }) {
         </button>
 
         <button
-          onClick={handlePrint}
+          onClick={() => handlePrint()}
           className="mt-3 bg-blue-600 text-white px-3 py-1 rounded hover:bg-blue-700 text-sm"
         >
           🖨️ Imprimir Tirilla
