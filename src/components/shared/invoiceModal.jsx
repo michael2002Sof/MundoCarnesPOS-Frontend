@@ -43,8 +43,9 @@ export default function InvoicePrinter({ invoice, setShowInvoice }) {
     tax5,
     tax19,
     total,
-    method_payment,
-    receipt,
+
+    receipt_cash,
+    total_payment,
     repay,
   } = invoice;
 
@@ -141,6 +142,14 @@ export default function InvoicePrinter({ invoice, setShowInvoice }) {
             </tbody>
           </table>
 
+          {/* Totales de pago */}
+          <div className="w-full mt-2 border-t border-gray-300 pt-1">
+            {receipt_cash > 0 && <p><strong>Recibido en Efectivo:</strong> {formatDecimal(receipt_cash, true)}</p>}
+            {receipt_transfer > 0 && <p><strong>Recibido en Trasnferencia:</strong> {formatDecimal(receipt_transfer, true)}</p>}
+            <p><strong>Cambio:</strong> {formatDecimal(repay, true)}</p>
+            <p><strong>Total pago:</strong> {formatDecimal(total_payment, true)}</p>
+          </div>
+
           {/* Totales */}
           <div className="w-full border-t border-gray-300 pt-1 text-[11px]">
             <div className="flex justify-between">
@@ -169,13 +178,6 @@ export default function InvoicePrinter({ invoice, setShowInvoice }) {
               <span>Total:</span>
               <span>{formatDecimal(total, true)}</span>
             </div>
-          </div>
-
-          {/* Método de pago */}
-          <div className="w-full mt-2 border-t border-gray-300 pt-1">
-            <p><strong>Método:</strong> {method_payment === "cash" ? "Efectivo" : "Transferencia"}</p>
-            <p><strong>Recibido:</strong> {formatDecimal(receipt, true)}</p>
-            <p><strong>Cambio:</strong> {formatDecimal(repay, true)}</p>
           </div>
 
           {/* Mensaje final */}

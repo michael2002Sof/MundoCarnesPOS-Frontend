@@ -205,7 +205,7 @@ export default function CashSale() {
         // Actualizar Siigo paymentMethods
         const updatedPayments = paymentArray.map(p => {
             if (p.id === filteredPayments[0]?.id) {
-                return { ...p, value: receiptCash };
+                return { ...p, value: (total - receiptTransfer) };
             }
             if (p.id === filteredPayments[1]?.id) {
                 return { ...p, value: receiptTransfer };
@@ -217,7 +217,7 @@ export default function CashSale() {
         const filteredPaymentsFinal = updatedPayments.filter(p => Number(p.value) > 0);
 
         useHandleInputChange(setBuildInvoice, "payments", filteredPaymentsFinal);
-        useHandleInputChange(setBuildInvoice, "receipt_cash", receiptCash);
+        useHandleInputChange(setBuildInvoice, "receipt_cash", (receiptCash - repay) );
         useHandleInputChange(setBuildInvoice, "receipt_transfer", receiptTransfer);
     }, [receiptCash, receiptTransfer, total]);
 
@@ -231,7 +231,6 @@ export default function CashSale() {
     useEffect(() => {
         useHandleInputChange(setBuildInvoice, "document.id", typeInvoiceSiigo?.id)
         useHandleInputChange(setBuildInvoice, "customer", selectedCustomer)
-        useHandleInputChange(setBuildInvoice, "payments.0.value", total)
         if (wh?.id === 26) {
             useHandleInputChange(setBuildInvoice, "cost_center", 1163)
         } else if (wh?.id === 28) {
