@@ -1,31 +1,27 @@
 import { useState } from "react"
-import { Edit2, Save, Trash2, X, Loader2 } from "lucide-react"
+import { Edit2, Save, Trash2, X, Loader2, Loader } from "lucide-react"
+import toast from "react-hot-toast"
 
-import usePersistentResponse from "../../utils/response_message"
 import {ModulesHeader} from "../../components/shared/headers"
-import handleInputChange from "../../utils/handleInputChange"
-import axiosInstance from "../../api/axiosintance"
-import DecodeToken from "../../api/decode"
+import useHandleInputChange from "../../utils/useHandleInputChange"
 import ModuleItems from "../../config/modulesItems"
 import Modules from "../../config/modules"
-import {GetAllRoles} from "../../hooks/user"
+import useRole from "../../hooks/user/useRole"
 
-export default function ManageRol() {
-    const token = DecodeToken()
-    const {roles, FetchRoles} = GetAllRoles()
-    const [ isLoading, setLoading ] = useState(false)
+export default function Role() {
+    const {isLoading, allRoles, POST_Role, PUT_Role} = useRole()
     const [ isAction, setAction ] = useState("Manage Rol")
 
     /* -- Campos Base de Cear Rol -- */
-    const initialBaseRol = {
+    const initialData = {
         id: null,
-        company: token.company,
         name: "",
+        company: null,
         modules: [],
         permissions: [],
     };
 
-    const [isRol, setRol] = useState(initialBaseRol) // control de datos para el rol
+    const [isRole, setRole] = useState(initialData) // control de datos para el rol
 
     /* ===============================================================
         SELECCIÓN DE MÓDULOS Y PERMISOS
@@ -33,23 +29,23 @@ export default function ManageRol() {
 
     /* -- Manejar selección de módulos dinámicamente -- */
     const handleModuleSelect = (moduleName) => {
-        if (isRol.modules.includes(moduleName)) {
+        if (isRole.modules.includes(moduleName)) {
             // Si ya está seleccionado, se deselecciona
-            setRol((prev) => ({ ...prev, modules: prev.modules.filter((m) => m !== moduleName) }))
+            setRole((prev) => ({ ...prev, modules: prev.modules.filter((m) => m !== moduleName) }))
         } else {
             // Si no está, se agrega y se muestra lista de permisos
-            setRol((prev) => ({ ...prev, modules: [...prev.modules, moduleName] }))
+            setRole((prev) => ({ ...prev, modules: [...prev.modules, moduleName] }))
         }
     }
 
     /* -- Manejar selección de permisos por módulo -- */
     const handlePermissionToggle = (permissionName) => {
-        if (isRol.permissions.includes(permissionName)) {
+        if (isRole.permissions.includes(permissionName)) {
             // Si ya estaba, lo quitamos
-            setRol((prev) => ({ ...prev, permissions: prev.permissions.filter((p) => p !== permissionName)}))
+            setRole((prev) => ({ ...prev, permissions: prev.permissions.filter((p) => p !== permissionName)}))
         } else {
             // Si no estaba, lo agregamos
-            setRol((prev) => ({...prev, permissions: [...prev.permissions, permissionName] }))
+            setRole((prev) => ({...prev, permissions: [...prev.permissions, permissionName] }))
         }
     }
 
@@ -58,68 +54,21 @@ export default function ManageRol() {
     =============================================================== */
 
    /* -- Enviar datos del rol al backend -- */
-    const handleSubmitRol = async (e) => {
+    const SubmitRole = (e) => {
         e.preventDefault()
-        setLoading(true)
-        try {
-            if (isRol.modules.length === 0){
-                usePersistentResponse({ success: false, message: "Error: Debes asignar al menos un módulo al rol"})
-                setLoading(false)
-                return
-            }
-            if (isRol.permissions.length === 0) {
-                usePersistentResponse({ success: false, message: "Error: Debes asignar al menos un permiso al rol",})
-                setLoading(false)
-                return
-            }
-            let res
-            if (isRol.id) {
-                res = await axiosInstance.put("/posinnovate/app/user/rol/update", isRol)
-            } else {    
-                res = await axiosInstance.post( "/posinnovate/app/user/rol/register", isRol )
-            }
-
-            usePersistentResponse(res)
-            FetchRoles()
-
-            // 🔄 Reinicio del formulario tras crear rol con éxito
-            setRol(initialBaseRol)
-        } catch (error) {
-            usePersistentResponse(error)
-        } finally {
-            setLoading(false)
+        if (isRole.modules.length === 0){
+            toast.error("ERROR: Debes asignar al menos un módulo al rol")
+            return
+        } else if (isRole.permissions.length === 0) {
+            toast.error("ERROR: Debes asignar al menos un permiso al rol")
+            return
+        } else if  (isRole.id) {
+            PUT_Role(isRole)
+        } else {
+            POST_Role(isRole)
         }
-    }
-
-    /* ===============================================================
-        ELIMINAR ROL
-    =============================================================== */
-    const handleDeleteRol = async (id) => {
-        if (!confirm("¿Seguro que deseas eliminar este rol?")) return
-        setLoading(true)
-        try {
-            const res = await axiosInstance.delete(`/posinnovate/app/user/rol/delete/${id}`)
-            usePersistentResponse(res)
-            FetchRoles()
-        } catch (error) {
-            usePersistentResponse(error)
-        } finally {
-            setLoading(false)
-        }
-    }
-
-    /* ===============================================================
-        INFO EDITAR ROL
-    =============================================================== */
-    const handleEditRol = (rol) => {
-        setRol({
-        id: rol.id,
-        company: rol.company,
-        name: rol.name,
-        modules: rol.modules,
-        permissions: rol.permissions,
-        })
-        setAction("Rol Input")
+        setRole(initialData)
+        isAction("Manage Rol")
     }
 
 
@@ -133,7 +82,7 @@ export default function ManageRol() {
                 {/* -- Pestañas principales: vista de roles o creación -- */}
                 <div className="border- mb-4 text-[#841A1A] border-b">
                     <button onClick={() => setAction("Manage Rol")} className={` ${isAction === "Manage Rol" && "border-b-4"} px-4 py-2  cursor-pointer`}>Roles del Sistema</button>
-                    <button onClick={() => setAction("Rol Input")} className={` ${isAction === "Rol Input" && "border-b-4"} px-4 py-2 cursor-pointer`}>{isRol.id ? "Editar Rol" : "Crear Rol"}</button>
+                    <button onClick={() => setAction("Rol Input")} className={` ${isAction === "Rol Input" && "border-b-4"} px-4 py-2 cursor-pointer`}>{isRole.id ? "Editar Rol" : "Crear Rol"}</button>
                 </div>
                 {isAction === "Manage Rol" && (
                     <div className="overflow-x-auto">
@@ -147,21 +96,30 @@ export default function ManageRol() {
                                 </tr>
                             </thead>
                             <tbody>
-                                {roles?.length === 0 ? (
+                                {isLoading ? (
                                     <tr>
-                                        <td colSpan={10} className="text-center p-6">No hay Roles Registrados</td>
+                                        <td colSpan={4}>
+                                            <div className="p-4 w-full flex items-center justify-center gap-2">
+                                                <Loader className="w-5 h-5 animate-spin" />
+                                                Cargando Roles...
+                                            </div>
+                                        </td>
                                     </tr>
                                 ) : (
                                     <>
-                                        {roles?.map((rol) => (
+                                        {allRoles?.map((rol) => (
                                             <tr key={rol.id}>
                                                 <td className="p-4">{rol.name}</td>
                                                 <td className="p-4">{rol.modules.join(", ")}</td>
                                                 <td className="p-4">{rol.permissions.join(", ")}</td>
                                                 <td className="p-4">
                                                     <div className="flex items-center gap-2">
-                                                        <button onClick={() => handleEditRol(rol)} className="bg-[#841A1A] text-amber-100 p-1 rounded-lg cursor-pointer"><Edit2/></button>
-                                                        <button onClick={() => handleDeleteRol(rol.id)} className="bg-[#841A1A] text-amber-100 p-1 rounded-lg cursor-pointer"><Trash2/></button>
+                                                        <button 
+                                                        onClick={() => {setRole(rol), setAction("Rol Input")}} 
+                                                        className="flex gap-1 items-center justify-center text-blue-500 font-semibold  border-b cursor-pointer"
+                                                    >
+                                                        <Edit2/> Editar
+                                                    </button>
                                                     </div>
                                                 </td>
                                             </tr>
@@ -179,16 +137,16 @@ export default function ManageRol() {
                     <section className="bg-[#841A1A] text-amber-100 rounded-xl p-6">
                         <div>
                         <h1 className="font-semibold text-lg">Datos del Rol</h1>
-                        <p className="text-xs"> {isRol.id ? "Actualiza la información de tu rol" : "Completa la información para registrar un nuevo rol"} </p>
+                        <p className="text-xs"> {isRole.id ? "Actualiza la información de tu rol" : "Completa la información para registrar un nuevo rol"} </p>
                         </div>
 
-                        <form onSubmit={handleSubmitRol}>
+                        <form onSubmit={SubmitRole}>
                         {/* -- Campo: Nombre del Rol -- */}
                         <section className="mt-4">
                             <label className="font-semibold text-md">Nombre del Rol</label>
                             <input
-                            value={isRol.name}
-                            onChange={(e) => handleInputChange(setRol, "name", e.target.value)}
+                            value={isRole.name}
+                            onChange={(e) => useHandleInputChange(setRole, "name", e.target.value)}
                             required
                             placeholder="Ej: Administrador, Cajero, Vendedor..."
                             className="w-full border-b rounded-lg px-2 outline-none py-1 bg-transparent text-amber-50"
@@ -205,7 +163,7 @@ export default function ManageRol() {
                                 <div
                                 key={mod.name}
                                 className={`flex items-center gap-2 border p-3 rounded-lg cursor-pointer transition ${
-                                    isRol.modules.includes(mod.name)
+                                    isRole.modules.includes(mod.name)
                                     ? "bg-amber-200 text-[#841A1A]"
                                     : "bg-[#6B1313] text-amber-100 hover:bg-[#9C2E2E]"
                                 }`}
@@ -222,9 +180,9 @@ export default function ManageRol() {
                         </section>
 
                         {/* -- Lista dinámica de permisos según módulo seleccionado -- */}
-                        {isRol.modules && (
+                        {isRole.modules && (
                             <>
-                                {isRol.modules.map((module) => (
+                                {isRole.modules.map((module) => (
                                     <section key={module} className="mt-6">
                                         <h2 className="font-semibold text-md mb-2">
                                             Permisos del módulo: <span className="italic">{module}</span>
@@ -234,7 +192,7 @@ export default function ManageRol() {
                                             <div
                                                 key={perm.name}
                                                 className={`flex items-center gap-2 p-3 border rounded-lg cursor-pointer transition ${
-                                                isRol.permissions.includes(perm.name)
+                                                isRole.permissions.includes(perm.name)
                                                     ? "bg-amber-200 text-[#841A1A]"
                                                     : "bg-[#6B1313] text-amber-100 hover:bg-[#9C2E2E]"
                                                 }`}
@@ -254,9 +212,9 @@ export default function ManageRol() {
 
                         {/* -- Botón para crear rol -- */}
                         <div className="flex justify-end mt-8 gap-2">
-                            {isRol.id && (
+                            {isRole.id && (
                             <button
-                            onClick={() => setRol(initialBaseRol)}
+                            onClick={() => setRole(initialData)}
                             className="bg-amber-200 text-[#841A1A] flex items-center gap-2 px-4 py-2 rounded-lg cursor-pointer font-semibold"
                             >
                             <X/> Cancelar
@@ -274,7 +232,7 @@ export default function ManageRol() {
                                 </div>
                             ) : (
                                 <>
-                                <Save /> {isRol.id ? "Actualizar Rol" : "Crear Rol"}
+                                <Save /> {isRole.id ? "Actualizar Rol" : "Crear Rol"}
                                 </>
                             )}
                             </button>

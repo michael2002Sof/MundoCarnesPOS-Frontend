@@ -9,12 +9,8 @@ import Account from "./pages/account"
 
 import ModuleIndex from "./components/shared/moduleIndex"
 
-import ManageRol from "./modules/user/manageRole"
-import ManageUser from "./modules/user/manageUser"
-
-import ManageProduct from "./modules/inventory/ManageProduct"
-
-import ManageCustomer from "./modules/customer/manageCustomer"
+import Role from "./modules/user/role"
+import User from "./modules/user/user"
 
 
 import ManageBranch from "./modules/sale/manageBranch"
@@ -37,15 +33,8 @@ const MundoCarnesPosRoutes = [
                 RUTAS PARA EL MODULO DE USER
             =========================================================== */
             { path: "/user", element: <ModuleIndex items={ModuleItems["Usuarios"]} title={"Gestión de Usuarios"}/>},
-            { path: "/user/managerol", element: <ManageRol/> },
-            { path: "/user/manage", element: <ManageUser/> },
-
-
-            /*========================================================
-                RUTAS PARA EL MODULO DE INVENTARIO
-            =========================================================== */
-            { path: "/inventory", element: <ModuleIndex items={ModuleItems["Inventario"]} title={"Gestión de Inventario"}/>},
-            { path: "/inventory/manage-product", element: <ManageProduct/> },
+            { path: "/user/role", element: <Role/> },
+            { path: "/user/user", element: <User/> },
 
 
             /*========================================================
@@ -57,13 +46,6 @@ const MundoCarnesPosRoutes = [
             { path: "/sale/cash-sale", element: <CashSale/>},
             { path: "/sale/report", element: <ReportSale/>},
             { path: "/sale/credit-note", element: <CreditNote/>},
-
-
-            /*========================================================
-                RUTAS PARA EL MODULO DE CLIENTES
-            =========================================================== */
-            { path: "/customer", element: <ModuleIndex items={ModuleItems["Clientes"]} title={"Gestión de Clientes"}/>},
-            { path: "/customer/manage", element: <ManageCustomer/> },
         ]
     }
 ]

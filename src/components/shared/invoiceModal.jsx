@@ -37,7 +37,7 @@ export default function InvoicePrinter({ invoice, setShowInvoice }) {
     cc,
     address_client,
     vendedor,
-    itemsProduct = [],
+    invoiceItem = [],
     subtotal,
     tax0,
     tax5,
@@ -53,9 +53,9 @@ export default function InvoicePrinter({ invoice, setShowInvoice }) {
   }, []);
 
   // Detectar los IVAs activos antes del render
-  const showIVA0 = itemsProduct.some(it => it.tax0 === true);
-  const showIVA5 = itemsProduct.some(it => it.tax5 > 0);
-  const showIVA19 = itemsProduct.some(it => it.tax19 > 0);
+  const showIVA0 = invoiceItem.some(it => it.tax0 === true);
+  const showIVA5 = invoiceItem.some(it => it.tax5 > 0);
+  const showIVA19 = invoiceItem.some(it => it.tax19 > 0);
 
   return (
     <div className="flex flex-col items-center bg-amber-50 p-12">
@@ -65,19 +65,19 @@ export default function InvoicePrinter({ invoice, setShowInvoice }) {
           className="w-[80mm] text-[11px] text-gray-900 font-sans mx-auto flex flex-col items-center justify-center"
           style={{ fontFamily: "Arial, sans-serif", lineHeight: "1.4" }}
         >
-          {/* 🏷️ Logo */}
+          {/* Logo */}
           <img
             src={logo || "/logo_mundocarnes.svg"}
             alt="Logo empresa"
             className="w-16 h-auto mb-2 mt-1 object-contain"
           />
 
-          {/* 🧾 Encabezado */}
+          {/* Encabezado */}
           <h2 className="text-[13px] font-bold mb-1 text-center uppercase border-b border-gray-400 pb-1">
             FACTURA DE VENTA
           </h2>
 
-          {/* 🏢 Datos de empresa */}
+          {/* Datos de empresa */}
           <div className="text-center mb-2">
             <p className="font-semibold text-[12px]">{company}</p>
             <p>NIT: {nit}</p>
@@ -87,7 +87,7 @@ export default function InvoicePrinter({ invoice, setShowInvoice }) {
             <p><strong>Caja:</strong> {caja}</p>
           </div>
 
-          {/* 🧍 Datos cliente */}
+          {/* Datos cliente */}
           <div className="w-full border-t border-b border-gray-300 py-1 my-2 text-left">
             <p><strong>Factura N°:</strong> {code}</p>
             <p><strong>Fecha:</strong> {created_at}</p>
@@ -97,7 +97,7 @@ export default function InvoicePrinter({ invoice, setShowInvoice }) {
             <p><strong>Vendedor:</strong> {vendedor}</p>
           </div>
 
-          {/* 📋 Tabla productos */}
+          {/* Tabla productos */}
           <table className="w-full border-collapse my-2 text-[11px]">
             <thead>
               <tr className="border-b border-gray-400">
@@ -111,7 +111,7 @@ export default function InvoicePrinter({ invoice, setShowInvoice }) {
               </tr>
             </thead>
             <tbody>
-              {itemsProduct.map((it, i) => (
+              {invoiceItem.map((it, i) => (
                 <tr key={i} className="border-b border-gray-200">
                   <td className="py-0.5">{it.product_name}</td>
                   <td className="text-right">{it.quantity}</td>
@@ -141,7 +141,7 @@ export default function InvoicePrinter({ invoice, setShowInvoice }) {
             </tbody>
           </table>
 
-          {/* 🧮 Totales */}
+          {/* Totales */}
           <div className="w-full border-t border-gray-300 pt-1 text-[11px]">
             <div className="flex justify-between">
               <span>Subtotal:</span>
@@ -171,14 +171,14 @@ export default function InvoicePrinter({ invoice, setShowInvoice }) {
             </div>
           </div>
 
-          {/* 💰 Método de pago */}
+          {/* Método de pago */}
           <div className="w-full mt-2 border-t border-gray-300 pt-1">
             <p><strong>Método:</strong> {method_payment === "cash" ? "Efectivo" : "Transferencia"}</p>
             <p><strong>Recibido:</strong> {formatDecimal(receipt, true)}</p>
             <p><strong>Cambio:</strong> {formatDecimal(repay, true)}</p>
           </div>
 
-          {/* 🧡 Mensaje final */}
+          {/* Mensaje final */}
           <p className="text-center font-semibold text-[12px] mt-3">
             ¡Gracias por su compra!
           </p>

@@ -1,18 +1,13 @@
 import { useState } from "react"
-import { Building2, MapPin, Save, Edit2, Trash2, X, Loader2 } from "lucide-react"
+import { Building2, MapPin, Save, Edit2, X, Loader2, Loader } from "lucide-react"
 
 import { ModulesHeader } from "../../components/shared/headers"
-import DecodeToken from "../../api/decode"
-import axiosInstance from "../../api/axiosintance"
-import usePersistentResponse from "../../utils/response_message"
-import handleInputChange from "../../utils/handleInputChange"
-import { GetAllBranchs } from "../../hooks/sales"
+import handleInputChange from "../../utils/useHandleInputChange"
+import useBranch from "../../hooks/sale/useBranch"
 
 
 export default function ManageBranch () {
-    const token = DecodeToken()
-    const {branchs, FetchBranchs} = GetAllBranchs()
-    const [isLoading, setLoading] = useState(false)
+    const {isLoading, branchs, POST_Branch, PUT_Branch} = useBranch()
     const [isAction, setAction] = useState("Manage Branch")
 
     /* ===============================================================
@@ -20,7 +15,6 @@ export default function ManageBranch () {
     =============================================================== */
     const initialBaseBranch = {
         id: null,
-        company: token.company,
         name: "",
         address: "",
         city: "Cúcuta",
@@ -34,60 +28,17 @@ export default function ManageBranch () {
     =============================================================== */
     const handleSubmitBrach = async (e) => {
         e.preventDefault()
-        setLoading(true)
-        let res
-        try {
-            if(isBrach.id) {
-                // Actualizar usuario existente
-                res = await axiosInstance.put("/posinnovate/app/sale/branch/update", isBrach)
-            } else {
-                res = await axiosInstance.post("/posinnovate/app/sale/branch/register", isBrach)
-            }
 
-            FetchBranchs()
-            setBrach(initialBaseBranch)
-            usePersistentResponse(res)
+        if(isBrach.id) {
+            await PUT_Branch(isBrach)
+        } else {
+            await POST_Branch(isBrach)
+        }
+
+        setBrach(initialBaseBranch)
+        setAction("Manage Branch")
             
-        } catch (error) {
-            usePersistentResponse(error)
-        } finally {
-            setLoading(false)
-        }
     }
-     
-    /* ===============================================================
-        🗑️ ELIMINAR BRANCH
-    =============================================================== */
-    const handleDeleteBranch = async (id) => {
-        if (!confirm("¿Seguro que deseas eliminar esta sucursal?")) return
-        setLoading(true)
-        try {
-            const res = await axiosInstance.delete(`/posinnovate/app/sales/branch/delete/${id}`)
-            usePersistentResponse(res)
-            FetchBranchs()
-        } catch (error) {
-            usePersistentResponse(error)
-        } finally {
-            setLoading(false)
-        }
-    }
-
-    /* ===============================================================
-        CARGAR BRANCH PARA EDICIÓN
-    =============================================================== */
-    const handleEditBranch = (brach) => {
-        setBrach({
-            id: brach.id,
-            company: brach.company,
-            name: brach.name,
-            address: brach.address,
-            city: brach.city,
-            department: brach.department,
-            country: brach.country
-        })
-        setAction("Branch Input")
-    }
-
 
     /* ===============================================================
         INTERFAZ
@@ -116,7 +67,7 @@ export default function ManageBranch () {
                 </div>
 
                 {/* ===============================================================
-                    📄 TABLA DE SUCURSALES
+                    TABLA DE SUCURSALES
                 =============================================================== */}
                 {isAction === "Manage Branch" && (
                     <div className="overflow-x-auto">
@@ -132,31 +83,33 @@ export default function ManageBranch () {
                                 </tr>
                             </thead>
                             <tbody>
-                                {branchs?.length === 0 ? (
+                                {isLoading ? (
                                     <tr>
-                                        <td colSpan={10} className="text-center p-6">No hay Sucursales Registradas</td>
+                                        <td colSpan={10}>
+                                            <div className="p-4 w-full flex items-center justify-center gap-2">
+                                                <Loader className="w-5 h-5 animate-spin" />
+                                                Cargando Sucursales...
+                                            </div>
+                                        </td>
                                     </tr>
                                 ) : (
-                                    branchs?.map((brach) => (
-                                        <tr key={brach.id} className="border-b border-gray-200">
-                                            <td className="p-4">{brach.name}</td>
-                                            <td className="p-4">{brach.address}</td>
-                                            <td className="p-4">{brach.city}</td>
-                                            <td className="p-4">{brach.department}</td>
-                                            <td className="p-4">{brach.country}</td>
+                                    branchs?.map((b) => (
+                                        <tr key={b.id} className="border-b border-gray-200">
+                                            <td className="p-4">{b.name}</td>
+                                            <td className="p-4">{b.address}</td>
+                                            <td className="p-4">{b.city}</td>
+                                            <td className="p-4">{b.department}</td>
+                                            <td className="p-4">{b.country}</td>
                                             <td className="p-4">
                                                 <div className="flex items-center gap-2">
                                                     <button
-                                                        onClick={() => handleEditBranch(brach)}
-                                                        className="bg-[#841A1A] text-amber-100 p-1 rounded-lg cursor-pointer"
+                                                        onClick={() => {
+                                                            setBrach(b)
+                                                            setAction("Branch Input")
+                                                        }}
+                                                        className="flex gap-1   items-center justify-center text-blue-500 font-semibold  border-b cursor-pointer"
                                                     >
-                                                        <Edit2 />
-                                                    </button>
-                                                    <button
-                                                        onClick={() => handleDeleteBranch(brach.id)}
-                                                        className="bg-[#841A1A] text-amber-100 p-1 rounded-lg cursor-pointer"
-                                                    >
-                                                        <Trash2 />
+                                                        <Edit2 size={16}/> Editar
                                                     </button>
                                                 </div>
                                             </td>
@@ -168,7 +121,7 @@ export default function ManageBranch () {
                     </div>
                 )}
                 {/* ===============================================================
-                    🧾 FORMULARIO CREAR / EDITAR USUARIO
+                    FORMULARIO CREAR / EDITAR USUARIO
                 =============================================================== */}
                 {isAction === "Branch Input" && (
                     <section className="bg-[#841A1A] text-amber-100 rounded-xl p-6">

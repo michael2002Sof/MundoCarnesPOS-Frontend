@@ -2,101 +2,91 @@ import { useState, useEffect } from "react"
 import { LockOpen, Lock, Loader2 } from "lucide-react"
 
 import { ModulesHeader } from "../../../components/shared/headers"
-import { GetSessionById } from "../../../hooks/sales"
 import usePersistentResponse from "../../../utils/response_message"
 import axiosInstance from "../../../api/axiosintance"
-import handleInputChange from "../../../utils/handleInputChange"
+import handleInputChange from "../../../utils/useHandleInputChange"
 import { formatDecimal } from "../../../utils/formatData"
-import { div } from "framer-motion/client"
+
+import useCashSession from "../../../hooks/sale/useCashSession"
+import useSalePoint from "../../../hooks/sale/useSalePoint"
+import toast from "react-hot-toast"
+
 
 export default function OpenCloseCash ({sp, user, FetchSalesPoints}) {
 
-    const [isLoading, setLoading] = useState(false)
+    const [setLoading] = useState(false)
+    const {isLoading, POST_CashSession, GET_SessionById, session, POST_CreditNote} = useCashSession()
+    const {GET_SalePoint} = useSalePoint()
 
     /*=======================================================================
         CONSTANTES PARA LA APERTURA DE CAJA y CREACION DE REGISTRO DIARIO
     =========================================================================*/
-    const [ showOpenModal, setShowOpenModal ] = useState(false)
 
     /* -- Iniciar Registro de caja -- */
     const [ isRegisterCashSession, setRegisterCashSession ] = useState({
-        sales_point: sp?.id,
+        sale_point: sp?.id,
         branch: sp?.id_branch,
-        opened_by: user,
         initial_cash: 0,
     })
 
     /* -- Sincroniza el id del punto de venta cuando cambie -- */
     useEffect(() => {
         setRegisterCashSession({
-            sales_point: sp?.id,
+            sale_point: sp?.id,
             branch: sp?.id_branch,
-            opened_by: user,
             initial_cash: 0,
         })
     }, [sp]);
 
     /* -- Función: Abrir caja (crear registro diario) -- */
+    const [ showOpenModal, setShowOpenModal ] = useState(false)
     const handleOpenRegister = async (e) => {
         e.preventDefault()
-        setLoading(true)
-        try {
-            console.log(isRegisterCashSession)
-            const res = await axiosInstance.post( "/posinnovate/app/sale/cash/session/open", isRegisterCashSession);
-            localStorage.setItem("SessionCashID", res.data.session);
-            FetchSalesPoints()
-            usePersistentResponse(res);
-        } catch (error) {
-            usePersistentResponse(error);
-        } finally {
-            setLoading(false)
-            setShowOpenModal(false)
-        }
+        await POST_CashSession(isRegisterCashSession)
+        GET_SalePoint()
+        setShowOpenModal(false)
     };
 
     /*=======================================================================
         CONSTANTES PARA EL CIERRE DE CAJA y FINALIZACION DEL REGISTRO DIARIO
     =========================================================================*/
-        const [ showCloseModal, setShowCloseModal ] = useState(false)
-        const sessionId = localStorage.getItem("SessionCashID");
-        const {session, FetchSession} = GetSessionById(sessionId)
-        useEffect(() => {
-            if (showCloseModal) {
-                FetchSession();
+    const [ showCloseModal, setShowCloseModal ] = useState(false)
+    const sessionId = localStorage.getItem("SessionCashID");
+    useEffect(() => {
+        if (showCloseModal) {
+            GET_SessionById(sessionId);
+            POST_CreditNote()
+        }
+    }, [showCloseModal]);
+    /* -- Función: Cerrar caja del día -- */
+    const handleCloseRegister = async () => {
+        try {
+        
+        if (!sessionId) {
+            throw new Error("No hay sesión activa para cerrar");
+        }
+        console.log(  {
+                cash_session: sessionId,
+                sales_point: sp?.id,
+                closed_by: user,
+            })
+        // Cerrar la sesión con los totales calculados
+        const res = await axiosInstance.put( `/posinnovate/siigo/cash/close`,
+            {
+                cash_session: sessionId,
+                sales_point: sp?.id,
+                closed_by: user,
             }
-        }, [showCloseModal]);
-        /* -- Función: Cerrar caja del día -- */
-        const handleCloseRegister = async () => {
-            setLoading(true)
-            try {
-            
-            if (!sessionId) {
-                throw new Error("No hay sesión activa para cerrar");
-            }
-            console.log(  {
-                    cash_session: sessionId,
-                    sales_point: sp?.id,
-                    closed_by: user,
-                })
-            // Cerrar la sesión con los totales calculados
-           const res = await axiosInstance.put( `/posinnovate/app/sale/cash/session/close`,
-                {
-                    cash_session: sessionId,
-                    sales_point: sp?.id,
-                    closed_by: user,
-                }
-            );
-            usePersistentResponse(res);
-            FetchSalesPoints()
-            setShowCloseModal(false);
-            // Limpieza de localStorage (registro ya cerrado)
-            localStorage.removeItem("SessionCashID");
-            } catch (error) {
-            usePersistentResponse(error);
-            } finally {
-                setLoading(false)
-            }
-        };
+        );
+        toast.success(res.message)
+        GET_SalePoint()
+        setShowCloseModal(false);
+        // Limpieza de localStorage (registro ya cerrado)
+        localStorage.removeItem("SessionCashID");
+        } catch (error) {
+            toast.error(error.message);
+        }
+    };
     
     return (
         <>

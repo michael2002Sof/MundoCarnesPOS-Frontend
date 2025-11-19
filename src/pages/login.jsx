@@ -3,7 +3,7 @@ import { Lock, Eye, EyeOff, Mail, Loader2 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
 import axiosInstance from "../api/axiosintance";
-import handleInputChange from "../utils/handleInputChange";
+import handleInputChange from "../utils/useHandleInputChange";
 
 export default function Login() {
   const navigate = useNavigate()
@@ -17,8 +17,7 @@ export default function Login() {
     setLoading(true);
     let res
     try {
-      res = await axiosInstance.post("/posinnovate/app/auth/login", user)
-      console.log("respuesta del backend:",  res)
+      res = await axiosInstance.post("/posinnovate/siigo/auth/login", user)
       setMessage(res.message)
       sessionStorage.setItem("token", res.token)
       setTimeout(() => {  navigate("/home") }, 2000);
@@ -60,7 +59,7 @@ export default function Login() {
                         <div className="flex items-center bg-[#6E1515] text-amber-100/60 rounded-lg">
                             <field.icon className="ml-3" />
                             <input value={user[field.name]} placeholder={field.placeholder} type={showPassword ? "text" : "password"} onChange={(e) => handleInputChange(setUser, field.name, e.target.value)} required className="w-full p-2 bg-transparent focus:outline-none  rounded-r-lg"/>
-                            <button onClick={() => setShowPassword(showPassword ? false : true)} className="mr-3 cursor-pointer">{showPassword ? <EyeOff/> : <Eye/>}</button>
+                            <button type="button" onClick={() => setShowPassword(showPassword ? false : true)} className="mr-3 cursor-pointer">{showPassword ? <EyeOff/> : <Eye/>}</button>
                         </div>
                     ) : (
                         <div className="flex items-center bg-[#6E1515] text-amber-100/60 rounded-lg">

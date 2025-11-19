@@ -1,39 +1,110 @@
-import { useState, useMemo, useEffect } from "react"
+import { useState, useMemo, useEffect, use } from "react"
 import { Barcode, Loader2, ShoppingCart, Trash2} from "lucide-react"
 
-import { GetAllSalesPoint } from "../../hooks/sales"
-import { GetAllProducts } from "../../hooks/products"
 import OpenCloseCash from "./cash sale/OpenCloseCash"
 import DecodeToken from "../../api/decode"
 import ClientSearch from "./cash sale/ClientSearch"
-import usePersistentResponse from "../../utils/response_message"
-import handleInputChange from "../../utils/handleInputChange"
-import axiosInstance from "../../api/axiosintance"
+import useHandleInputChange from "../../utils/useHandleInputChange"
 import { formatDecimal } from "../../utils/formatData"
 import InvoiceModal from "../../components/shared/invoiceModal"
+
+import {useDecodeScale, useDecodeNormal} from "./cash sale/useDecodeBarcode"
+
+import useSalePoint from "../../hooks/sale/useSalePoint"
+import useProductSiigo from "../../hooks/siigo/useProduct"
+import useInvoiceSiigo from "../../hooks/siigo/useInvoice"
+import usePaymentSiigo from "../../hooks/siigo/usePayment"
+import useCostCenterSiigo from "../../hooks/siigo/useCostCenter"
+import useWareHouse from "../../hooks/siigo/useWareHouse"
 import toast from "react-hot-toast"
+
 
 
 export default function CashSale() {
     /*================================================================
       LLAMADA DE DATOS DEL SISTEMA
     ===================================================================*/
-    const { products, FetchProducts } = GetAllProducts()
-    const {salesPoints, FetchSalesPoints} = GetAllSalesPoint()         
+    const {isLoading, POST_InvoiceSiigo, typeInvoiceSiigo} = useInvoiceSiigo()
+    const today = new Date().toISOString().slice(0, 10);
+
+
+    const {costCenterSiigo} = useCostCenterSiigo()
+    const {wareHouses} = useWareHouse()
+    const {GET_ProductSiigoByCode} = useProductSiigo()
+
+    const [selectedCustomer, setSelectedCustomer] = useState(null); // cliente elegido
+
+    const {salePoints, GET_SalePoint} = useSalePoint()         
     const token = DecodeToken()     
-    const sp = salesPoints?.find(sp => sp.id_user === token.id ) //Punto de venta del usuario
-    const user = token?.id
+    const sp = salePoints?.find(sp => sp.id_user === token.id ) //Punto de venta del usuario
+
+
+    const {paymentMethodSiigo} = usePaymentSiigo()
+    const paymentMethodsBySalePoint = { 
+        1: [10780, 7057], // LC PEQUEÑO
+        2: [10779, 7057], // LC OFICINA
+    };
+    const filterPaymentMethods = (methods, salePointId) => {
+        const allowedIds = paymentMethodsBySalePoint[salePointId] || [];
+        return methods.filter(method => allowedIds.includes(method.id));
+    };
+    const filteredPayments = filterPaymentMethods(paymentMethodSiigo, sp?.id);
+    const paymentArray = filteredPayments.map(method => ({
+        id: method.id,
+        value: "",
+        due_date: today
+    }));
+
+    const wh = wareHouses?.find(wh => wh.id === sp?.warehouse) // Bodega del punto de venta
+    const user = token?.id //Vendedor del punto de venta
+
+    /*=======================================================================
+      ESTRUCTURA DE DATOS PARA LA GENERACION DE FACTURA 
+    =========================================================================*/
+    const initalData = {
+        document: { id: ""},
+        date: today,
+        customer: selectedCustomer,
+        cost_center: "",
+        stamp: { send: true },
+        mail: { send: true},
+        observations: "Venta realizada en punto de venta",
+        payments: [],
+        globaldiscounts: [
+            {
+                id: "",
+                percentage: "",
+                value: ""
+            }
+        ],
+        additional_fields: {},
+
+        //Para mi pos
+        sale_point: "",
+        receipt_cash: "",
+        receipt_transfer: "",
+        total_payment: "",
+        repay: "",
+
+        subtotal: "",
+        tax0: "",
+        tax5: "",
+        tax19: "",
+        total: ""
+
+    }
+    const [isBuildInvoice, setBuildInvoice] = useState(initalData)
+ 
+
     /*=======================================================================
       PROCESOS PARA EL REGISTRO DE VENTA DE PRODUCTOS 
     =========================================================================*/
-
     // Estado inicial
     const [tabs, setTabs] = useState([{ id: Date.now(), name: "Venta 1", cart: [], client: null }])
 
     const [activeTabId, setActiveTabId] = useState(tabs[0].id) //Pestaña activa
 
     const [barcode, setBarcode] = useState("") // Codigo escaneado
-    const [isSelectedClient, setSelectedClient] = useState(null); // cliente elegido
 
     // Añadir / Eliminar pestañas
     const addTab = () => {
@@ -60,79 +131,31 @@ export default function CashSale() {
         updateActiveTab((tab) => ({ ...tab, cart: tab.cart.filter((_, i) => i !== index) }));
     };
 
-        // Decodificar bascula
-    const decodeScaleBarcode = (code) => {
-        const productCode = code.slice(2, 7);
-        const weightDigits = code.slice(7, 12); // ejemplo: 00655 -> 0.655 kg
-        const weight = parseInt(weightDigits, 10) / 1000;
-
-        const product = products?.find((p) => String(p.barcode) === String(productCode))
-        if (!product) return null;
-
-        const subtotal = Number(product.base_price) * weight;
-
-        const isTax0 = Number(product.tax0) === 1;
-        const hasTax5 = Number(product.tax5) > 0;
-        const hasTax19 = Number(product.tax19) > 0;
-
-        let tax5 = 0;
-        let tax19 = 0;
-
-        if (hasTax5) tax5 = subtotal * 0.05;
-        if (hasTax19) tax19 = subtotal * 0.19;
-
-        const total = subtotal + tax5 + tax19;
-
-        return {
-        barcode: productCode,
-        name: product.name,
-        subtotal:subtotal,
-        tax0: isTax0,
-        tax5,
-        tax19,
-        total: total,
-        isScale: true,
-        quantity: weight,
-        };
-    };
-
-    // Decodificar normal
-    const decodeNormalBarcode = (code) => {
-        const product = products?.find((p) => String(p.barcode) === String(code))
-        if (!product) return null;
-        return {
-            barcode: product.barcode,
-            name: product.name,    
-            subtotal:Number(product.base_price),
-            tax0: product.tax0 === 1 ? true : false,
-            tax5: Number(product.tax5),
-            tax19: Number(product.tax19),
-            total: Number(product.sale_price),
-            isScale: false,
-            quantity: 1,
-            unit_mesurement: product.unit_mesurement,
-        };
-    };
-
     // Manejar escaneo
-    const handleScan = (e) => {
+    const handleScan = async (e) => {
         e.preventDefault();
         if (!barcode) return;
+
         const prefix = parseInt(barcode.slice(0, 2), 10);
         let product 
         if (barcode.length < 12 && prefix < 20 || prefix > 29) {
-            product = decodeNormalBarcode(barcode)
+            const productSiigo = await GET_ProductSiigoByCode(barcode)
+            console.log(productSiigo)
+            product = useDecodeNormal(productSiigo, wh)
         } else {
-            product = decodeScaleBarcode(barcode) 
+            const productCode = barcode.slice(2, 7);
+            const weightDigits = barcode.slice(7, 12); // ejemplo: 00655 -> 0.655 kg
+            const weight = parseInt(weightDigits, 10) / 1000;
+            const adjust_code = productCode.padStart(6, "0")
+            setBarcode(adjust_code)
+            const productSiigo = await GET_ProductSiigoByCode(adjust_code)
+            console.log(productSiigo)
+            product = useDecodeScale(productSiigo, weight, wh) 
         }
 
-        console.log(product)
+        console.log("Producto traido de siigo", product)
 
-        if (!product) {
-            toast.error("Producto no existe")
-            setBarcode("");
-            return;
-        }
+   
 
         updateActiveTab((tab) => {
         // si es bascula => agregar siempre como item independiente (no sumar cantidades)
@@ -141,17 +164,17 @@ export default function CashSale() {
         }
 
         // para normal => si existe en carrito sumar cantidad
-        const existingIndex = tab.cart.findIndex((it) => String(it.barcode) === String(product.barcode));
+        const existingIndex = tab.cart.findIndex((it) => String(it.code) === String(product.code));
         if (existingIndex === -1) {
             return { ...tab, cart: [...tab.cart, product] };
         } else {
             const newCart = [...tab.cart];
             const found = { ...newCart[existingIndex] };
             found.quantity = (found.quantity || 1) + 1;
-            found.subtotal = Math.round(found.price * found.quantity);
-            found.iva5 = (Number(found.tax5) || 0) * found.quantity; // si tu iva es por unidad ajustar según lógica
-            found.iva19 = (Number(found.tax19) || 0) * found.quantity;
-            found.total = Math.round(found.subtotal + (found.iva5 || 0) + (found.iva19 || 0) + (found.iva0 || 0));
+            found.subtotal = Math.round(found.subtotal + product.subtotal);
+            found.iva5 = (Number(found.tax5) || 0) + product.tax5; // si tu iva es por unidad ajustar según lógica
+            found.iva19 = (Number(found.tax19) || 0) + product.tax19;
+            found.total = Math.round(found.total + product.total);
             newCart[existingIndex] = found;
             return { ...tab, cart: newCart };
         }
@@ -164,104 +187,105 @@ export default function CashSale() {
       PROCESOS PARA CALCULAR EL RESUMEN DE VENTA 
     =========================================================================*/
     // Totales del tab activo
-    const activeTab = useMemo(() => tabs.find((t) => t.id === activeTabId) || tabs[0], [tabs, activeTabId]);
+    const activeTab = tabs.find((t) => t.id === activeTabId) || tabs[0]
     const subtotal = (activeTab?.cart || []).reduce((s, it) => s + (Number(it.subtotal || 0)), 0);
     const tax5Total = (activeTab?.cart || []).reduce((s, it) => s + Number(it.tax5 || 0), 0);
     const tax19Total = (activeTab?.cart || []).reduce((s, it) => s + Number(it.tax19 || 0), 0);
     const total = subtotal + tax5Total + tax19Total;
 
-    const [isPayment, setPayment] = useState({method: "cash", receipt: "", repay: 0})// Metodo de pago
+    /* -- CONTROL DE PAGOS -- */
+    const [receiptCash, setReceiptCash] = useState(0);
+    const [receiptTransfer, setReceiptTransfer] = useState(0);
+
     useEffect(() => {
-        setPayment((prev) => ({
-            ...prev,
-            receipt: prev.method === "transfer" && total,
-            repay: Math.max(0, prev.receipt - total),
-        }));
-    }, [isPayment.method, total]);
+        const repay = (receiptCash + receiptTransfer) - total;
+        useHandleInputChange(setBuildInvoice, "repay", repay < 0 ? 0 : repay);
+        useHandleInputChange(setBuildInvoice, "total_payment", (receiptCash + receiptTransfer) - repay);
+
+        // Actualizar Siigo paymentMethods
+        const updatedPayments = paymentArray.map(p => {
+            if (p.id === filteredPayments[0]?.id) {
+                return { ...p, value: receiptCash };
+            }
+            if (p.id === filteredPayments[1]?.id) {
+                return { ...p, value: receiptTransfer };
+            }
+            return p;
+        });
+
+        // Filtrar los pagos con valor 0
+        const filteredPaymentsFinal = updatedPayments.filter(p => Number(p.value) > 0);
+
+        useHandleInputChange(setBuildInvoice, "payments", filteredPaymentsFinal);
+        useHandleInputChange(setBuildInvoice, "receipt_cash", receiptCash);
+        useHandleInputChange(setBuildInvoice, "receipt_transfer", receiptTransfer);
+    }, [receiptCash, receiptTransfer, total]);
+
    
     /*=======================================================================
       PROCESOS PARA IMPRIMIR FACTURA Y REGISTAR VENTA
     =========================================================================*/
     const [showInvoice, setShowInvoice] = useState(false);
     const [isInvoicePrinting, setIsInvoicePrinting] = useState(false);
-    const [isLoaging, setIsLoading] = useState(false);
+
+    useEffect(() => {
+        useHandleInputChange(setBuildInvoice, "document.id", typeInvoiceSiigo?.id)
+        useHandleInputChange(setBuildInvoice, "customer", selectedCustomer)
+        useHandleInputChange(setBuildInvoice, "payments.0.value", total)
+        if (wh?.id === 26) {
+            useHandleInputChange(setBuildInvoice, "cost_center", 1163)
+        } else if (wh?.id === 28) {
+            useHandleInputChange(setBuildInvoice, "cost_center", 1167)
+        }
+        useHandleInputChange(setBuildInvoice, "sale_point", sp?.id)
+    }, [selectedCustomer, typeInvoiceSiigo, total, wh, isBuildInvoice.cost_center, sp])
 
     // Confirmar pago: registrar venta + descontar stock + imprimir factura + limpiar carrito
     const handleConfirmPayment = async () => {
-        if (isPayment.method === "cash" && isPayment.receipt < total) {
-            alert("El monto recibido es menor al total");
+
+        if (isBuildInvoice.total_payment < total) {
+            toast.error("El monto recibido es menor al total");
             return;
         }
-        setIsLoading(true);
         
 
-        // 1️⃣ Crear la parte base de la factura
-        const invoiceData = {
-        company: token?.company,
-        sales_point: sp?.id,
-        cash_session: localStorage.getItem("SessionCashID"), // ID de caja abierta
-        seller: user,
-        customer: isSelectedClient?.id || null,
-        subtotal,
-        tax0: 0,
-        tax5: tax5Total,
-        tax19: tax19Total,
-        total,
-        payment_method: isPayment.method,
-        receipt: Number(isPayment.receipt),
-        repay: Number(isPayment.repay),
-        };
-
-        // 2️⃣ Crear los ítems
+        // Crear los ítems
         const itemsPayload = (activeTab?.cart || []).map((it) => ({
-            product_id: it.id,
+            code: it.code,
+            description: it.description,
+            quantity: it.quantity,
+            price: it.price,
+            discount: it.discount,
+            warehouse: it.warehouse,
+            taxes: it.taxes,
+        }));
+
+
+        // Crear los ítems
+        const invoiceItem = (activeTab?.cart || []).map((it) => ({
             product_name: it.name,
-            product_barcode: it.barcode,
-            quantity: it.quantity || 1,
+            product_barcode: it.code,
+            quantity: it.quantity,
             unit_price: it.subtotal,
             tax0: it.tax0,
             tax5: it.tax5,
             tax19: it.tax19,
-            total: it.total,
+            total: it.total
         }));
 
-        // 3️⃣ Combinar todo correctamente
-        const data = {
-            ...invoiceData,
-            invoiceItem: itemsPayload,
-        };
+        const invoiceData = {...isBuildInvoice, items: itemsPayload, invoiceItem, subtotal, tax0: 0, tax5: tax5Total, tax19: tax19Total, total}
 
-        console.log("📦 Data final enviada:", data);
-
-        try {
-            const res = await axiosInstance.post("/posinnovate/app/sale/cash/invoice", data);
-
-            // 🧾 Guardar datos y disparar impresión
-            setIsInvoicePrinting(res.invoice);
-            console.log(res)
-
-
-            // ✅ Limpiar carrito y cliente
+        const invoice = await POST_InvoiceSiigo(invoiceData)
+        // Guardar datos y disparar impresión
+        if (invoice) {
+            setIsInvoicePrinting(invoice, invoiceItem);
+            // Limpiar carrito y cliente
             setTabs((prev) =>
                 prev.map((t) =>
                 t.id === activeTabId ? { ...t, cart: [], client: null } : t
                 )
             );
-
-            FetchProducts?.();
-            usePersistentResponse({
-                message: "Venta registrada e inventario actualizado correctamente.",
-                success: true,
-            });
-        } catch (error) {
-            console.error(error);
-            usePersistentResponse({
-                message: "Error al registrar la venta o actualizar el inventario.",
-                success: false,
-            });
-        } finally {
-            setIsLoading(false);
-            setShowInvoice(true);
+            setShowInvoice(true)
         }
     };
 
@@ -270,10 +294,12 @@ export default function CashSale() {
     const showIVA5 = activeTab.cart.some(it => it.tax5 > 0);
     const showIVA19 = activeTab.cart.some(it => it.tax19 > 0);
 
+    //console.log("Factura registrada en el pos", isInvoicePrinting)
+
 
     return (
         <>
-            <OpenCloseCash sp={sp} user={user} FetchSalesPoints={FetchSalesPoints}/>
+            <OpenCloseCash sp={sp} user={user} FetchSalesPoints={GET_SalePoint}/>
             {/*================================================================
                 VISTA DE REGISTRO DE PRODUCTO A LA VENTA
             ===================================================================*/}
@@ -300,7 +326,7 @@ export default function CashSale() {
                         <Barcode /><h3 className="text-lg font-bold">Escáner</h3>
                         </div>
                         <form onSubmit={handleScan} className="flex gap-2">
-                            <input value={barcode} onChange={(e) => setBarcode(e.target.value)} className="flex-1 p-2 rounded bg-[#6E1515]" placeholder="Escanea o escribe código" autoFocus />
+                            <input value={barcode} onChange={(e) => setBarcode(e.target.value)} className="flex-1 p-2 focus:outline-none rounded-lg bg-[#6E1515]" placeholder="Escanea o escribe código" autoFocus />
                         </form>
                     </section>
 
@@ -336,7 +362,7 @@ export default function CashSale() {
                                 {activeTab.cart.map((it, idx) => (
                                 <tr key={idx} className="text-nowrap">
                                     <td className="px-4">{it.name}</td>
-                                    <td className="px-4 text-center py-2">{it.quantity} {it.unit_mesurement}</td>
+                                    <td className="px-4 text-center py-2">{it.quantity}</td>
                                     <td className="px-4 text-center py-2">{formatDecimal(it.subtotal, true)}</td>
                                     {showIVA0 && (
                                     <td className="px-4 text-center py-2">
@@ -367,9 +393,10 @@ export default function CashSale() {
                     {/*============================================================
                      RESUMEN DE VENTA Y FACUTRACION 
                     ==============================================================*/}
-                    <div className="p-4 bg-[#841A1A] text-amber-100 space-y-4 rounded-xl w-1/3">
+                    <div className="p-4 bg-[#841A1A] text-amber-100 space-y-4 flex flex-col items-center justify-center rounded-xl w-1/3">
                     <h4 className="font-bold">Resumen</h4>
-                    <div className="text-right">
+                    {/*Valores de la venta*/}
+                    <div className="text-righ w-full">
                         <div className="flex justify-between"><span>Subtotal:</span><span>{formatDecimal(subtotal, true)}</span></div>
                         {showIVA0 && (
                             <div className="flex justify-between">IVA 0%: <span>$0</span></div>
@@ -383,56 +410,61 @@ export default function CashSale() {
                         <div className="flex justify-between font-bold mt-2"><span>Total:</span><span>{formatDecimal(total, true)}</span></div>
                     </div>
 
-                    <ClientSearch   isSelectedClient={isSelectedClient} setSelectedClient={setSelectedClient}/>
-                    {activeTab.client && (<div className="mt-2 p-2 bg-amber-200 text-[#841A1A] rounded">{activeTab.client.name} — {activeTab.client.document}</div>)}
+                    <hr className="border-amber-200/20 w-[90%] my-4" />
 
-                    <section className="flex items-center gap-2 w-full">
-                        {/* Método de pago */}
-                        <div className={`${isPayment.method === "cash" ? "w-1/3" : "w-1/2"}`}>
-                            <label className="font-semibold mb-1 text-sm text-nowrap">Método de Pago:</label>
-                            <select
-                            value={isPayment.method}
-                            onChange={(e) => handleInputChange(setPayment, "method", e.target.value)}
-                            className="w-full p-2 rounded cursor-pointer bg-[#6E1515] outline-none text-white"
-                            >
-                            <option value="cash">Efectivo</option>
-                            <option value="transfer">Bancolombia</option>
-                            </select>
-                        </div>
+                    {/*Tipo de Facuración */}
+                    <section className="flex flex-col w-full">
+                        <label className="font-semibold text-sm">Tipo de Factura:</label>
+                        <input value={`${typeInvoiceSiigo?.type} - ${typeInvoiceSiigo?.code} - ${typeInvoiceSiigo?.name}`} type="text" disabled className="bg-[#6E1515] rounded-lg px-4 py-1 mt-1"/>
+                    </section>
 
-                        {/* Recibido */}
-                        <div className={`${isPayment.method === "cash" ? "w-1/3" : "w-1/2"}`}>
-                            <label className="font-semibold mb-1 text-sm">Recibido:</label>
-                            <input
+                    {/*Metodo de pago efectivo*/}
+                    <section className="flex flex-col w-full">
+                        <label className="font-semibold text-sm">{filteredPayments[0]?.name}:</label>
+                        <input
                             type="number"
-                            value={isPayment.receipt}
-                            disabled={isPayment.method !== "cash"}
-                            onChange={(e) =>
-                                handleInputChange(setPayment, "receipt", Number(e.target.value))
-                            }
-                            className={`bg-[#6E1515] w-full px-2 py-1 outline-none text-white ${
-                                isPayment.method !== "cash" ? "opacity-70 cursor-not-allowed" : ""
-                            }`}
-                            />
-                        </div>
-
-                        {/* Devuelta */}
-                        {isPayment.method === "cash" && (
-                            <div className="w-1/3">
-                            <label className="font-semibold mb-1 text-sm">Devuelta:</label>
-                            <input
-                                type="number"
-                                value={Math.max(0, isPayment.receipt - total)}
-                                readOnly
-                                className="bg-[#6E1515] outline-none w-full px-2 py-1 text-white"
-                            />
-                            </div>
-                        )}
+                            className="bg-[#6E1515] w-full px-4 py-1 rounded-lg outline-none text-white"
+                            value={receiptCash}
+                            onChange={(e) => setReceiptCash(Number(e.target.value))}
+                        />
+                    </section>
+                    {/*Metodo de pago Bancolombia*/}
+                    <section className="flex flex-col w-full">
+                        <label className="font-semibold text-sm">Pago Bancolombia:</label>
+                        <input
+                            type="number"
+                            className="bg-[#6E1515] w-full px-4 py-1 rounded-lg outline-none text-white"
+                            value={receiptTransfer}
+                            onChange={(e) => setReceiptTransfer(Number(e.target.value))}
+                        />
                     </section>
 
 
-                    <button onClick={() => handleConfirmPayment()} disabled={activeTab.cart.length === 0} className="mt-4 bg-amber-200 text-[#841A1A] p-2 rounded font-semibold w-full">
-                        {isLoaging ? 
+                    {/*Centro de Costos */}
+                    <section className="flex flex-col w-full">
+                        <label className="font-semibold text-sm">Centro de Costos:</label>
+                        <select value={isBuildInvoice.cost_center} onChange={(e) => useHandleInputChange(setBuildInvoice, "cost_center", Number(e.target.value) )} className="bg-[#6E1515] cursor-pointer w-full px-2 py-2 rounded-lg outline-none text-white mt-1">
+                            <option value="">Seleccionar...</option>
+                            {costCenterSiigo?.map((type) => (
+                                <option key={type.id} value={type.id}>{type.name}</option>
+                            ))}
+                        </select>
+                    </section>
+
+                    <section className="flex flex-col w-full">
+                        <label className="font-semibold text-sm">Devuelta:</label>
+                        <input
+                            type="number"
+                            readOnly
+                            value={isBuildInvoice.repay}
+                            className="bg-[#6E1515] w-full px-4 py-1 rounded-lg outline-none text-white opacity-70"
+                        />
+                    </section>
+
+                    <ClientSearch setCustomer={setSelectedCustomer}/>
+
+                    <button onClick={() => handleConfirmPayment()} disabled={activeTab.cart.length === 0 || sp?.status === "closed"} className={`${sp?.status === "closed" && "cursor-not-allowed"} mt-4 bg-amber-200 text-[#841A1A] p-2 rounded font-semibold w-full`}>
+                        {isLoading ? 
                             <div className="flex justify-center items-center gap-2">
                                 <Loader2 className="animate-spin mr-2 inline-block" />
                                 <p>Procesando...</p>

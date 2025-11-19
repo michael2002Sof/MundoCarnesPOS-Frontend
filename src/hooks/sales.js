@@ -13,7 +13,7 @@ export  function GetAllBranchs () {
             if (!token) return
 
             const company = token.company
-            const res = await axiosInstance.get(`/posinnovate/app/sale/branch/all/${company}`)
+            const res = await axiosInstance.get(`/posinnovate/api/sale/branch/all/${company}`)
             setBranchs(res.data)
         } catch (error) {
             usePersistentResponse(error)
@@ -38,7 +38,7 @@ export  function GetAllSalesPoint () {
             if (!token) return
 
             const company = token.company
-            const res = await axiosInstance.get(`/posinnovate/app/sale/salepoint/all/${company}`)
+            const res = await axiosInstance.get(`/posinnovate/api/sale/salepoint/all/${company}`)
             setSalesPoints(res.data)
         } catch (error) {
             usePersistentResponse(error)
@@ -59,7 +59,7 @@ export  function GetSessionById (id) {
 
     const FetchSession = async () => {
         try {
-            const res = await axiosInstance.get(`/posinnovate/app/sale/report/session/${id}`)
+            const res = await axiosInstance.get(`/posinnovate/api/sale/report/session/${id}`)
             setSession(res.data)
         } catch (error) {
             usePersistentResponse(error)
@@ -79,7 +79,7 @@ export function GetInvoiceByCode (code) {
 
     const FetchInvoice = async () => {
         try {
-            const res = await axiosInstance.get(`/posinnovate/app/sale/report/invoice/${code}`)
+            const res = await axiosInstance.get(`/posinnovate/api/sale/report/invoice/${code}`)
             setInvoice(res.data)
         } catch (error) {
             usePersistentResponse(error)
@@ -103,7 +103,7 @@ export function GetAllCreditNote (code) {
             const token = DecodeToken()
             if (!token) return
             const company = token.company
-            const res = await axiosInstance.get(`/posinnovate/app/sale/return/all/${company}`)
+            const res = await axiosInstance.get(`/posinnovate/api/sale/return/all/${company}`)
             setCreditNotes(res.data)
         } catch (error) {
             usePersistentResponse(error)

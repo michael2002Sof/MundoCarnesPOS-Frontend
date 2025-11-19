@@ -4,7 +4,7 @@ import { useState, useEffect, useRef } from "react";
 import {AppHeader} from "./components/shared/headers"
 import Sidebar from "./components/shared/sidebar";
 import Modules from "./config/modules"
-import useFilteredAuthorization from "./utils/filteredAuthorization";
+import useFilteredAuthorization from "./utils/useFilteredAuthorization";
 
 export default function AppLayout() {
     

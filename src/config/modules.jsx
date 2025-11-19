@@ -8,18 +8,6 @@ const Modules = [
         to: "/user"
     },
     {
-        icon: <Boxes/>,
-        name: "Inventario",
-        description: "Gestiona el inventario",
-        to: "/inventory"
-    },
-    {
-        icon: <Users/>,
-        name: "Clientes",
-        description: "Gestiona tus clientes",
-        to: "/customer"
-    },
-    {
         icon: <ShoppingCart/>,
         name: "Ventas",
         description: "Gestiona tus ventas del sistema",

@@ -1,33 +1,110 @@
 import { Search } from "lucide-react";
-import { useMemo, useState } from "react";
+import { useEffect, useState } from "react";
+import { toast } from "react-hot-toast";
 
-import {GetAllCustomers} from "../../../hooks/customer"
+import useCustomerSiigo from "../../../hooks/siigo/useCustomer";
 
+export default function ClientSearch({ setCustomer }) {
+  const { GET_CustomerSiigoByIdentification } = useCustomerSiigo();
 
+  const [searchTerm, setSearchTerm] = useState("");
+  const [customerList, setCustomerList] = useState([]);
+  const [isSelectedClient, setSelectedClient] = useState(null);
 
-export default function ClientSearch({isSelectedClient, setSelectedClient}) {
-  const {customers} = GetAllCustomers() //Todos los clientes de la empresa
-  const [searchTerm, setSearchTerm] = useState(""); // lo que escribe el usuario
+  const CONSUMIDOR_FINAL_DOCUMENT = "222222222222";
 
+  // Convertir cliente Siigo a tu estructura (con null por defecto)
+  const mapCustomer = (client) => {
+    const city = client?.address?.city || {};
 
-  // Filtra los clientes a medida que se escribe el documento
-  const filteredClients = useMemo(() => {
-    if (!searchTerm) return [];
-    return customers?.filter((c) =>
-      c.cc.toLowerCase().includes(searchTerm.toLowerCase())
-    );
-  }, [customers, searchTerm]);
-
-  const handleSelectClient = (client) => {
-    setSelectedClient(client);
-    setSearchTerm(client.cc); // muestra el documento en el input
+    return {
+      person_type: client.person_type || null,
+      id_type: client.id_type?.code || null,
+      identification: client.identification || null,
+      branch_office: client.branch_office || 0,
+      name: client.name || [],
+      address: {
+        address: client.address?.address || null,
+        city: {
+          country_code: city.country_code || null,
+          country_name: city.country_name || null,
+          state_code: city.state_code || null,
+          state_name: city.state_name || null,
+          city_code: city.city_code || null,
+          city_name: city.city_name || null,
+        },
+        postal_code: client.address?.postal_code || null,
+      },
+      phones: [
+        {
+          indicative: client.phones?.[0]?.indicative || null,
+          number: client.phones?.[0]?.number || null,
+          extension: client.phones?.[0]?.extension || null,
+        },
+      ],
+      contacts: [
+        {
+          first_name: client.contacts?.[0]?.first_name || null,
+          last_name: client.contacts?.[0]?.last_name || null,
+          email: client.contacts?.[0]?.email || null,
+          phone: {
+            indicative: client.contacts?.[0]?.phone?.indicative || null,
+            number: client.contacts?.[0]?.phone?.number || null,
+            extension: client.contacts?.[0]?.phone?.extension || null,
+          },
+        },
+      ],
+    };
   };
 
-   return (
+  // Cargar "Consumidor Final" automáticamente al iniciar
+  useEffect(() => {
+    const loadDefaultCustomer = async () => {
+      const result = await GET_CustomerSiigoByIdentification(CONSUMIDOR_FINAL_DOCUMENT);
+      if (result && result.length > 0) {
+        const cf = mapCustomer(result[0]);
+        setCustomer(cf);
+        setSelectedClient(result[0]);
+        setSearchTerm(CONSUMIDOR_FINAL_DOCUMENT);
+      }
+    };
+
+    loadDefaultCustomer();
+  }, []);
+
+  // Búsqueda manual con Enter
+  const handleSearch = async () => {
+    if (!searchTerm.trim()) return;
+
+    const result = await GET_CustomerSiigoByIdentification(searchTerm.trim());
+
+    if (!result || result.length === 0) {
+      toast.error("Cliente no registrado en Siigo");
+
+      // Volver a Consumidor Final si la búsqueda falló
+      const cf = await GET_CustomerSiigoByIdentification(CONSUMIDOR_FINAL_DOCUMENT);
+      setSelectedClient(cf[0]);
+      setCustomer(mapCustomer(cf[0]));
+      setSearchTerm(CONSUMIDOR_FINAL_DOCUMENT);
+      setCustomerList([]);
+
+      return;
+    }
+
+    setCustomerList(result);
+  };
+
+  // Seleccionar cliente
+  const handleSelectClient = (client) => {
+    setCustomer(mapCustomer(client));
+    setSelectedClient(client);
+    setSearchTerm(client.identification);
+    setCustomerList([]); // Ocultar lista
+  };
+
+  return (
     <div className="space-y-2 relative w-full ">
-      <label className="block text-sm">
-        Buscar cliente por documento
-      </label>
+      <label className="block text-sm">Buscar cliente por documento</label>
 
       <div className="flex gap-2">
         <div className="relative flex-1">
@@ -37,7 +114,10 @@ export default function ClientSearch({isSelectedClient, setSelectedClient}) {
               setSearchTerm(e.target.value);
               setSelectedClient(null);
             }}
-            className="w-full p-2 rounded bg-[#6E1515]  placeholder-amber-100 outline-none"
+            onKeyDown={(e) => {
+              if (e.key === "Enter") handleSearch();
+            }}
+            className="w-full p-2 rounded bg-[#6E1515] placeholder-amber-100 outline-none"
             placeholder="Documento"
           />
           <Search className="absolute right-2 top-2.5 text-gray-300 w-4 h-4" />
@@ -45,36 +125,32 @@ export default function ClientSearch({isSelectedClient, setSelectedClient}) {
       </div>
 
       {/* Lista de sugerencias */}
-      {filteredClients.length > 0 && !isSelectedClient && (
+      {customerList.length > 0 && !isSelectedClient && (
         <ul className="absolute z-10 w-full bg-[#3a0f0f] border border-[#6E1515] rounded shadow-lg max-h-48 overflow-y-auto">
-          {filteredClients.map((client) => (
+          {customerList.map((client) => (
             <li
               key={client.id}
               onClick={() => handleSelectClient(client)}
               className="p-2 cursor-pointer hover:bg-[#8B1E1E] text-white"
             >
-              <div className="font-semibold">{client.name}</div>
-              <div className="text-sm text-gray-300">CC: {client.cc}</div>
-              <div className="text-xs text-gray-400">{client.email}</div>
+              <div className="font-semibold">{client.name.join(" ")}</div>
+              <div className="text-sm text-gray-300">CC: {client.identification}</div>
+              <div className="text-xs text-gray-400">{client.address?.address}</div>
             </li>
           ))}
         </ul>
       )}
 
-      {/* Mostrar cliente seleccionado */}
+      {/* Cliente seleccionado */}
       {isSelectedClient && (
         <div className="p-3 mt-2 bg-[#6E1515] rounded text-white text-sm space-y-1">
           <div>
             <span className="font-semibold">Cliente:</span>{" "}
-            {isSelectedClient.name}
-          </div>
-          <div>
-            <span className="font-semibold">Documento:</span>{" "}
-            {isSelectedClient.cc}
+            {isSelectedClient.name.join(" ")}
           </div>
           <div>
             <span className="font-semibold">Dirección:</span>{" "}
-            {isSelectedClient.address}
+            {isSelectedClient.address?.address || "N/A"}
           </div>
         </div>
       )}

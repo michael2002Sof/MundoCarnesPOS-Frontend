@@ -1,19 +1,25 @@
 import { useMemo } from "react";
 import DecodeToken from "../api/decode";
-import { GetAllRoles } from "../hooks/user";
+import useRole from "../hooks/user/useRole";
 
 export default function useFilteredAuthorization(items, type = "modules") {
   const token = DecodeToken();
-  const { roles } = GetAllRoles();
+  const { allRoles } = useRole();
   const userRol = token.rol;
 
   const filtered = useMemo(() => {
-    if (userRol === "admin") return items;
-    const rol = roles?.find(r => r.id === userRol);
+
+    // Admin: tiene todo EXCEPTO Punto de Venta
+    if (userRol === "admin") return items.filter(item => item.name != "Punto de Venta");
+
+    // Roles normales
+    const rol = allRoles?.find(r => r.id === userRol);
+
     const key = type === "modules" ? "modules" : "permissions";
     const userAccess = rol?.[key] || [];
+    
     return items.filter(item => userAccess.includes(item.name));
-  }, [roles, userRol, items, type]);
+  }, [allRoles, userRol, items, type]);
 
   return filtered;
 }

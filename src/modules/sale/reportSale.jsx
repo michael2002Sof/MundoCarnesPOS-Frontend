@@ -22,7 +22,7 @@ const useFetchCashSessions = (fecha) => {
       setLoading(true);
 
       // Aquí iría tu llamada real:
-    const res = await axiosInstance.get(`/posinnovate/app/sale/report/sales/date/${fecha}`)
+    const res = await axiosInstance.get(`/posinnovate/siigo/report/day/${fecha}`)
     const mockData = res.data;
     console.log("Sesiones de caja obtenidas:", mockData);
 
@@ -64,7 +64,7 @@ const ReportTemplate = ({ session }) => {
         </div>
         <div className="text-right">
           <p className="text-sm text-gray-500">Reporte Interno</p>
-          <p className="text-sm text-gray-500">POS Innovate System</p>
+          <p className="text-sm text-gray-500">POSInnovate Siigo System</p>
         </div>
       </header>
 
@@ -117,7 +117,7 @@ const ReportTemplate = ({ session }) => {
 
       {/* Pie de página */}
       <footer className="text-center text-xs text-gray-500 mt-10 border-t border-black/20 pt-4">
-        <p>© {new Date().getFullYear()} POSInnovate – Reporte generado automáticamente.</p>
+        <p>© {new Date().getFullYear()} POSInnovate Siigo – Reporte generado automáticamente.</p>
       </footer>
     </div>
   );

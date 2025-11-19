@@ -4,29 +4,15 @@ const ModuleItems = {
     "Usuarios" : [
         {
             icon: <ShieldUser/>,
-            name: "Administrar Roles del Sistema",
-            to: "/user/managerol",
-            description: "Crea roles en tu sitema, para asignarlos a tus usuarios"
+            name: "Roles del Sistema",
+            to: "/user/role",
+            description: "Crea roles en tu sistema, editalos o eliminalos. Estos son importantes para asignarlos a tus usuarios"
         },
         {
-            name: 'Administrar Usuarios del Sistema',
-            description: 'Crea cuentas para nuevos usuarios y asígnales un rol',
+            name: 'Usuarios del Sistema',
+            description: 'Crea cuentas para nuevos usuarios y asígnales un rol, edita su informaion o eliminalos',
             icon: <User/>,
-            to: '/user/manage',
-        },
-    ],
-    "Inventario" : [
-        {
-            icon: <Package/>,
-            name: "Administrar Producto",
-            to: "/inventory/manage-product",
-            description: "Agrega nuevos productos, al inventario de la empresa de forma rápida y organizada"
-        },
-        {
-            icon: <Package/>,
-            name: "Administrar Bodegas",
-            to: "/inventory/manage-product",
-            description: "Agrega nuevos productos, al inventario de la empresa de forma rápida y organizada"
+            to: '/user/user',
         },
     ],
     "Ventas" : [
@@ -60,15 +46,6 @@ const ModuleItems = {
             to: "/sale/credit-note",
             description: "Modifica las facturas, y actualiza la informacion de tus cuentas al hacer devoluciones",
         },
-    ],
-
-    "Clientes" : [
-        {
-            icon: <User/>,
-            name: "Administrar Clientes",
-            to: "/customer/manage",
-            description: "Registra clientes en tu sistema, edita su información o eliminalos. Usalos para generar tus ventas personalizadas"
-        }
     ]
 }
 

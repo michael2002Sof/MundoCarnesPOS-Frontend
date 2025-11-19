@@ -1,21 +1,22 @@
 import { useEffect, useState } from "react"
-import { Building2, CreditCard, Save, User, Loader2, Edit2, Trash2, X} from "lucide-react"
+import { Building2, CreditCard, Save, User, Loader2, Edit2, Trash2, X, Loader} from "lucide-react"
 
 import { ModulesHeader } from "../../components/shared/headers"
-import {GetAllBranchs, GetAllSalesPoint} from "../../hooks/sales"
-import { GetAllUsers } from "../../hooks/user"
-import DecodeToken from "../../api/decode"
-import axiosInstance from "../../api/axiosintance"
-import handleInputChange from "../../utils/handleInputChange"
-import usePersistentResponse from "../../utils/response_message"
+import handleInputChange from "../../utils/useHandleInputChange"
 import {formatDateTime} from "../../utils/formatData"
 
+import useWareHouse from "../../hooks/siigo/useWareHouse"
+import useUserSiigo from "../../hooks/siigo/useUser"
+import useBranch from "../../hooks/sale/useBranch"
+import useSalePoint from "../../hooks/sale/useSalePoint"
+
 export default function ManageSalePoint () {
-    const token = DecodeToken()
-    const {branchs} = GetAllBranchs()
-    const {salesPoints, FetchSalesPoints} = GetAllSalesPoint()
-    const {users} = GetAllUsers()
-    const [ isLoading, setLoading ] = useState(false)
+    const {wareHouses} = useWareHouse()
+    const {branchs} = useBranch()
+    const {isLoading, salePoints, POST_SalePoint} = useSalePoint()
+    console.log(salePoints)
+    const {usersPOS} = useUserSiigo()
+
     const [ isAction, setAction ] = useState("Manage Sales Point")
 
     /* ===============================================================
@@ -23,68 +24,26 @@ export default function ManageSalePoint () {
     =============================================================== */
     const initialBaseSalesPoint = {
         id: null,
-        company: token.company,
         branch: "",
         user: "",
         name: "",
+        warehouse: "",
     }
-    const [isSalesPoint, setSalesPoint] = useState(initialBaseSalesPoint) // control de datos de punto de venta
+    const [isSalePoint, setSalePoint] = useState(initialBaseSalesPoint) // control de datos de punto de venta
     /* ===============================================================
         CREAR / ACTUALIZAR PUNTO DE VENTA
     =============================================================== */
     const handleSubmitSalesPoint = async (e) => {
         e.preventDefault()
-        setLoading(true)
-        let res
-          console.log("Datos enviados", isSalesPoint)
-        try {
-            if (isSalesPoint.id) {
-                // Actualizar Punto de Venta existente
-                res = await axiosInstance.put("/posinnovate/app/sale/salepoint/update", isSalesPoint)
-            } else {
-                // Crear nuevo Punto de Venta
-                res = await axiosInstance.post("/posinnovate/app/sale/salepoint/register", isSalesPoint)
-            }
+        if (isSalePoint.id) {
 
-            setSalesPoint(initialBaseSalesPoint)
-            FetchSalesPoints()
-            usePersistentResponse(res)
-        } catch (error) {
-            usePersistentResponse(error)
-        } finally {
-            setLoading(false)
+        } else {
+            POST_SalePoint(isSalePoint)
         }
+        setSalePoint(initialBaseSalesPoint)
+        setAction("Manage Sales Point")
     }
-    /* ===============================================================
-        ELIMINAR PUNTO DE VENTA
-    =============================================================== */
-    const handleDeleteSalesPoint = async (id) => {
-        if (!confirm("¿Seguro que deseas eliminar este usuario?")) return
-        setLoading(true)
-        try {
-            const res = await axiosInstance.delete(`/posinnovate/app/sale/salepoint/delete/${id}`)
-            usePersistentResponse(res)
-            FetchSalesPoints()
-        } catch (error) {
-            usePersistentResponse(error)
-        } finally {
-            setLoading(false)
-        }
-    }
-    /* ===============================================================
-        CARGAR USUARIO PARA EDICIÓN
-    =============================================================== */
-    const handleEditSalesPoint = (sp) => {
-        setSalesPoint({
-            id: sp.id,
-            company: token.company,
-            branch: sp.id_branch,
-            user: sp.id_user,
-            name: sp.name,
-            status: sp.status,
-        })
-        setAction("Input Sales Point")
-    }
+
     /* ===============================================================
         INTERFAZ
     =============================================================== */
@@ -92,14 +51,14 @@ export default function ManageSalePoint () {
         <>
             {/* -- Encabezado del módulo -- */}
             <ModulesHeader module={"Administrar Puntos de Venta"} description={"Controla todas la funciones diseñadas para tus puntos de ventas"}/>
-            <section className="w-full container mx-auto max-w-5xl">
+            <section className="w-full container mx-auto max-w-7xl">
                 {/* -- Pestañas principales -- */}
                 <div className="border-b mb-4 text-[#841A1A]">
                     <button onClick={() => setAction("Manage Sales Point")} className={` ${isAction === "Manage Sales Point" && "border-b-4 font-semibold"} px-4 py-2  cursor-pointer`}>Puntos de Venta del Sistema</button>
-                    <button onClick={() => setAction("Input Sales Point")} className={` ${isAction === "Input Sales Point" && "border-b-4 font-semibold"} px-4 py-2 cursor-pointer`}>{isSalesPoint.id ? "Editar Punto de Venta" : "Nuevo Punto de Venta"}</button>
+                    <button onClick={() => setAction("Input Sales Point")} className={` ${isAction === "Input Sales Point" && "border-b-4 font-semibold"} px-4 py-2 cursor-pointer`}>{isSalePoint.id ? "Editar Punto de Venta" : "Nuevo Punto de Venta"}</button>
                 </div>
                 {/* ===============================================================
-                    📄 TABLA DE USUARIOS
+                    TABLA DE PUNTOS DE VENTA
                 =============================================================== */}
                 {isAction === "Manage Sales Point" && (
                     <div className="overflow-x-auto">
@@ -108,6 +67,7 @@ export default function ManageSalePoint () {
                                 <tr>
                                     <th className="px-4 py-3 text-left text-nowrap">Punto de Venta</th>
                                     <th className="px-4 py-3 text-left text-nowrap">Sucursal</th>
+                                    <th className="px-4 py-3 text-left text-nowrap">Bodega</th>
                                     <th className="px-4 py-3 text-left text-nowrap">Usuario Asignado</th>
                                     <th className="px-4 py-3 text-left text-nowrap">Estado</th>
                                     <th className="px-4 py-3 text-left text-nowrap">Fecha de Abrir</th>
@@ -116,15 +76,21 @@ export default function ManageSalePoint () {
                                 </tr>
                             </thead>
                             <tbody>
-                                {salesPoints?.length === 0 ? (
+                                {isLoading ? (
                                     <tr>
-                                        <td colSpan={10} className="text-center p-6">No hay Puntos de registrados</td>
+                                        <td colSpan={10}>
+                                            <div className="p-4 w-full flex items-center justify-center gap-2">
+                                                <Loader className="w-5 h-5 animate-spin" />
+                                                Cargando Puntos de Venta...
+                                            </div>
+                                        </td>
                                     </tr>
                                 ) : (
-                                    salesPoints?.map((sp) => (
+                                    salePoints?.map((sp) => (
                                         <tr key={sp.id} className="text-nowrap">
                                             <td className="p-4">{sp.name}</td>
                                             <td className="p-4">{sp.branch}</td>
+                                            <td className="p-4">{wareHouses.find(wh => wh.id === sp.warehouse)?.name || "—"}</td>
                                             <td className="p-4">{sp.user}</td>
                                             <td className="p-4">
                                                 <span
@@ -141,16 +107,10 @@ export default function ManageSalePoint () {
                                             <td className="p-4">
                                                 <div className="flex items-center gap-2">
                                                     <button
-                                                        onClick={() => handleEditSalesPoint(sp)}
-                                                        className="bg-[#841A1A] text-amber-100 p-1 rounded-lg cursor-pointer"
+                                                        onClick={() => setSalePoint(sp)}
+                                                        className="flex gap-1   items-center justify-center text-blue-500 font-semibold  border-b cursor-pointer"
                                                     >
-                                                        <Edit2 />
-                                                    </button>
-                                                    <button
-                                                        onClick={() => handleDeleteSalesPoint(sp.id)}
-                                                        className="bg-[#841A1A] text-amber-100 p-1 rounded-lg cursor-pointer"
-                                                    >
-                                                        <Trash2 />
+                                                        <Edit2 size={16}/> Editar
                                                     </button>
                                                 </div>
                                             </td>
@@ -170,7 +130,7 @@ export default function ManageSalePoint () {
                         <div>
                             <h1 className="font-semibold text-lg">Datos del Punto de Venta</h1>
                             <p className="text-xs">
-                                {isSalesPoint.id ? "Actualiza la información del punto de venta" : "Completa la información para registrar un nuevo punto de venta"}
+                                {isSalePoint.id ? "Actualiza la información del punto de venta" : "Completa la información para registrar un nuevo punto de venta"}
                             </p>
                         </div>
                         <form onSubmit={handleSubmitSalesPoint}>
@@ -178,7 +138,8 @@ export default function ManageSalePoint () {
                                 {[
                                     { icon: CreditCard, name: "name", label: "Nombre del Punto de Venta", type: "text" },
                                     { icon: Building2, name: "branch", label: "Sucursal", type: "select", options: branchs},
-                                    { icon: User, name: "user", label: "Usuario", type: "select", options: users},
+                                    { icon: User, name: "user", label: "Usuario", type: "select", options: usersPOS},
+                                    { icon: Building2, name: "warehouse", label: "Bodeha Asignada", type: "select", options: wareHouses}
                                 ].map((field) => (
                                     <section key={field.name}>
                                         <label className="font-semibold text-md mb-1">{field.label}</label>
@@ -186,7 +147,7 @@ export default function ManageSalePoint () {
                                             {field.type === "select" ? (
                                                 <>
                                                     <field.icon className="ml-3" />
-                                                    <select disabled={field.name === "status" && isSalesPoint.id !== null} value={isSalesPoint[field.name]}  onChange={(e) => handleInputChange(setSalesPoint, field.name, e.target.value)} className="w-full p-2 bg-transparent focus:outline-none  rounded-r-lg">
+                                                    <select disabled={field.name === "status" && isSalePoint.id !== null} value={isSalePoint[field.name]}  onChange={(e) => handleInputChange(setSalePoint, field.name, e.target.value)} className="w-full p-2 bg-transparent focus:outline-none  rounded-r-lg">
                                                         <option value="">Seleccionar...</option>
                                                         {Array.isArray(field.options) && field.options.map((option) => (
                                                             <option key={option.id} value={option.id}>{option.name}</option>
@@ -196,7 +157,7 @@ export default function ManageSalePoint () {
                                             ) : (
                                                 <>
                                                     <field.icon className="ml-3" />
-                                                    <input value={isSalesPoint[field.name]} type={field.type} onChange={(e) => handleInputChange(setSalesPoint, field.name, e.target.value)} required className="w-full p-2 bg-transparent focus:outline-none  rounded-r-lg"/>
+                                                    <input value={isSalePoint[field.name]} type={field.type} onChange={(e) => handleInputChange(setSalePoint, field.name, e.target.value)} required className="w-full p-2 bg-transparent focus:outline-none  rounded-r-lg"/>
                                                 </>
                                             )}
                                         </div>
@@ -205,9 +166,9 @@ export default function ManageSalePoint () {
                             </section>
                            {/* -- Botones de acción -- */}
                             <div className="flex justify-end mt-8 gap-2">
-                                {isSalesPoint.id && (
+                                {isSalePoint.id && (
                                     <button
-                                        onClick={() => setSalesPoint(initialBaseSalesPoint)}
+                                        onClick={() => setSalePoint(initialBaseSalesPoint)}
                                         type="button"
                                         className="bg-amber-200 text-[#841A1A] flex items-center gap-2 px-4 py-2 rounded-lg cursor-pointer font-semibold"
                                     >
@@ -225,7 +186,7 @@ export default function ManageSalePoint () {
                                         </div>
                                     ) : (
                                         <>
-                                            <Save /> {isSalesPoint.id ? "Actualizar Punto de Venta" : "Registrar Punto de Venta"}
+                                            <Save /> {isSalePoint.id ? "Actualizar Punto de Venta" : "Registrar Punto de Venta"}
                                         </>
                                     )}
                                 </button>

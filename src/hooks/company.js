@@ -13,7 +13,7 @@ export default function CompanyData () {
             if (!token) return
 
             const id = token.company
-            const res = await axiosInstance.get(`/posinnovate/app/admin/company/${id}`)
+            const res = await axiosInstance.get(`/posinnovate/api/admin/company/${id}`)
             setCompany(res.data)
         } catch (error) {
             usePersistentResponse(error)

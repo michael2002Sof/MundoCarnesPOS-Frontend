@@ -1,89 +1,40 @@
 import { useState, useEffect } from "react";
-import { toast } from "react-hot-toast";
-import { Pencil, Trash2, RefreshCw, Mail } from "lucide-react";
+import { Pencil, Trash2, RefreshCw, Mail, Loader } from "lucide-react";
 
-import axiosInstance from "../api/axiosintance";
-import DecodeToken from "../api/decode";
 import { ModulesHeader } from "../components/shared/headers";
-import handleInputChange from "../utils/handleInputChange";
-import {AllAccounts} from "../hooks/account";
+import handleInputChange from "../utils/useHandleInputChange";
+import useAccount from "../hooks/account";
+import {formatDateTime} from "../utils/formatData"
 
 
 export default function Account() {
-  const token = DecodeToken();
   const [isAction, setAction] = useState("View Accounts");
-  const {accounts, FetchAccounts} = AllAccounts()  //hook con todas la cuentas de la empresa
-  const [isLoading, setLoading] = useState(false);
+  const {account, isLoading, POST_Account, PUT_Account} = useAccount()  //hook con todas la cuentas de la empresa
+  console.log(account)
 
   const isInitialDataAccount = {
     id: null,
-    company: token.company,
     email: "",
     api_key: "",
-    provider: "siigo",
+    provider: "Siigo",
   }
 
   const [isAccount, setAccount] = useState(isInitialDataAccount);
 
-  useEffect(() => {
-    FetchAccounts();
-  }, []);
-
-  // 💾 Registrar o actualizar cuenta
+  // Registrar o actualizar cuenta
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setLoading(true)
-    try {
-      if (isAccount.id) {
-        await axiosInstance.put(`/posinnovate/app/account/update`, isAccount);
-        toast.success("Cuenta actualizada correctamente");
-      } else {
-        await axiosInstance.post(`/posinnovate/app/account/register`, isAccount);
-        toast.success("Cuenta registrada correctamente");
-      }
-      setAccount({ id: null, company: token.company, email: "", api_key: "" });
-      setAction("View Accounts");
-      FetchAccounts();
-    } catch (error) {
-      toast.error(error.message);
-    } finally {
-      setLoading(false);
+    if (isAccount.id) {
+      PUT_Account(isAccount)
+    } else {
+      await POST_Account(isAccount)
     }
+
+    setAccount(isInitialDataAccount);
+    setAction("View Accounts");
   };
 
-  // ✏️ Editar cuenta
-  const handleEdit = (acc) => {
-    setAccount(acc);
-    setAction("Account Input");
-  };
 
-  // 🗑️ Eliminar cuenta
-  const handleDelete = async (id) => {
-    if (!confirm("¿Deseas eliminar esta cuenta?")) return;
-    try {
-      await axiosInstance.delete(`/posinnovate/app/account/delete/${id}`);
-      toast.success("Cuenta eliminada");
-      FetchAccounts();
-    } catch {
-      toast.error("Error al eliminar");
-    }
-  };
-
-  // 🔄 Sincronizar productos desde Siigo
-  const handleSync = async (company) => {
-    setLoading(true);
-    toast.loading("Sincronizando con Siigo...");
-    try {
-      const res = await axiosInstance.post(`/posinnovate/app/account/siigo/sync/products`, {company});
-      toast.success(res.message || "Sincronización completada");
-      console.log(res)
-      FetchAccounts();
-    } catch (err) {
-      toast.error("Error al sincronizar con Siigo");
-    } finally {
-      setLoading(false);
-    }
-  };
 
   return (
     <>
@@ -122,46 +73,32 @@ export default function Account() {
                 <tr>
                   <th className="p-2 text-left">Proveedor</th>
                   <th className="p-2 text-left">Correo</th>
-                  <th className="p-2 text-left">Estado</th>
+                  <th className="p-2 text-left">Creada en</th>
                   <th className="p-2 text-center">Acciones</th>
                 </tr>
               </thead>
               <tbody>
-                {accounts.length === 0 ? (
+                {isLoading ? (
                   <tr>
-                    <td colSpan="4" className="text-center py-4 text-gray-600">
-                      No hay cuentas registradas
+                    <td colSpan={4}>
+                      <div className="p-4 w-full flex items-center justify-center gap-2">
+                        <Loader className="w-5 h-5 animate-spin" />
+                        Cargando Cuenta de Siigo...
+                      </div>
                     </td>
-                  </tr>
+                </tr>
                 ) : (
-                  accounts.map((acc) => (
+                  account.map((acc) => (
                     <tr key={acc.id} className="border-b hover:bg-amber-200">
                       <td className="p-2 capitalize">{acc.provider}</td>
                       <td className="p-2">{acc.email}</td>
-                      <td className="p-2">
-                        <span
-                          className={`px-2 py-1 rounded text-xs font-semibold ${
-                            acc.status === "synchronized"
-                              ? "bg-green-500 text-white"
-                              : "bg-gray-400 text-white"
-                          }`}
-                        >
-                          {acc.status === "synchronized" ? "Sincronizado" : "No sincronizado"}
-                        </span>
-                      </td>
+                      <td className="p-2">{formatDateTime(acc.created_at)}</td>
                       <td className="p-2 text-center flex justify-center gap-3">
-                        {acc.provider === "siigo" && (
-                          <button
-                            disabled={isLoading}
-                            onClick={() => handleSync(acc.company)}
-                            className={`bg-[#841A1A] hover:bg-[#6a1515] text-amber-100 p-2 rounded`}
-                            title="Sincronizar"
-                          >
-                          <RefreshCw size={16}  className={` ${isLoading && "animate-spin"}`}/>
-                          </button>
-                        )}
                         <button
-                          onClick={() => handleEdit(acc)}
+                          onClick={() => {
+                            setAccount(acc),
+                            setAction("Account Input")
+                          }}
                           className="bg-yellow-500 hover:bg-yellow-600 text-white p-2 rounded"
                           title="Editar"
                         >
@@ -203,13 +140,13 @@ export default function Account() {
                         <label className="block text-sm font-semibold mb-1">{field.label}</label>   
                         {field.type === "select" ? (
                             <div className="flex items-center bg-[#6E1515] text-amber-100 rounded-lg">
-                                <field.icon className="ml-3" />
-                                <select name={field.name} onChange={(e) => handleInputChange(setAccount, field.name, e.target.value)} required className="w-full p-2 bg-transparent focus:outline-none  rounded-r-lg">
-                                <option value="">Seleccionar</option>
-                                {field.options.map((opt, i) => (
-                                    <option key={i} value={opt}>{opt}</option>
-                                ))}
-                                </select>
+                              <field.icon className="ml-3" />
+                              <select name={field.name} value={isAccount.provider} onChange={(e) => handleInputChange(setAccount, field.name, e.target.value)} required className="w-full p-2 bg-transparent focus:outline-none  rounded-r-lg">
+                              <option value="">Seleccionar</option>
+                              {field.options.map((opt, i) => (
+                                  <option key={i} value={opt}>{opt}</option>
+                              ))}
+                              </select>
                             </div>
                         ) :(
                             <div className="flex items-center bg-[#6E1515] text-amber-100 rounded-lg">

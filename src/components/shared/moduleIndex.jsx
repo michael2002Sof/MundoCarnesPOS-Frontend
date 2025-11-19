@@ -1,7 +1,7 @@
 import {ModulesHeader} from "./headers"
 
 import { Link } from "react-router-dom"
-import useFilteredAuthorization from "../../utils/filteredAuthorization"
+import useFilteredAuthorization from "../../utils/useFilteredAuthorization"
 
 export default function ModuleIndex ({items = [], title}) {
 
