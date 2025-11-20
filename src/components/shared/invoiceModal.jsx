@@ -45,6 +45,7 @@ export default function InvoicePrinter({ invoice, setShowInvoice }) {
     total,
 
     receipt_cash,
+    receipt_transfer,
     total_payment,
     repay,
   } = invoice;

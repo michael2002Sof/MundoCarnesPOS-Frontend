@@ -78,7 +78,7 @@ export default function Role() {
             <ModulesHeader
                 module={"Administrar Roles del Sistema"}
             />
-            <section className={` w-full container mx-auto max-w-5xl`}>
+            <section className={` w-full container mx-auto max-w-5xl 2xl:max-w-[90%]`}>
                 {/* -- Pestañas principales: vista de roles o creación -- */}
                 <div className="border- mb-4 text-[#841A1A] border-b">
                     <button onClick={() => setAction("Manage Rol")} className={` ${isAction === "Manage Rol" && "border-b-4"} px-4 py-2  cursor-pointer`}>Roles del Sistema</button>

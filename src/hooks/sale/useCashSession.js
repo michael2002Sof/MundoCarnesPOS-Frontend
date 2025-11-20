@@ -50,6 +50,22 @@ export default function useCashSession () {
             const company = token.company
             const res = await axiosInstance.post('/posinnovate/siigo/creditnote', {company})
             toast.success(res.message)
+            
+            return true
+        } catch (error) {
+            toast.error(error.message)
+            return false
+        } finally {
+            setLoading(false)
+        }
+    }
+
+    const PUT_CashSession = async (data) => {
+        try {
+            setLoading(true)
+
+            const res = await axiosInstance.put( `/posinnovate/siigo/cash/close`, data )
+            toast.success(res.message)
         } catch (error) {
             toast.error(error.message)
         } finally {
@@ -58,6 +74,6 @@ export default function useCashSession () {
     }
     
     return {
-        isLoading, session, POST_CashSession, GET_SessionById, POST_CreditNote
+        isLoading, session, POST_CashSession, GET_SessionById, POST_CreditNote, PUT_CashSession
     }
 }

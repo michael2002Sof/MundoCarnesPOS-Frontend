@@ -35,7 +35,7 @@ export default function CreditNote() {
         />
       </div>
 
-      <section className="container mx-auto max-w-7xl">
+      <section className="container mx-auto max-w-7xl 2xl:max-w-[90%]">
         <div className="overflow-x-auto">
           <table className="w-full text-sm text-left border-collapse">
             <thead className="bg-[#841A1A] text-white uppercase text-xs">

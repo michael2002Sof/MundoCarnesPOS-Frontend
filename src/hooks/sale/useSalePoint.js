@@ -48,10 +48,24 @@ export default function useSalePoint () {
 
     }
 
+    const PUT_SalePoint = async (data) => {
+        try {
+            setLoading(true)
+
+            const res = await axiosInstance.put('/posinnovate/siigo/salepoint', data)
+            toast.success(res.message)
+            GET_SalePoint()
+        } catch (error) {
+            toast.error(error.message)
+        } finally {
+            setLoading(false)
+        }
+    }
+
 
     useEffect(() => {
         GET_SalePoint()
     }, [])
 
-    return { isLoading, salePoints, POST_SalePoint, GET_SalePoint}
+    return { isLoading, salePoints, POST_SalePoint, GET_SalePoint, PUT_SalePoint}
 }

@@ -1,22 +1,17 @@
 import { useState, useEffect } from "react"
-import { LockOpen, Lock, Loader2 } from "lucide-react"
+import { LockOpen, Lock, Loader2, Loader } from "lucide-react"
 
 import { ModulesHeader } from "../../../components/shared/headers"
-import usePersistentResponse from "../../../utils/response_message"
-import axiosInstance from "../../../api/axiosintance"
 import handleInputChange from "../../../utils/useHandleInputChange"
 import { formatDecimal } from "../../../utils/formatData"
 
 import useCashSession from "../../../hooks/sale/useCashSession"
-import useSalePoint from "../../../hooks/sale/useSalePoint"
 import toast from "react-hot-toast"
 
 
-export default function OpenCloseCash ({sp, user, FetchSalesPoints}) {
-
-    const [setLoading] = useState(false)
-    const {isLoading, POST_CashSession, GET_SessionById, session, POST_CreditNote} = useCashSession()
-    const {GET_SalePoint} = useSalePoint()
+export default function OpenCloseCash ({sp, user, GET_SalePoint}) {
+    const {isLoading, POST_CashSession, GET_SessionById, session, POST_CreditNote, PUT_CashSession} = useCashSession()
+    //console.log("Sesión del dia traida",session)
 
     /*=======================================================================
         CONSTANTES PARA LA APERTURA DE CAJA y CREACION DE REGISTRO DIARIO
@@ -25,7 +20,7 @@ export default function OpenCloseCash ({sp, user, FetchSalesPoints}) {
     /* -- Iniciar Registro de caja -- */
     const [ isRegisterCashSession, setRegisterCashSession ] = useState({
         sale_point: sp?.id,
-        branch: sp?.id_branch,
+        branch: sp?.branch,
         initial_cash: 0,
     })
 
@@ -33,7 +28,7 @@ export default function OpenCloseCash ({sp, user, FetchSalesPoints}) {
     useEffect(() => {
         setRegisterCashSession({
             sale_point: sp?.id,
-            branch: sp?.id_branch,
+            branch: sp?.branch,
             initial_cash: 0,
         })
     }, [sp]);
@@ -51,41 +46,43 @@ export default function OpenCloseCash ({sp, user, FetchSalesPoints}) {
         CONSTANTES PARA EL CIERRE DE CAJA y FINALIZACION DEL REGISTRO DIARIO
     =========================================================================*/
     const [ showCloseModal, setShowCloseModal ] = useState(false)
-    const sessionId = localStorage.getItem("SessionCashID");
-    useEffect(() => {
-        if (showCloseModal) {
-            GET_SessionById(sessionId);
-            POST_CreditNote()
+    const [creditNotesSuccess, setCreditNotesSuccess] = useState(false)
+    const [sessionId, setSessionId] = useState(localStorage.getItem("SessionCashID"));
+    const RegisterCreditNotes = async () => {
+        const success = await POST_CreditNote()
+        if (!success) {
+            toast.error("No se pueden cargar las notas de crédito. No es posible cerrar caja.")
+            return
         }
-    }, [showCloseModal]);
+        setCreditNotesSuccess(true)
+    }
+    useEffect(() => {
+        if (!sessionId) {
+            return toast.error("No existe una sesión activa para cargar su información");
+        }
+        setSessionId(localStorage.getItem("SessionCashID"));
+        if(creditNotesSuccess) {
+            setShowCloseModal(true)
+            GET_SessionById(sessionId)
+        }
+    }, [creditNotesSuccess])
+
     /* -- Función: Cerrar caja del día -- */
     const handleCloseRegister = async () => {
-        try {
-        
+        setSessionId(localStorage.getItem("SessionCashID"));
         if (!sessionId) {
-            throw new Error("No hay sesión activa para cerrar");
+            return toast.error("No hay sesión activa para cerrar");
         }
-        console.log(  {
-                cash_session: sessionId,
-                sales_point: sp?.id,
-                closed_by: user,
-            })
-        // Cerrar la sesión con los totales calculados
-        const res = await axiosInstance.put( `/posinnovate/siigo/cash/close`,
-            {
-                cash_session: sessionId,
-                sales_point: sp?.id,
-                closed_by: user,
-            }
-        );
-        toast.success(res.message)
+        await PUT_CashSession({
+            cash_session: sessionId,
+            sales_point: sp?.id,
+            closed_by: user,
+        })
+
         GET_SalePoint()
         setShowCloseModal(false);
         // Limpieza de localStorage (registro ya cerrado)
         localStorage.removeItem("SessionCashID");
-        } catch (error) {
-            toast.error(error.message);
-        }
     };
     
     return (
@@ -278,8 +275,17 @@ export default function OpenCloseCash ({sp, user, FetchSalesPoints}) {
                 <button onClick={() => setShowOpenModal(true)} className={`px-4 py-2 rounded-lg border cursor-pointer flex gap-2 items-center ${sp?.status === "open" ? `bg-[#841A1A] text-amber-100` : `border-[#841A1A] text-[#841A1A] `}`}>
                     <LockOpen/> Apertura de Caja
                 </button>
-                <button onClick={() => setShowCloseModal(true)} className={`px-4 py-2 rounded-lg border cursor-pointer flex gap-2 items-center ${sp?.status  === "closed" ? `bg-[#841A1A] text-amber-100` : `border-[#841A1A] text-[#841A1A]`}`}>
-                    <Lock/> Cierre de Caja
+                <button onClick={RegisterCreditNotes}  disabled={sp?.status !== "open"} className={`px-4 py-2 rounded-lg border cursor-pointer flex gap-2 items-center ${sp?.status  === "closed" ? `bg-[#841A1A] text-amber-100` : `border-[#841A1A] text-[#841A1A]`}`}>
+                    {isLoading ? (
+                        <div className="flex items-center gap-2">
+                            <Loader className="w-5 h-5 animate-spin" />
+                            <p>Procesando Notas...</p>
+                        </div>
+                    ) : (
+                        <>
+                          <Lock/> Cierre de Caja
+                        </>
+                    )}
                 </button>
             </section>
         </>

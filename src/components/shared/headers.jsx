@@ -2,6 +2,7 @@ import { useState, useEffect } from "react"
 import { Bell, LogOut, Building2, User, Menu, X, ArrowLeft, HandCoins  } from "lucide-react"
 import { useNavigate, Link } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
+import DecodeToken from "../../api/decode";
 
 export function ModulesHeader({module, description}) {
   return (
@@ -18,6 +19,7 @@ export function AppHeader({ onToggleSidebar, modules = [] }) {
   const navigate = useNavigate();
   const [isMenuOpen, setMenuOpen] = useState(false);
   const [showLogoutModal, setShowLogoutModal] = useState(false);
+  const token = DecodeToken()
 
   // Verificación de sesión
   useEffect(() => {
@@ -50,30 +52,32 @@ export function AppHeader({ onToggleSidebar, modules = [] }) {
 
         {/* Acciones en desktop */}
         <section className="hidden lg:flex items-center gap-3">
-          {/* Notificaciones */}
-          <button className="relative p-2 cursor-pointer rounded-lg bg-white/10 hover:bg-white/20 transition-all">
-            <Bell size={18} />
-            <span className="absolute -top-1 -right-1 w-2.5 h-2.5 bg-red-500 rounded-full border border-[#841A1A]" />
-          </button>
+          {token.rol === 'admin' && 
+            <>
+              {/* Notificaciones */}
+              <button className="relative p-2 cursor-pointer rounded-lg bg-white/10 hover:bg-white/20 transition-all">
+                <Bell size={18} />
+                <span className="absolute -top-1 -right-1 w-2.5 h-2.5 bg-red-500 rounded-full border border-[#841A1A]" />
+              </button>
+              {/* Usuario */}
+              <button className="p-2 rounded-lg cursor-pointer bg-white/10 hover:bg-white/20 transition-all">
+                <User size={18} />
+              </button>
+              {/* Company */}
+              <button onClick={() => navigate("/account-sync")} className="p-2 rounded-lg cursor-pointer bg-white/10 hover:bg-white/20 transition-all">
+                <HandCoins size={18} />
+              </button>
 
-          {/* Usuario */}
-          <button className="p-2 rounded-lg cursor-pointer bg-white/10 hover:bg-white/20 transition-all">
-            <User size={18} />
-          </button>
-          {/* Company */}
-          <button onClick={() => navigate("/account-sync")} className="p-2 rounded-lg cursor-pointer bg-white/10 hover:bg-white/20 transition-all">
-            <HandCoins size={18} />
-          </button>
-
-          {/* Company */}
-          <button onClick={() => navigate("/company")} className="p-2 rounded-lg cursor-pointer bg-white/10 hover:bg-white/20 transition-all">
-            <Building2 size={18} />
-          </button>
-
+              {/* Company */}
+              <button onClick={() => navigate("/company")} className="p-2 rounded-lg cursor-pointer bg-white/10 hover:bg-white/20 transition-all">
+                <Building2 size={18} />
+              </button>
+            </>
+          }
           {/* Cerrar sesión */}
           <button
             onClick={() => setShowLogoutModal(true)}
-            className="p-2 rounded-lg bg-white/10 hover:bg-white/20 transition-all flex items-center gap-2"
+            className="p-2 rounded-lg cursor-pointer bg-white/10 hover:bg-white/20 transition-all flex items-center gap-2"
           >
             <LogOut size={18} className="text-red-300" />
             <span className="font-medium">Salir</span>

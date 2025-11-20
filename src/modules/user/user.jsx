@@ -63,7 +63,7 @@ export default function User() {
             {/* -- Encabezado del módulo -- */}
             <ModulesHeader module={"Administrar Usuarios"} />
 
-            <section className="w-full container mx-auto max-w-5xl">
+            <section className="w-full container mx-auto max-w-7xl 2xl:max-w-[90%]">
                 {/* -- Pestañas principales -- */}
                 <div className="border-b mb-4 text-[#841A1A]">
                     <button onClick={() => setAction("Manage User")} className={`px-4 py-2 cursor-pointer ${isAction === "Manage User" && "border-b-4 font-semibold"}`}>

@@ -13,7 +13,7 @@ import useSalePoint from "../../hooks/sale/useSalePoint"
 export default function ManageSalePoint () {
     const {wareHouses} = useWareHouse()
     const {branchs} = useBranch()
-    const {isLoading, salePoints, POST_SalePoint} = useSalePoint()
+    const {isLoading, salePoints, POST_SalePoint, PUT_SalePoint} = useSalePoint()
     console.log(salePoints)
     const {usersPOS} = useUserSiigo()
 
@@ -36,7 +36,8 @@ export default function ManageSalePoint () {
     const handleSubmitSalesPoint = async (e) => {
         e.preventDefault()
         if (isSalePoint.id) {
-
+            console.log(isSalePoint)
+            PUT_SalePoint(isSalePoint)
         } else {
             POST_SalePoint(isSalePoint)
         }
@@ -51,7 +52,7 @@ export default function ManageSalePoint () {
         <>
             {/* -- Encabezado del módulo -- */}
             <ModulesHeader module={"Administrar Puntos de Venta"} description={"Controla todas la funciones diseñadas para tus puntos de ventas"}/>
-            <section className="w-full container mx-auto max-w-7xl">
+            <section className="w-full container mx-auto max-w-7xl 2xl:max-w-[90%]">
                 {/* -- Pestañas principales -- */}
                 <div className="border-b mb-4 text-[#841A1A]">
                     <button onClick={() => setAction("Manage Sales Point")} className={` ${isAction === "Manage Sales Point" && "border-b-4 font-semibold"} px-4 py-2  cursor-pointer`}>Puntos de Venta del Sistema</button>
@@ -89,9 +90,9 @@ export default function ManageSalePoint () {
                                     salePoints?.map((sp) => (
                                         <tr key={sp.id} className="text-nowrap">
                                             <td className="p-4">{sp.name}</td>
-                                            <td className="p-4">{sp.branch}</td>
+                                            <td className="p-4">{sp.branch_name}</td>
                                             <td className="p-4">{wareHouses.find(wh => wh.id === sp.warehouse)?.name || "—"}</td>
-                                            <td className="p-4">{sp.user}</td>
+                                            <td className="p-4">{sp.user_name}</td>
                                             <td className="p-4">
                                                 <span
                                                 className={`px-3 py-1 flex items-center gap-2 rounded-full text-xs font-semibold ${
@@ -107,7 +108,10 @@ export default function ManageSalePoint () {
                                             <td className="p-4">
                                                 <div className="flex items-center gap-2">
                                                     <button
-                                                        onClick={() => setSalePoint(sp)}
+                                                        onClick={() => {
+                                                            setSalePoint(sp)
+                                                            setAction('Input Sales Point')
+                                                        }}
                                                         className="flex gap-1   items-center justify-center text-blue-500 font-semibold  border-b cursor-pointer"
                                                     >
                                                         <Edit2 size={16}/> Editar

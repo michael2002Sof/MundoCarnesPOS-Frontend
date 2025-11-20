@@ -34,9 +34,10 @@ export default function CashSale() {
 
     const [selectedCustomer, setSelectedCustomer] = useState(null); // cliente elegido
 
-    const {salePoints, GET_SalePoint} = useSalePoint()         
+    const {salePoints, GET_SalePoint} = useSalePoint()       
     const token = DecodeToken()     
-    const sp = salePoints?.find(sp => sp.id_user === token.id ) //Punto de venta del usuario
+    const sp = salePoints?.find(sp => sp?.user === token?.id ) //Punto de venta del usuario
+    console.log(sp)
 
 
     const {paymentMethodSiigo} = usePaymentSiigo()
@@ -277,7 +278,8 @@ export default function CashSale() {
         const invoice = await POST_InvoiceSiigo(invoiceData)
         // Guardar datos y disparar impresión
         if (invoice) {
-            setIsInvoicePrinting(invoice, invoiceItem);
+            console.log("Factura a imprimir: ", {...invoice, invoiceItem})
+            setIsInvoicePrinting({...invoice, invoiceItem});
             // Limpiar carrito y cliente
             setTabs((prev) =>
                 prev.map((t) =>
@@ -298,7 +300,7 @@ export default function CashSale() {
 
     return (
         <>
-            <OpenCloseCash sp={sp} user={user} FetchSalesPoints={GET_SalePoint}/>
+            <OpenCloseCash sp={sp} user={user} GET_SalePoint={GET_SalePoint}/>
             {/*================================================================
                 VISTA DE REGISTRO DE PRODUCTO A LA VENTA
             ===================================================================*/}
@@ -315,7 +317,7 @@ export default function CashSale() {
                     ))}
                     <button onClick={addTab} className="px-3 py-2 bg-green-500 text-white rounded">+ Nueva</button>
                 </div>
-                <div className="flex gap-6  container mx-auto max-w-7xl">
+                <div className="flex gap-6  container mx-auto max-w-7xl 2xl:max-w-[90%]">
                     {/*============================================================
                      COLUMNA DE ESCANEO Y CARRITO
                     ==============================================================*/}

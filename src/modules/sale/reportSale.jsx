@@ -93,7 +93,7 @@ const ReportTemplate = ({ session }) => {
             <h5 className="font-bold text-lg mb-2 text-center">Totales por Método de Pago</h5>
             <p><strong>Ingreso en Efectivo:</strong> {formatDecimal(session.total_cash, true)}</p>
             <p><strong>Ingreso en Transferencias:</strong> {formatDecimal(session.total_transfer, true)}</p>
-            <p><strong>Sub Total Pagos:</strong>{formatDecimal(session.subtotal_method)}</p>
+            <p><strong>Sub Total Pagos:</strong>{formatDecimal(session.subtotal_method, true)}</p>
             <p><strong>Devoluciones:</strong>{formatDecimal(session.total_return, true)}</p>
             <p className="font-bold mt-2 border-t border-[#841A1A]/20 pt-2">
               <strong>Total Métodos de Pago:</strong>{" "}

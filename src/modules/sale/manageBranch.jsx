@@ -49,7 +49,7 @@ export default function ManageBranch () {
                 module={"Administrar Sucursales"}
                 description={""}
             />
-            <section className=" container mx-auto max-w-5xl">
+            <section className=" container mx-auto max-w-7xl 2xl:max-w-[90%]">
                 {/* -- Pestañas principales -- */}
                 <div className="border-b mb-4 text-[#841A1A]">
                     <button
