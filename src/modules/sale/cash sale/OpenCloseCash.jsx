@@ -1,4 +1,5 @@
-import { useState, useEffect } from "react"
+import { useState, useEffect, useRef } from "react"
+import { useReactToPrint } from "react-to-print"
 import { LockOpen, Lock, Loader2, Loader } from "lucide-react"
 
 import { ModulesHeader } from "../../../components/shared/headers"
@@ -7,12 +8,30 @@ import { formatDecimal, formatInputNumber } from "../../../utils/formatData"
 
 import {useCashSession, useSessionId} from "../../../hooks/sale/useCashSession"
 import toast from "react-hot-toast"
+import ReportTemplate from "../../../components/shared/reportCashSession"
 
 
 export default function OpenCloseCash ({sp, user, GET_SalePoint}) {
     const {isLoading, session, POST_CashSession, GET_SessionById, POST_CreditNote, PUT_CashSession} = useCashSession()
 
     const sessionActive = useSessionId(sp?.id)
+    const reportRef = useRef();
+    const handleWorkerPrint = useReactToPrint({
+        contentRef: reportRef,
+        documentTitle: `Reporte_Caja_${sessionActive}`,
+        pageStyle: `
+        @page {
+            size: 80mm auto;
+            margin: 4mm;
+        }
+        body {
+            -webkit-print-color-adjust: exact;
+            print-color-adjust: exact;
+        }
+        `,
+    });
+
+
 
 
     //console.log("Sesión del dia traida",session)
@@ -53,6 +72,9 @@ export default function OpenCloseCash ({sp, user, GET_SalePoint}) {
     =========================================================================*/
     const [ showCloseModal, setShowCloseModal ] = useState(false)
     const [creditNotesSuccess, setCreditNotesSuccess] = useState(false)
+    console.log("creditNotesSuccess", creditNotesSuccess)
+
+    /* -- Función: Registrar Notas de Crédito antes de cerrar caja -- */
     const RegisterCreditNotes = async () => {
         const success = await POST_CreditNote()
         if (!success) {
@@ -62,13 +84,14 @@ export default function OpenCloseCash ({sp, user, GET_SalePoint}) {
         setCreditNotesSuccess(true)
     }
     useEffect(() => {
-        if(creditNotesSuccess) {
+        if(creditNotesSuccess  && sessionActive !== null) {
             setShowCloseModal(true)
             if (sessionActive) {
                 GET_SessionById(sessionActive)  // ← usa el ID correcto
             }
+            setCreditNotesSuccess(false)
         }
-    }, [creditNotesSuccess])
+    }, [creditNotesSuccess, sessionActive])
 // 
     /* -- Función: Cerrar caja del día -- */
     const handleCloseRegister = async () => {
@@ -83,6 +106,8 @@ export default function OpenCloseCash ({sp, user, GET_SalePoint}) {
 
         GET_SalePoint()
         setShowCloseModal(false);
+        // Ahora imprime
+        setTimeout(() => handleWorkerPrint(), 300);
     };
 
     
@@ -300,6 +325,12 @@ export default function OpenCloseCash ({sp, user, GET_SalePoint}) {
                     )}
                 </button>
             </section>
+
+            <div style={{ display: "none" }}>
+                <div ref={reportRef}>
+                    {session && <ReportTemplate session={session} />}
+                </div>
+            </div>
         </>
     )
 }

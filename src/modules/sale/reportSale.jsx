@@ -9,7 +9,7 @@ import { useReactToPrint } from 'react-to-print';
 import { ModulesHeader } from '../../components/shared/headers';
 import StatsView from '../../components/shared/stats_view';
 import axiosInstance from '../../api/axiosintance';
-import {formatDateTime, formatDecimal} from "../../utils/formatData"
+import {formatDecimal} from "../../utils/formatData"
 
 /* --- Simulación de llamada a backend --- */
 const useFetchCashSessions = (fecha) => {
@@ -22,9 +22,9 @@ const useFetchCashSessions = (fecha) => {
       setLoading(true);
 
       // Aquí iría tu llamada real:
-    const res = await axiosInstance.get(`/posinnovate/siigo/report/day/${fecha}`)
+    const res = await axiosInstance.get(`/posinnovate/siigo/sale/report/day/${fecha}`)
     const mockData = res.data;
-    console.log("Sesiones de caja obtenidas:", mockData);
+    //console.log("Sesiones de caja obtenidas:", mockData);
 
       // Simulamos retraso de carga
       setTimeout(() => {

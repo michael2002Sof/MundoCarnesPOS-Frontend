@@ -2,7 +2,7 @@ import { useRef, useEffect } from "react";
 import { useReactToPrint } from "react-to-print";
 import { formatDecimal } from "../../utils/formatData";
 
-export default function InvoicePrinter({ invoice }) {
+export default function InvoicePrinter({ invoice, onFinish }) {
   const printRef = useRef();
 
   const handlePrint = useReactToPrint({
@@ -25,6 +25,10 @@ export default function InvoicePrinter({ invoice }) {
   const timer = setTimeout(() => {
     if (printRef.current) {
       handlePrint();
+
+      setTimeout(() => {
+        onFinish?.(); // si existe, ejecute
+      }, 300);
     }
   }, 50);
 
@@ -198,10 +202,22 @@ export default function InvoicePrinter({ invoice }) {
           <p className="text-center font-semibold text-[12px] mt-3">
             ¡Gracias por su compra!
           </p>
-          <p className="text-center italic text-[10px] w-full  text-gray-500 mt-1"
+          <p className="text-center font-semibold text-[12px] w-full   mt-1"
             style={{ wordBreak: "break-all", whiteSpace: "normal", overflowWrap: "break-word" }} 
           >
             Cufe: {cufe}
+          </p>
+          {/* Nota legal */}
+          <p className="text-[12px] mt-2 font-semibold leading-tight text-center">
+            Responsable de IVA - Actividad Económica 4723.  
+            A esta factura de venta aplican las normas relativas a la letra de cambio  
+            (artículo 5 Ley 1231 de 2008).  
+            El comprador declara haber recibido real y materialmente las mercancías o  
+            servicios descritos en este título - Valor.
+          </p>
+          <p className="text-[12px] mt-2 font-semibold mb-8 leading-tight text-center">
+            Número Autorización Electrónica 18764091224670 aprobado en 20250329 prefijo 
+            CMC desde el número 10001 al 20000 Vigencia: 24 Meses.
           </p>
         </div>
       </div>

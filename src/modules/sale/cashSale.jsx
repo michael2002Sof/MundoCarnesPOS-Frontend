@@ -485,7 +485,7 @@ export default function CashSale() {
                   </div>
                 </div>
 
-                {isInvoicePrinting &&  <InvoiceModal invoice={isInvoicePrinting}/> }
+                {isInvoicePrinting &&  <InvoiceModal invoice={isInvoicePrinting} onFinish={() => setIsInvoicePrinting(null)}/> }
         </>
     )
 }
