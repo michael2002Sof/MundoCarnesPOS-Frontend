@@ -79,8 +79,8 @@ const ReportTemplate = ({ session }) => {
           <p><strong>Caja:</strong> {session.sales_point_name}</p>
           <p><strong>Vendedor:</strong> {session.opened_by}</p>
           <p><strong>Estado:</strong> {session.status === "in progress" ? "En Progreso" : "Finalizado"}</p>
-          <p><strong>Apertura:</strong> {formatDateTime(session.opened_at)}</p>
-          <p><strong>Cierre:</strong> {formatDateTime(session.closed_at)}</p>
+          <p><strong>Apertura:</strong> {session.opened_at}</p>
+          <p><strong>Cierre:</strong> {session.closed_at}</p>
           <p><strong>Cerrado por:</strong> {session.closed_by || "—"}</p>
         </div>
 
@@ -233,8 +233,8 @@ export default function ReportSale() {
                         {s.status === "in progress" ? "En Progreso" : "Finalizado"}
                     </span>
                     </p>
-                    <p><span className="font-semibold">Apertura:</span> {formatDateTime(s.opened_at)}</p>
-                    <p><span className="font-semibold">Cierre:</span> {formatDateTime(s.closed_at)}</p>
+                    <p><span className="font-semibold">Apertura:</span> {s.opened_at || "DD-MM-AA HH:MM"}</p>
+                    <p><span className="font-semibold">Cierre:</span> {s.closed_at || "DD-MM-AA HH:MM"}</p>
                     <p><span className="font-semibold">Cerrado por:</span> {s.closed_by || "—"}</p>
                 </div>
 

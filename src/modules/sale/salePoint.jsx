@@ -109,8 +109,8 @@ export default function SalePoint () {
                                                 {sp.status === "open" ? "Abierto" : "Cerrado"}
                                                 </span>
                                             </td>
-                                            <td className="p-4">{formatDateTime(sp.opened_at)}</td>
-                                            <td className="p-4">{formatDateTime(sp.closed_at)}</td>
+                                            <td className="p-4">{sp.opened_at || "DD-MM-AA HH:MM"}</td>
+                                            <td className="p-4">{sp.closed_at || "DD-MM-AA HH:MM"}</td>
                                             <td className="p-4">{sp.branch_name}</td>
                                             <td className="p-4">{sp.warehouse_name}</td>
                                             <td className="p-4">{sp.cost_center_name}</td>
