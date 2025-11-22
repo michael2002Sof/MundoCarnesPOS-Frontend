@@ -4,7 +4,7 @@ import toast from "react-hot-toast"
 import axiosInstance from "../../api/axiosintance"
 import DecodeToken from "../../api/decode"
 
-export default function useCashSession () {
+export function useCashSession () {
     const [ session, setSession ] = useState()
     const [isLoading, setLoading] = useState(false)
 
@@ -28,9 +28,8 @@ export default function useCashSession () {
             const company = token.company
             const data = {...sessionCash, opened_by, company}
             console.log("Session abierta: ", data)
-            const res = await axiosInstance.post( "/posinnovate/siigo/cash/open", data);
+            const res = await axiosInstance.post( "/posinnovate/siigo/sale/cash/open", data);
 
-            localStorage.setItem("SessionCashID", res.data.session);
             toast.success(res.message)
 
         } catch (error) {
@@ -64,7 +63,7 @@ export default function useCashSession () {
         try {
             setLoading(true)
 
-            const res = await axiosInstance.put( `/posinnovate/siigo/cash/close`, data )
+            const res = await axiosInstance.put( `/posinnovate/siigo/sale/cash/close`, data )
             toast.success(res.message)
         } catch (error) {
             toast.error(error.message)
@@ -76,4 +75,32 @@ export default function useCashSession () {
     return {
         isLoading, session, POST_CashSession, GET_SessionById, POST_CreditNote, PUT_CashSession
     }
+}
+
+
+
+export function useSessionId(point) {
+    const [sessionId, setSessionId] = useState(null);
+
+    useEffect(() => {
+        const fetchId = async () => {
+            if (!point) return;
+
+            try {
+                const token = DecodeToken();
+                if (!token) return;
+
+                const { company } = token;
+                const res = await axiosInstance.get(`/posinnovate/siigo/sale/cash/${company}/${point}`);
+
+                setSessionId(res.data);
+            } catch (err) {
+                toast.error("No se pudo obtener la sesión de caja");
+            }
+        };
+
+        fetchId();
+    }, [point]);
+
+    return sessionId;
 }

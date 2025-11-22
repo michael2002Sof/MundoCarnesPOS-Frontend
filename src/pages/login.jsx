@@ -30,7 +30,7 @@ export default function Login() {
   };
 
   return (
-    <div className="bg-amber-100 min-h-screen flex justify-center items-center p-4">
+    <div className="bg-amber-50 min-h-screen flex justify-center items-center p-4">
       <form
         onSubmit={handleSubmit}
         className="bg-[#841A1A] text-amber-100 p-10 w-full max-w-md rounded-2xl shadow-2xl space-y-6 transition-all duration-300"

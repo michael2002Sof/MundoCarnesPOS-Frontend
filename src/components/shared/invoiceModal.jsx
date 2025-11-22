@@ -1,24 +1,37 @@
-import React, { useRef, useEffect } from "react";
+import { useRef, useEffect } from "react";
 import { useReactToPrint } from "react-to-print";
 import { formatDecimal } from "../../utils/formatData";
 
-export default function InvoicePrinter({ invoice, setShowInvoice }) {
+export default function InvoicePrinter({ invoice }) {
   const printRef = useRef();
 
   const handlePrint = useReactToPrint({
-  contentRef: printRef,
-  documentTitle: `Factura-${invoice?.code || "POS"}`,
-  pageStyle: `
-    @page {
-      size: 80mm auto;
-      margin: 4mm;
+    contentRef: printRef,
+    documentTitle: `Factura-${invoice?.code || "POS"}`,
+    pageStyle: `
+      @page {
+        size: 80mm auto;
+        margin: 4mm;
+      }
+      body {
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+      }
+    `,
+  });
+
+  useEffect(() => {
+  // Esperar un pequeño tiempo para que el DOM esté listo
+  const timer = setTimeout(() => {
+    if (printRef.current) {
+      handlePrint();
     }
-    body {
-      -webkit-print-color-adjust: exact;
-      print-color-adjust: exact;
-    }
-  `,
-});
+  }, 50);
+
+  return () => clearTimeout(timer);
+}, []);
+
+
 
 
   if (!invoice) return null;
@@ -43,7 +56,7 @@ export default function InvoicePrinter({ invoice, setShowInvoice }) {
     tax5,
     tax19,
     total,
-
+    cufe,
     receipt_cash,
     receipt_transfer,
     total_payment,
@@ -185,28 +198,13 @@ export default function InvoicePrinter({ invoice, setShowInvoice }) {
           <p className="text-center font-semibold text-[12px] mt-3">
             ¡Gracias por su compra!
           </p>
-          <p className="text-center italic text-[10px] text-gray-500 mt-1">
-            -- Factura emitida a través del programa <strong>Siigo</strong> --
+          <p className="text-center italic text-[10px] w-full  text-gray-500 mt-1"
+            style={{ wordBreak: "break-all", whiteSpace: "normal", overflowWrap: "break-word" }} 
+          >
+            Cufe: {cufe}
           </p>
         </div>
       </div>
-
-      {/* Botones */}
-      <section className="flex gap-4 items-center justify-center">
-        <button
-          onClick={() => setShowInvoice(false)}
-          className="mt-3 bg-red-600 text-white px-3 py-1 rounded hover:bg-red-700 text-sm"
-        >
-          ❌ Cerrar
-        </button>
-
-        <button
-          onClick={() => handlePrint()}
-          className="mt-3 bg-blue-600 text-white px-3 py-1 rounded hover:bg-blue-700 text-sm"
-        >
-          🖨️ Imprimir Tirilla
-        </button>
-      </section>
     </div>
   );
 }

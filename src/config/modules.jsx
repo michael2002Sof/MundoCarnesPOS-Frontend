@@ -8,11 +8,18 @@ const Modules = [
         to: "/user"
     },
     {
+        icon: <Boxes/>,
+        name: "Inventario",
+        description: "Gestiona tu inventario del sistema",
+        to: "/inventory"
+    },
+    {
         icon: <ShoppingCart/>,
         name: "Ventas",
         description: "Gestiona tus ventas del sistema",
         to: "/sale"
     },
+
 ]
 
 export default Modules

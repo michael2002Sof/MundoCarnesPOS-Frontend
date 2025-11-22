@@ -16,7 +16,7 @@ export default function useSalePoint () {
             if (!token) return
 
             const company = token.company
-            const res = await axiosInstance.get(`/posinnovate/siigo/salepoint/${company}`)
+            const res = await axiosInstance.get(`/posinnovate/siigo/sale/point/${company}`)
             setSalePoints(res.data)
 
         } catch (error) {
@@ -36,7 +36,7 @@ export default function useSalePoint () {
             const company = token.company
             const data = {...salePoint, company}
             console.log("datos del punto de venta a crear:", data)
-            const res = await axiosInstance.post('/posinnovate/siigo/salepoint', data)
+            const res = await axiosInstance.post('/posinnovate/siigo/sale/point', data)
             toast.success(res.message)
 
         } catch (error) {
@@ -52,7 +52,7 @@ export default function useSalePoint () {
         try {
             setLoading(true)
 
-            const res = await axiosInstance.put('/posinnovate/siigo/salepoint', data)
+            const res = await axiosInstance.put('/posinnovate/siigo/sale/point', data)
             toast.success(res.message)
             GET_SalePoint()
         } catch (error) {

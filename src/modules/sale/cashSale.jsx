@@ -13,9 +13,7 @@ import {useDecodeScale, useDecodeNormal} from "./cash sale/useDecodeBarcode"
 import useSalePoint from "../../hooks/sale/useSalePoint"
 import useProductSiigo from "../../hooks/siigo/useProduct"
 import useInvoiceSiigo from "../../hooks/siigo/useInvoice"
-import usePaymentSiigo from "../../hooks/siigo/usePayment"
-import useCostCenterSiigo from "../../hooks/siigo/useCostCenter"
-import useWareHouse from "../../hooks/siigo/useWareHouse"
+import { useSessionId } from "../../hooks/sale/useCashSession"
 import toast from "react-hot-toast"
 
 
@@ -25,42 +23,20 @@ export default function CashSale() {
       LLAMADA DE DATOS DEL SISTEMA
     ===================================================================*/
     const {isLoading, POST_InvoiceSiigo, typeInvoiceSiigo} = useInvoiceSiigo()
-    const today = new Date().toISOString().slice(0, 10);
-
-
-    const {costCenterSiigo} = useCostCenterSiigo()
-    const {wareHouses} = useWareHouse()
     const {GET_ProductSiigoByCode} = useProductSiigo()
+    const {salePoints, GET_SalePoint} = useSalePoint()       
 
     const [selectedCustomer, setSelectedCustomer] = useState(null); // cliente elegido
-
-    const {salePoints, GET_SalePoint} = useSalePoint()       
+    const today = new Date().toISOString().slice(0, 10);
     const token = DecodeToken()     
-    const sp = salePoints?.find(sp => sp?.user === token?.id ) //Punto de venta del usuario
-    console.log(sp)
+    const sp = salePoints?.find(sp => sp?.user === token?.id ) //Punto de venta del usuario]
+    const wh = sp?.warehouse
+    const user = token?.id
 
-
-    const {paymentMethodSiigo} = usePaymentSiigo()
-    const paymentMethodsBySalePoint = { 
-        1: [10780, 7057], // LC PEQUEÑO
-        2: [10779, 7057], // LC OFICINA
-    };
-    const filterPaymentMethods = (methods, salePointId) => {
-        const allowedIds = paymentMethodsBySalePoint[salePointId] || [];
-        return methods.filter(method => allowedIds.includes(method.id));
-    };
-    const filteredPayments = filterPaymentMethods(paymentMethodSiigo, sp?.id);
-    const paymentArray = filteredPayments.map(method => ({
-        id: method.id,
-        value: "",
-        due_date: today
-    }));
-
-    const wh = wareHouses?.find(wh => wh.id === sp?.warehouse) // Bodega del punto de venta
-    const user = token?.id //Vendedor del punto de venta
+    const sessionActive = useSessionId(sp?.id)
 
     /*=======================================================================
-      ESTRUCTURA DE DATOS PARA LA GENERACION DE FACTURA 
+      ESTRUCURA DE DATOS PARA LA GENERACION DE FACTURA 
     =========================================================================*/
     const initalData = {
         document: { id: ""},
@@ -82,13 +58,14 @@ export default function CashSale() {
 
         //Para mi pos
         sale_point: "",
-        receipt_cash: "",
-        receipt_transfer: "",
-        total_payment: "",
-        repay: "",
+        cash_session: "",
+        receipt_cash: 0,
+        receipt_transfer: 0,
+        total_payment: 0,
+        repay: 0,
 
         subtotal: "",
-        tax0: "",
+        tax0: 0,
         tax5: "",
         tax19: "",
         total: ""
@@ -96,15 +73,12 @@ export default function CashSale() {
     }
     const [isBuildInvoice, setBuildInvoice] = useState(initalData)
  
-
     /*=======================================================================
       PROCESOS PARA EL REGISTRO DE VENTA DE PRODUCTOS 
     =========================================================================*/
     // Estado inicial
     const [tabs, setTabs] = useState([{ id: Date.now(), name: "Venta 1", cart: [], client: null }])
-
     const [activeTabId, setActiveTabId] = useState(tabs[0].id) //Pestaña activa
-
     const [barcode, setBarcode] = useState("") // Codigo escaneado
 
     // Añadir / Eliminar pestañas
@@ -141,7 +115,6 @@ export default function CashSale() {
         let product 
         if (barcode.length < 12 && prefix < 20 || prefix > 29) {
             const productSiigo = await GET_ProductSiigoByCode(barcode)
-            console.log(productSiigo)
             product = useDecodeNormal(productSiigo, wh)
         } else {
             const productCode = barcode.slice(2, 7);
@@ -150,11 +123,15 @@ export default function CashSale() {
             const adjust_code = productCode.padStart(6, "0")
             setBarcode(adjust_code)
             const productSiigo = await GET_ProductSiigoByCode(adjust_code)
-            console.log(productSiigo)
             product = useDecodeScale(productSiigo, weight, wh) 
         }
 
-        console.log("Producto traido de siigo", product)
+        if (!product) {
+            toast.error("ERROR: Producto no existe ")
+            return
+        }
+
+        console.log("Producto codificado de siigo", product)
 
    
 
@@ -172,9 +149,9 @@ export default function CashSale() {
             const newCart = [...tab.cart];
             const found = { ...newCart[existingIndex] };
             found.quantity = (found.quantity || 1) + 1;
-            found.subtotal = Math.round(found.subtotal + product.subtotal);
-            found.iva5 = (Number(found.tax5) || 0) + product.tax5; // si tu iva es por unidad ajustar según lógica
-            found.iva19 = (Number(found.tax19) || 0) + product.tax19;
+            found.subtotal = found.subtotal + product.subtotal
+            found.tax5 = found.tax5 + product.tax5; // si tu iva es por unidad ajustar según lógica
+            found.tax19 = found.tax19 + product.tax19;
             found.total = Math.round(found.total + product.total);
             newCart[existingIndex] = found;
             return { ...tab, cart: newCart };
@@ -189,63 +166,98 @@ export default function CashSale() {
     =========================================================================*/
     // Totales del tab activo
     const activeTab = tabs.find((t) => t.id === activeTabId) || tabs[0]
+    console.log("Cariito activo", activeTab)
     const subtotal = (activeTab?.cart || []).reduce((s, it) => s + (Number(it.subtotal || 0)), 0);
     const tax5Total = (activeTab?.cart || []).reduce((s, it) => s + Number(it.tax5 || 0), 0);
     const tax19Total = (activeTab?.cart || []).reduce((s, it) => s + Number(it.tax19 || 0), 0);
+    const paymenTotalSiigo =  (activeTab?.cart || []).reduce((s, it) => s + Number(it.price || 0), 0);
+    console.log(paymenTotalSiigo)
     const total = subtotal + tax5Total + tax19Total;
 
     /* -- CONTROL DE PAGOS -- */
-    const [receiptCash, setReceiptCash] = useState(0);
-    const [receiptTransfer, setReceiptTransfer] = useState(0);
+    const getCashMethodId = () => {
+        if (!sp?.methods) return null;
+        return sp.methods.find(m => m.name.toLowerCase().includes("efectivo"))?.id || null;
+    };
+    const getTransferMethodId = () => {
+        if (!sp?.methods) return null;
+        return sp.methods.find(m =>  m.name.toLowerCase().includes("bancolombia") )?.id || null;
+    };
+    const cashMethodId = getCashMethodId();
+    const transferMethodId = getTransferMethodId();
 
-    useEffect(() => {
-        const repay = (receiptCash + receiptTransfer) - total;
-        useHandleInputChange(setBuildInvoice, "repay", repay < 0 ? 0 : repay);
-        useHandleInputChange(setBuildInvoice, "total_payment", (receiptCash + receiptTransfer) - repay);
+    const formatMoney = (value) => {
+        if (!value) return "0";
+        return Number(value).toLocaleString("es-CO");
+    };
+    const cleanNumber = (value) => {
+        if (!value) return 0; // evita el error
 
-        // Actualizar Siigo paymentMethods
-        const updatedPayments = paymentArray.map(p => {
-            if (p.id === filteredPayments[0]?.id) {
-                return { ...p, value: (total - receiptTransfer) };
-            }
-            if (p.id === filteredPayments[1]?.id) {
-                return { ...p, value: receiptTransfer };
-            }
-            return p;
-        });
+        return Number(
+            value
+                .toString()
+                .replace(/\./g, "")
+                .replace(/,/g, "")
+        ) || 0;
+    }
 
-        // Filtrar los pagos con valor 0
-        const filteredPaymentsFinal = updatedPayments.filter(p => Number(p.value) > 0);
+    const [paymentValues, setPaymentValues] = useState({}); //Valores ingresados en los metodos de pago
+    const handlePaymentChange = (id, value) => {
+        const clean = cleanNumber(value); // número sin formato
+        console.log(clean)
 
-        useHandleInputChange(setBuildInvoice, "payments", filteredPaymentsFinal);
-        useHandleInputChange(setBuildInvoice, "receipt_cash", (receiptCash - repay) );
-        useHandleInputChange(setBuildInvoice, "receipt_transfer", receiptTransfer);
-    }, [receiptCash, receiptTransfer, total]);
+        setPaymentValues(prev => ({
+            ...prev,
+            [id]: clean
+        }));
+    };
+    console.log("Valores del metodo de pago", paymentValues)
 
-   
+    const cash = paymentValues[cashMethodId] || 0;
+    const transfer = paymentValues[transferMethodId] || 0;
+
+    const repay = Math.max((cash + transfer) - total, 0);  // nunca negativo
+
+    const receipt_cash = cash - repay
+    const receipt_transfer = transfer
+    const total_payment = receipt_cash + receipt_transfer
+
+    let payments = sp?.methods.map(m => {
+        let value = 0;
+        if (m.id === cashMethodId) value = receipt_cash;
+        if (m.id === transferMethodId) value = receipt_transfer;
+
+        return { id: m.id, value, due_date: today };
+    }).filter(p => p.value > 0);
+
+    console.log(isBuildInvoice.payments)
+
+
     /*=======================================================================
       PROCESOS PARA IMPRIMIR FACTURA Y REGISTAR VENTA
     =========================================================================*/
-    const [showInvoice, setShowInvoice] = useState(false);
     const [isInvoicePrinting, setIsInvoicePrinting] = useState(false);
 
     useEffect(() => {
         useHandleInputChange(setBuildInvoice, "document.id", typeInvoiceSiigo?.id)
         useHandleInputChange(setBuildInvoice, "customer", selectedCustomer)
-        if (wh?.id === 26) {
-            useHandleInputChange(setBuildInvoice, "cost_center", 1163)
-        } else if (wh?.id === 28) {
-            useHandleInputChange(setBuildInvoice, "cost_center", 1167)
-        }
+        useHandleInputChange(setBuildInvoice, "cost_center", sp?.cost_center)
         useHandleInputChange(setBuildInvoice, "sale_point", sp?.id)
-    }, [selectedCustomer, typeInvoiceSiigo, total, wh, isBuildInvoice.cost_center, sp])
+    }, [selectedCustomer, typeInvoiceSiigo, sp])
 
     // Confirmar pago: registrar venta + descontar stock + imprimir factura + limpiar carrito
     const handleConfirmPayment = async () => {
 
-        if (isBuildInvoice.total_payment < total) {
+        console.log(isBuildInvoice)
+        if (total_payment < total) {
             toast.error("El monto recibido es menor al total");
             return;
+        }
+        if (receipt_transfer > total){
+            return toast.error("El ingreso de tranferencia no es exacto")
+        }
+        if (!sessionActive) {
+            return toast.error("La caja no esta habierta")
         }
         
 
@@ -273,7 +285,21 @@ export default function CashSale() {
             total: it.total
         }));
 
-        const invoiceData = {...isBuildInvoice, items: itemsPayload, invoiceItem, subtotal, tax0: 0, tax5: tax5Total, tax19: tax19Total, total}
+        const invoiceData = {
+            ...isBuildInvoice, 
+            items: itemsPayload, 
+            invoiceItem, subtotal, 
+            tax0: 0, 
+            tax5: tax5Total, 
+            tax19: tax19Total, 
+            total,
+            payments,
+            receipt_cash,
+            receipt_transfer,
+            repay,
+            total_payment,
+            cash_session: sessionActive
+        }
 
         const invoice = await POST_InvoiceSiigo(invoiceData)
         // Guardar datos y disparar impresión
@@ -286,7 +312,6 @@ export default function CashSale() {
                 t.id === activeTabId ? { ...t, cart: [], client: null } : t
                 )
             );
-            setShowInvoice(true)
         }
     };
 
@@ -395,7 +420,14 @@ export default function CashSale() {
                      RESUMEN DE VENTA Y FACUTRACION 
                     ==============================================================*/}
                     <div className="p-4 bg-[#841A1A] text-amber-100 space-y-4 flex flex-col items-center justify-center rounded-xl w-1/3">
-                    <h4 className="font-bold">Resumen</h4>
+                    <div className="text-center">
+                        {/*Tipo de Facuración */}
+                        <p className="font-bold text-lg">{typeInvoiceSiigo?.type} - {typeInvoiceSiigo?.code} - {typeInvoiceSiigo?.name}</p>
+                        {/*Centro de Costos */}
+                        <p className="font-semibold">{sp?.cost_center_name}</p>
+                    </div>
+                    <hr className="border-amber-200/20 w-[90%] my-2" />
+                    <h4 className="font-semibold mt-2">Resumen</h4>
                     {/*Valores de la venta*/}
                     <div className="text-righ w-full">
                         <div className="flex justify-between"><span>Subtotal:</span><span>{formatDecimal(subtotal, true)}</span></div>
@@ -413,54 +445,30 @@ export default function CashSale() {
 
                     <hr className="border-amber-200/20 w-[90%] my-4" />
 
-                    {/*Tipo de Facuración */}
-                    <section className="flex flex-col w-full">
-                        <label className="font-semibold text-sm">Tipo de Factura:</label>
-                        <input value={`${typeInvoiceSiigo?.type} - ${typeInvoiceSiigo?.code} - ${typeInvoiceSiigo?.name}`} type="text" disabled className="bg-[#6E1515] rounded-lg px-4 py-1 mt-1"/>
-                    </section>
-
-                    {/*Metodo de pago efectivo*/}
-                    <section className="flex flex-col w-full">
-                        <label className="font-semibold text-sm">{filteredPayments[0]?.name}:</label>
-                        <input
-                            type="number"
-                            className="bg-[#6E1515] w-full px-4 py-1 rounded-lg outline-none text-white"
-                            value={receiptCash}
-                            onChange={(e) => setReceiptCash(Number(e.target.value))}
-                        />
-                    </section>
-                    {/*Metodo de pago Bancolombia*/}
-                    <section className="flex flex-col w-full">
-                        <label className="font-semibold text-sm">Pago Bancolombia:</label>
-                        <input
-                            type="number"
-                            className="bg-[#6E1515] w-full px-4 py-1 rounded-lg outline-none text-white"
-                            value={receiptTransfer}
-                            onChange={(e) => setReceiptTransfer(Number(e.target.value))}
-                        />
-                    </section>
-
-
-                    {/*Centro de Costos */}
-                    <section className="flex flex-col w-full">
-                        <label className="font-semibold text-sm">Centro de Costos:</label>
-                        <select value={isBuildInvoice.cost_center} onChange={(e) => useHandleInputChange(setBuildInvoice, "cost_center", Number(e.target.value) )} className="bg-[#6E1515] cursor-pointer w-full px-2 py-2 rounded-lg outline-none text-white mt-1">
-                            <option value="">Seleccionar...</option>
-                            {costCenterSiigo?.map((type) => (
-                                <option key={type.id} value={type.id}>{type.name}</option>
-                            ))}
-                        </select>
-                    </section>
+                    {sp?.methods.map((m) => (
+                        <section key={m.id} className="flex flex-col w-full">
+                            <label className="font-semibold text-sm">{m.name}:</label>
+                            
+                            <input
+                                type="text"
+                                className="bg-[#6E1515] w-full px-4 py-1 rounded-lg outline-none text-white"
+                                 value={formatMoney(paymentValues[m.id] || "")}
+                                onChange={(e) => handlePaymentChange(m.id, e.target.value)}
+                            />
+                        </section>
+                    ))}
 
                     <section className="flex flex-col w-full">
                         <label className="font-semibold text-sm">Devuelta:</label>
                         <input
                             type="number"
                             readOnly
-                            value={isBuildInvoice.repay}
+                            value={formatMoney(repay)}
                             className="bg-[#6E1515] w-full px-4 py-1 rounded-lg outline-none text-white opacity-70"
                         />
                     </section>
+
+                    <hr className="border-amber-200/20 w-[90%] my-2" />
 
                     <ClientSearch setCustomer={setSelectedCustomer}/>
 
@@ -476,11 +484,8 @@ export default function CashSale() {
                     </button>
                   </div>
                 </div>
-            {showInvoice && (
-                <div className=" fixed inset-0 py-12 bg-black/70 flex justify-center items-center p-4 z-50">
-                    <InvoiceModal setShowInvoice={setShowInvoice}  invoice={isInvoicePrinting}/>
-                </div>
-            )}
+
+                {isInvoicePrinting &&  <InvoiceModal invoice={isInvoicePrinting}/> }
         </>
     )
 }

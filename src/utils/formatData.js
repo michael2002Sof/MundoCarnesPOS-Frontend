@@ -39,3 +39,8 @@ export function formatDecimal(value, currency = false) {
   }
 }
 
+export function formatInputNumber(value) {
+    const numeric = value.replace(/\D/g, ""); // Solo números
+    return `$ ${Number(numeric).toLocaleString("es-CO")}`
+}
+

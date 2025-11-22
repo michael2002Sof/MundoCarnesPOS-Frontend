@@ -12,12 +12,15 @@ import ModuleIndex from "./components/shared/moduleIndex"
 import Role from "./modules/user/role"
 import User from "./modules/user/user"
 
+import Warehouse from "./modules/inventory/warehouse"
 
 import ManageBranch from "./modules/sale/manageBranch"
-import ManageSalePoint from "./modules/sale/manageSalePoint"
+import SalePoint from "./modules/sale/salePoint"
 import CashSale from "./modules/sale/cashSale"
 import ReportSale from "./modules/sale/reportSale"
 import CreditNote from "./modules/sale/creditNote"
+import CostCenter from "./modules/sale/cost_center"
+import PaymentMethod from "./modules/sale/payment_method"
 
 const MundoCarnesPosRoutes = [
     { path: "/", element: <Login/> },
@@ -36,16 +39,23 @@ const MundoCarnesPosRoutes = [
             { path: "/user/role", element: <Role/> },
             { path: "/user/user", element: <User/> },
 
+            /*========================================================
+                RUTAS PARA EL MODULO DE INVENTARIO
+            =========================================================== */
+            { path: "/inventory", element: <ModuleIndex items={ModuleItems["Inventario"]} title={"Gestión de Inventario"}/>},
+            { path: "/inventory/warehouse", element: <Warehouse/>},
 
             /*========================================================
                 RUTAS PARA EL MODULO DE VENTAS
             =========================================================== */
             { path: "/sale", element: <ModuleIndex items={ModuleItems["Ventas"]} title={"Gestión de Ventas"}/>},
-            { path: "/sale/manage-salepoint", element: <ManageSalePoint/>},
+            { path: "/sale/manage-salepoint", element: <SalePoint/>},
             { path: "/sale/manage-branch", element: <ManageBranch/>},
             { path: "/sale/cash-sale", element: <CashSale/>},
             { path: "/sale/report", element: <ReportSale/>},
             { path: "/sale/credit-note", element: <CreditNote/>},
+            { path: "/sale/cost-center", element: <CostCenter/>},
+            { path: "/sale/payment-method", element: <PaymentMethod/>},
         ]
     }
 ]

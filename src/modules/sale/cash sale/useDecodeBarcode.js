@@ -16,21 +16,24 @@ export function useDecodeScale (productSiigo, weight, wh)  {
     let tax19 = 0;
 
     const to2 = (n) => Math.floor(n * 100) / 100;
-    console.log("Peso", to2(weight))
 
     const total = base_price * to2(weight)
     let subtotal = total
 
+    let price = base_price
+
     // ✔ Si tiene IVA 5%
     if (hasTax5) {
-    subtotal = total / 1.05;
-    tax5 = subtotal * 0.05;
+    subtotal = total / 1.05
+    price = base_price / 1.05
+    tax5 = Math.round(subtotal * 0.05)
     }
 
     // ✔ Si tiene IVA 19%
     if (hasTax19) {
-    subtotal = total / 1.19;
-    tax19 = subtotal * 0.19;
+    subtotal = total / 1.19
+    price = base_price / 1.19
+    tax19 = Math.round(subtotal * 0.19)
     }
 
 
@@ -41,9 +44,9 @@ export function useDecodeScale (productSiigo, weight, wh)  {
     discount: 0,
     taxes: [ { id: product.taxes[0].id } ],
     name: product.name,
-    price: base_price,
-    subtotal: subtotal,
-    warehouse: wh?.id,
+    price: Number(price.toFixed(2))  ,
+    subtotal: Math.round(subtotal),
+    warehouse: wh,
     tax0: isTax0,
     tax5,
     tax19,
@@ -57,6 +60,7 @@ export function useDecodeScale (productSiigo, weight, wh)  {
 export function useDecodeNormal (productSiigo, wh) {
 
     const product = productSiigo
+    console.log("Producto escaneado de siigo", product)
 
     if (!product) return null;
 
@@ -69,21 +73,21 @@ export function useDecodeNormal (productSiigo, wh) {
     
     const total = base_price;
     let subtotal = total
+
     let tax5 = 0;
     let tax19 = 0;
 
     // ✔ Si tiene IVA 5%
     if (hasTax5) {
-    subtotal = total / 1.05;
-    tax5 = subtotal * 0.05;
+    subtotal = total / 1.05
+    tax5 = subtotal * 0.05
     }
 
     // ✔ Si tiene IVA 19%
     if (hasTax19) {
-    subtotal = total / 1.19;
-    tax19 = subtotal * 0.19;
+    subtotal = total / 1.19
+    tax19 = subtotal * 0.19
     }
-    const to2 = (n) => Math.floor(n * 100) / 100;
 
   
 
@@ -92,14 +96,14 @@ export function useDecodeNormal (productSiigo, wh) {
         description: product.description,
         quantity: 1,
         discount: 0,
-        price: base_price,
-        warehouse: wh?.id,
+        price: Number(subtotal.toFixed(2))  ,
+        warehouse: wh,
         taxes: [ { id: product.taxes[0].id } ],
         name: product.name,
-        subtotal: to2(subtotal),
+        subtotal: Math.round(subtotal),
         tax0: isTax0,
-        tax5: to2(tax5),
-        tax19 : to2(tax19),
+        tax5: Math.round(tax5),
+        tax19 : Math.round(tax19),
         total,
         isScale: false
     };

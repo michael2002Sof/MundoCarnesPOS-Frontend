@@ -3,19 +3,24 @@ import { LockOpen, Lock, Loader2, Loader } from "lucide-react"
 
 import { ModulesHeader } from "../../../components/shared/headers"
 import handleInputChange from "../../../utils/useHandleInputChange"
-import { formatDecimal } from "../../../utils/formatData"
+import { formatDecimal, formatInputNumber } from "../../../utils/formatData"
 
-import useCashSession from "../../../hooks/sale/useCashSession"
+import {useCashSession, useSessionId} from "../../../hooks/sale/useCashSession"
 import toast from "react-hot-toast"
 
 
 export default function OpenCloseCash ({sp, user, GET_SalePoint}) {
-    const {isLoading, POST_CashSession, GET_SessionById, session, POST_CreditNote, PUT_CashSession} = useCashSession()
-    //console.log("Sesión del dia traida",session)
+    const {isLoading, session, POST_CashSession, GET_SessionById, POST_CreditNote, PUT_CashSession} = useCashSession()
 
+    const sessionActive = useSessionId(sp?.id)
+
+
+    //console.log("Sesión del dia traida",session)
+    console.log("ID de la sesión:", sessionActive)
     /*=======================================================================
         CONSTANTES PARA LA APERTURA DE CAJA y CREACION DE REGISTRO DIARIO
     =========================================================================*/
+    const [cashDisplay, setCashDisplay] = useState(""); // lo que ve el usuario
 
     /* -- Iniciar Registro de caja -- */
     const [ isRegisterCashSession, setRegisterCashSession ] = useState({
@@ -38,7 +43,8 @@ export default function OpenCloseCash ({sp, user, GET_SalePoint}) {
     const handleOpenRegister = async (e) => {
         e.preventDefault()
         await POST_CashSession(isRegisterCashSession)
-        GET_SalePoint()
+        await GET_SalePoint()
+        useCashSession(sp?.id)
         setShowOpenModal(false)
     };
 
@@ -47,7 +53,6 @@ export default function OpenCloseCash ({sp, user, GET_SalePoint}) {
     =========================================================================*/
     const [ showCloseModal, setShowCloseModal ] = useState(false)
     const [creditNotesSuccess, setCreditNotesSuccess] = useState(false)
-    const [sessionId, setSessionId] = useState(localStorage.getItem("SessionCashID"));
     const RegisterCreditNotes = async () => {
         const success = await POST_CreditNote()
         if (!success) {
@@ -57,33 +62,29 @@ export default function OpenCloseCash ({sp, user, GET_SalePoint}) {
         setCreditNotesSuccess(true)
     }
     useEffect(() => {
-        if (!sessionId) {
-            return toast.error("No existe una sesión activa para cargar su información");
-        }
-        setSessionId(localStorage.getItem("SessionCashID"));
         if(creditNotesSuccess) {
             setShowCloseModal(true)
-            GET_SessionById(sessionId)
+            if (sessionActive) {
+                GET_SessionById(sessionActive)  // ← usa el ID correcto
+            }
         }
     }, [creditNotesSuccess])
-
+// 
     /* -- Función: Cerrar caja del día -- */
     const handleCloseRegister = async () => {
-        setSessionId(localStorage.getItem("SessionCashID"));
-        if (!sessionId) {
+        if (!sessionActive) {
             return toast.error("No hay sesión activa para cerrar");
         }
         await PUT_CashSession({
-            cash_session: sessionId,
+            cash_session: sessionActive,
             sales_point: sp?.id,
             closed_by: user,
         })
 
         GET_SalePoint()
         setShowCloseModal(false);
-        // Limpieza de localStorage (registro ya cerrado)
-        localStorage.removeItem("SessionCashID");
     };
+
     
     return (
         <>
@@ -94,7 +95,18 @@ export default function OpenCloseCash ({sp, user, GET_SalePoint}) {
                 <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 min-h-screen">
                     <form onSubmit={handleOpenRegister} className="bg-[#841A1A] text-amber-100 p-12 rounded-xl flex flex-col">
                         <h1 className="text-xl font-semibold">Ingresa el Valor Inicial de la Caja</h1>
-                        <input value={isRegisterCashSession.initial_cash} onChange={(e) => handleInputChange(setRegisterCashSession, "initial_cash", e.target.value)} type="number"  className="focus:outline-none bg-[#6E1515] px-4 py-2 mt-4 rounded-lg"/>
+                        <input 
+                            value={cashDisplay} 
+                            onChange={(e) => { 
+                                const display = formatInputNumber(e.target.value)
+                                setCashDisplay(display)
+                                const numeric = Number(display.replace(/[^\d]/g, ""));  // guardar limpio
+                                handleInputChange(setRegisterCashSession, "initial_cash", numeric)
+                            }} 
+                            type="text"
+                            inputMode="numeric"
+                            className="focus:outline-none bg-[#6E1515] px-4 py-2 mt-4 rounded-lg"
+                        />
                         <div className="flex gap-2 items-center w-full justify-center">
                             <button type="button" onClick={() => setShowOpenModal(false)} className="border-amber-200 border text-amber-200 hover:bg-amber-200/10 rounded-lg px-4 py-2 cursor-pointer mt-8 font-semibold">
                                 Cancelar

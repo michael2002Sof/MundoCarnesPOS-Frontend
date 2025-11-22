@@ -54,7 +54,7 @@ export default function AppLayout() {
 
  
     return (
-        <div className={`bg-amber-100  h-screen flex flex-col`}>
+        <div className={`bg-amber-50  h-screen flex flex-col`}>
             <header ref={headerRef} className={`bg-[#841A1A] text-amber-100`}>
                 <AppHeader modules={filteredModules}  onToggleSidebar={onToggleSidebar}/>
             </header>
@@ -70,7 +70,7 @@ export default function AppLayout() {
                 </div>
 
                 {/* Contenido */}
-                <div className="relative flex-1 w-full p-4 sm:p-8 bg-amber-100  space-y-6 flex flex-col items-center overflow-hidden">
+                <div className="relative flex-1 w-full p-4 sm:p-8 bg-amber-50  space-y-6 flex flex-col items-center overflow-hidden">
                     {response && (
                     <div className="fixed top-20 right-4 border-l-2 z-50 px-6 py-3 rounded-lg shadow-md font-medium bg-[#841A1A] text-amber-100">
                         {response.message}
