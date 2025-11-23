@@ -12,10 +12,10 @@ export default function InvoicePrinter({ invoice, onFinish }) {
     pageStyle: `
       @page {
         size: 80mm auto;
-        margin: 4mm;
+        margin: 2mm;
       }
       body {
-        margin: 2mm;
+        margin: 0;
         padding: 2mm;
         -webkit-print-color-adjust: exact;
         print-color-adjust: exact;
