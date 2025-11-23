@@ -8,15 +8,19 @@ export default function InvoicePrinter({ invoice, onFinish }) {
 
   const handlePrint = useReactToPrint({
     contentRef: printRef,
-    documentTitle: `Factura-${invoice?.code || "POS"}`,
+    documentTitle: `Factura-${invoice?.code || "Mundo Carnes POS"}`,
     pageStyle: `
       @page {
         size: 80mm auto;
-        margin: 4mm;
+        margin: 0;
       }
       body {
         -webkit-print-color-adjust: exact;
         print-color-adjust: exact;
+        margin: 0;
+        padding: 0;
+        text-align: center;
+        font-family: Arial, sans-serif;
       }
     `,
   });
@@ -42,7 +46,6 @@ export default function InvoicePrinter({ invoice, onFinish }) {
   if (!invoice) return null;
 
   const {
-    logo,
     company,
     code,
     nit,
@@ -81,17 +84,16 @@ export default function InvoicePrinter({ invoice, onFinish }) {
   return (
     <div style={{display: "none"}}>
       {/* Contenido que se imprime */}
-      <div ref={printRef} className="bg-white p-2 shadow w-full">
+      <div ref={printRef} style={{ width: "80mm", margin: "0 auto", textAlign: "center" }}>
         <div
-          className="w-[80mm] text-[11px] text-gray-900 font-sans mx-auto"
-          style={{ fontFamily: "Arial, sans-serif", lineHeight: "1.4" }}
+          style={{ width: "100%" }}
         >
           <section className="w-full flex justify-center">
           {/* Logo */}
           <img
             src={"/logo_mundocarnes.svg"}
             alt="Logo empresa"
-            className="w-16 h-auto mb-2 mt-1 object-contain"
+            style={{ width: "64px", height: "auto", objectFit: "contain" }}
           />
           </section>
 
