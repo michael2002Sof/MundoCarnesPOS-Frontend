@@ -12,15 +12,11 @@ export default function InvoicePrinter({ invoice, onFinish }) {
     pageStyle: `
       @page {
         size: 80mm auto;
-        margin: 0;
+        margin: 4mm;
       }
       body {
         -webkit-print-color-adjust: exact;
         print-color-adjust: exact;
-        margin: 0;
-        padding: 0;
-        text-align: center;
-        font-family: Arial, sans-serif;
       }
     `,
   });
@@ -84,16 +80,17 @@ export default function InvoicePrinter({ invoice, onFinish }) {
   return (
     <div style={{display: "none"}}>
       {/* Contenido que se imprime */}
-      <div ref={printRef} style={{ width: "80mm", margin: "0 auto", textAlign: "center" }}>
+      <div ref={printRef} className="bg-white p-2 shadow w-full">
         <div
-          style={{ width: "100%" }}
+          className="w-[80mm] text-[11px] text-gray-900 font-sans mx-auto"
+          style={{ fontFamily: "Arial, sans-serif", lineHeight: "1.4" }}
         >
           <section className="w-full flex justify-center">
           {/* Logo */}
           <img
             src={"/logo_mundocarnes.svg"}
             alt="Logo empresa"
-            style={{ width: "64px", height: "auto", objectFit: "contain" }}
+            className="w-16 h-auto mb-2 mt-1 object-contain"
           />
           </section>
 
