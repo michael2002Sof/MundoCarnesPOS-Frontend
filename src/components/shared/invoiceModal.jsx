@@ -15,13 +15,14 @@ export default function InvoicePrinter({ invoice, onFinish }) {
         margin: 0mm;
       }
       body {
-        margin: 2mm;
-        padding: 2mm;
+        margin: "0 auto",
+        padding: "2mm 4mm 2mm 2mm"
         -webkit-print-color-adjust: exact;
         print-color-adjust: exact;
       }
     `,
   });
+
 
   useEffect(() => {
   // Esperar un pequeño tiempo para que el DOM esté listo
