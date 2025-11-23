@@ -15,9 +15,10 @@ export function useDecodeScale (productSiigo, weight, wh)  {
     let tax5 = 0;
     let tax19 = 0;
 
-    const to2 = (n) => Math.floor(n * 100) / 100;
+     // ✔ Ajuste de cantidad mínima para unidad variable
+    const realWeight = weight < 0.01 ? 1 : weight;  // si < 0.01, asumir 1 unidad
 
-    const total = base_price * to2(weight)
+    const total = base_price * parseFloat(realWeight.toFixed(2));  // total con iva incluido
     let subtotal = total
 
     let price = base_price
@@ -40,7 +41,7 @@ export function useDecodeScale (productSiigo, weight, wh)  {
     return {
     code: product.code,
     description: product.description,
-    quantity: to2(weight),
+    quantity: parseFloat(realWeight.toFixed(2)),
     discount: 0,
     taxes: [ { id: product.taxes[0].id } ],
     name: product.name,

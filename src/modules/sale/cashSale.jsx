@@ -363,9 +363,14 @@ export default function CashSale() {
                     <section className="p-4 bg-[#841A1A] text-amber-100 rounded-xl">
                         <h4 className="font-semibold mb-2 flex items-center">
                             {tabs.length !== 0 && (
-                                <p>
-                                    Carrito de  {tabs.find((t) => t.id === activeTabId)?.name}: 
-                                </p>
+                                <div className="mr-4 flex justify-between w-full">
+                                    <p>
+                                        Carrito de  {tabs.find((t) => t.id === activeTabId)?.name}
+                                    </p>
+                                    <p>
+                                       Total items: {tabs.find((t) => t.id === activeTabId)?.cart.length} 
+                                    </p>
+                                </div>
                             )}             
                         </h4>
                         {activeTab.cart.length === 0 ? (
