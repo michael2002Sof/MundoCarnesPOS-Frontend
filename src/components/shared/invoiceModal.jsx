@@ -12,9 +12,11 @@ export default function InvoicePrinter({ invoice, onFinish }) {
     pageStyle: `
       @page {
         size: 80mm auto;
-        margin: 4mm;
+        margin: 0;
       }
       body {
+        margin: 0;
+        padding: 0;
         -webkit-print-color-adjust: exact;
         print-color-adjust: exact;
       }
@@ -82,7 +84,7 @@ export default function InvoicePrinter({ invoice, onFinish }) {
       {/* Contenido que se imprime */}
       <div ref={printRef} className="bg-white p-2 shadow w-full">
         <div
-          className="w-[80mm] text-[11px] text-gray-900 font-sans mx-auto"
+          className="w-[80mm] p-[4mm] text-[11px] text-gray-900 font-sans mx-auto"
           style={{ fontFamily: "Arial, sans-serif", lineHeight: "1.4" }}
         >
           <section className="w-full flex justify-center">
