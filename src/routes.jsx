@@ -18,9 +18,11 @@ import ManageBranch from "./modules/sale/manageBranch"
 import SalePoint from "./modules/sale/salePoint"
 import CashSale from "./modules/sale/cashSale"
 import ReportSale from "./modules/sale/reportSale"
+import Invoices from "./modules/sale/invoices"
 import CreditNote from "./modules/sale/creditNote"
 import CostCenter from "./modules/sale/cost_center"
 import PaymentMethod from "./modules/sale/payment_method"
+import { path } from "framer-motion/client"
 
 const MundoCarnesPosRoutes = [
     { path: "/", element: <Login/> },
@@ -53,6 +55,7 @@ const MundoCarnesPosRoutes = [
             { path: "/sale/manage-branch", element: <ManageBranch/>},
             { path: "/sale/cash-sale", element: <CashSale/>},
             { path: "/sale/report", element: <ReportSale/>},
+            { path: "/sale/invoices", element: <Invoices/>},
             { path: "/sale/credit-note", element: <CreditNote/>},
             { path: "/sale/cost-center", element: <CostCenter/>},
             { path: "/sale/payment-method", element: <PaymentMethod/>},

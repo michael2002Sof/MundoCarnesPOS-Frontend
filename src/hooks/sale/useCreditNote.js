@@ -18,7 +18,7 @@ export default function useCreditNote () {
             const res = await axiosInstance.get(`/posinnovate/siigo/creditnote/by/${company}/${date}`)
             setCreditNotes(res.data)
         } catch (error) {
-            toast.error(error.message)
+            toast.error(error.message, {duration: 9000})
         } finally {
             setLoading(false)
         }

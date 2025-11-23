@@ -256,6 +256,7 @@ export default function CashSale() {
         if (receipt_transfer > total){
             return toast.error("El ingreso de tranferencia no es exacto")
         }
+
         if (!sessionActive) {
             return toast.error("La caja no esta habierta")
         }
@@ -485,7 +486,9 @@ export default function CashSale() {
                   </div>
                 </div>
 
-                {isInvoicePrinting &&  <InvoiceModal invoice={isInvoicePrinting} onFinish={() => setIsInvoicePrinting(null)}/> }
+                 
+                {isInvoicePrinting &&   <InvoiceModal invoice={isInvoicePrinting} onFinish={() => setIsInvoicePrinting(null)}/> }
+
         </>
     )
 }

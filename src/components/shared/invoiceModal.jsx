@@ -1,6 +1,7 @@
 import { useRef, useEffect } from "react";
 import { useReactToPrint } from "react-to-print";
 import { formatDecimal } from "../../utils/formatData";
+import QRCode from "react-qr-code";
 
 export default function InvoicePrinter({ invoice, onFinish }) {
   const printRef = useRef();
@@ -23,7 +24,7 @@ export default function InvoicePrinter({ invoice, onFinish }) {
   useEffect(() => {
   // Esperar un pequeño tiempo para que el DOM esté listo
   const timer = setTimeout(() => {
-    if (printRef.current) {
+    if (printRef.current ) {
       handlePrint();
 
       setTimeout(() => {
@@ -72,24 +73,27 @@ export default function InvoicePrinter({ invoice, onFinish }) {
   }, []);
 
   // Detectar los IVAs activos antes del render
-  const showIVA0 = invoiceItem.some(it => it.tax0 === true);
-  const showIVA5 = invoiceItem.some(it => it.tax5 > 0);
-  const showIVA19 = invoiceItem.some(it => it.tax19 > 0);
+  const showIVA0 = invoiceItem.some(it => Number(it.tax5) === 0 && Number(it.tax19) === 0);
+  console.log("Mostrar IVA 0%:", showIVA0);
+  const showIVA5 = invoiceItem.some(it => Number(it.tax5) > 0);
+  const showIVA19 = invoiceItem.some(it => Number(it.tax19) > 0);
 
   return (
-    <div className="flex flex-col items-center bg-amber-50 p-12">
+    <div style={{display: "none"}}>
       {/* Contenido que se imprime */}
-      <div ref={printRef} className="bg-white p-2 rounded shadow">
+      <div ref={printRef} className="bg-white p-2 shadow w-full">
         <div
-          className="w-[80mm] text-[11px] text-gray-900 font-sans mx-auto flex flex-col items-center justify-center"
+          className="w-[80mm] text-[11px] text-gray-900 font-sans mx-auto"
           style={{ fontFamily: "Arial, sans-serif", lineHeight: "1.4" }}
         >
+          <section className="w-full flex justify-center">
           {/* Logo */}
           <img
-            src={logo || "/logo_mundocarnes.svg"}
+            src={"/logo_mundocarnes.svg"}
             alt="Logo empresa"
             className="w-16 h-auto mb-2 mt-1 object-contain"
           />
+          </section>
 
           {/* Encabezado */}
           <h2 className="text-[13px] font-bold mb-1 text-center uppercase border-b border-gray-400 pb-1">
@@ -139,7 +143,7 @@ export default function InvoicePrinter({ invoice, onFinish }) {
                   </td>
                   {showIVA0 && (
                     <td className="text-right">
-                      {it.tax0 ? "$ 0" : "-"}
+                      {Number(it.tax5) === 0 && Number(it.tax19) === 0 ? "$ 0" : "-"}
                     </td>
                   )}
                   {showIVA5 && (
@@ -199,14 +203,22 @@ export default function InvoicePrinter({ invoice, onFinish }) {
           </div>
 
           {/* Mensaje final */}
-          <p className="text-center font-semibold text-[12px] mt-3">
+          <p className="text-center font-semibold text-[12px] mt-2">
             ¡Gracias por su compra!
           </p>
-          <p className="text-center font-semibold text-[12px] w-full   mt-1"
-            style={{ wordBreak: "break-all", whiteSpace: "normal", overflowWrap: "break-word" }} 
-          >
-            Cufe: {cufe}
-          </p>
+
+          {/* QR PEQUEÑO PARA EL CUFE */}
+          <div className="flex flex-col items-center mt-6">
+            <QRCode
+              value={cufe || "000"}
+              size={70}
+              style={{ width: "80px", height: "80px" }}
+            />
+            <p className="text-[10px] mt-1 w-[90%] font-semibold break-all text-center">
+              CUFE: {cufe}
+            </p>
+          </div>
+
           {/* Nota legal */}
           <p className="text-[12px] mt-2 font-semibold leading-tight text-center">
             Responsable de IVA - Actividad Económica 4723.  

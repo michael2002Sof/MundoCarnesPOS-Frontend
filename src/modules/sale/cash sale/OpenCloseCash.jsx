@@ -39,7 +39,7 @@ export default function OpenCloseCash ({sp, user, GET_SalePoint}) {
     /*=======================================================================
         CONSTANTES PARA LA APERTURA DE CAJA y CREACION DE REGISTRO DIARIO
     =========================================================================*/
-    const [cashDisplay, setCashDisplay] = useState(""); // lo que ve el usuario
+    const [cashDisplay, setCashDisplay] = useState(0); // lo que ve el usuario
 
     /* -- Iniciar Registro de caja -- */
     const [ isRegisterCashSession, setRegisterCashSession ] = useState({
@@ -63,9 +63,9 @@ export default function OpenCloseCash ({sp, user, GET_SalePoint}) {
         e.preventDefault()
         await POST_CashSession(isRegisterCashSession)
         await GET_SalePoint()
-        useCashSession(sp?.id)
         setShowOpenModal(false)
     };
+    console.log(showOpenModal)
 
     /*=======================================================================
         CONSTANTES PARA EL CIERRE DE CAJA y FINALIZACION DEL REGISTRO DIARIO
@@ -79,6 +79,7 @@ export default function OpenCloseCash ({sp, user, GET_SalePoint}) {
         const success = await POST_CreditNote()
         if (!success) {
             toast.error("No se pueden cargar las notas de crédito. No es posible cerrar caja.")
+            setCreditNotesSuccess(false)
             return
         }
         setCreditNotesSuccess(true)

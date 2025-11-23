@@ -10,6 +10,7 @@ import { ModulesHeader } from '../../components/shared/headers';
 import StatsView from '../../components/shared/stats_view';
 import axiosInstance from '../../api/axiosintance';
 import {formatDecimal} from "../../utils/formatData"
+import DecodeToken from '../../api/decode';
 
 /* --- Simulación de llamada a backend --- */
 const useFetchCashSessions = (fecha) => {
@@ -22,7 +23,9 @@ const useFetchCashSessions = (fecha) => {
       setLoading(true);
 
       // Aquí iría tu llamada real:
-    const res = await axiosInstance.get(`/posinnovate/siigo/sale/report/day/${fecha}`)
+    const token = DecodeToken()
+    const company = token.company
+    const res = await axiosInstance.get(`/posinnovate/siigo/sale/report/day/${fecha}/${company}`)
     const mockData = res.data;
     //console.log("Sesiones de caja obtenidas:", mockData);
 

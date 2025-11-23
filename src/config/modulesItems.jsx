@@ -1,4 +1,4 @@
-import { ShieldUser, ShoppingCart, Receipt, BarChart3, Settings, Store, User, Undo2, Warehouse, CreditCard } from "lucide-react"
+import { ShieldUser, ShoppingCart, Receipt, ScrollText, BarChart3, Settings, Store, User, Undo2, Warehouse, CreditCard } from "lucide-react"
 
 const ModuleItems = {
     "Usuarios" : [
@@ -36,6 +36,12 @@ const ModuleItems = {
             name: "Reportes de Ventas",
             to: "/sale/report",
             description: "Analiza ventas por fecha, turno, usuario o punto de venta. Revisa arqueos, cierres y movimientos de caja con detalle de pagos, ingresos y diferencias.",
+        },
+        {
+            icon: <ScrollText />,
+            name: "Facturas de Venta",
+            to: "/sale/invoices",
+            description: "Consulta rápidamente las facturas generadas en el punto de venta. Busca por fecha o número e imprime los comprobantes.",
         },
         {
             icon: <Undo2 />,
