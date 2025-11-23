@@ -15,7 +15,7 @@ export default function InvoicePrinter({ invoice, onFinish }) {
         margin: 0mm;
       }
       body {
-        margin: 2mm 4mm 2mm 2mm;
+        margin: 0mm 4mm 0mm 0mm;
         padding: 2mm;
         -webkit-print-color-adjust: exact;
         print-color-adjust: exact;
