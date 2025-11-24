@@ -12,7 +12,7 @@ const ReportTemplate = ({ session, onFinish }) => {
     pageStyle: `
       @page {
         size: 80mm auto;
-        margin: 2mm 4mm 2mm 2mm;
+        margin: 2mm 8mm 2mm 2mm;
       }
       body {
         -webkit-print-color-adjust: exact;
@@ -48,8 +48,8 @@ const ReportTemplate = ({ session, onFinish }) => {
       {/* Encabezado */}
       <section ref={printRef} className="w-full px-2">
         <header className=" w-full flex flex-col items-center mb-4 ">
-          <h4 className="font-bold tracking-wide">Reporte Diario</h4>
-          <h3 className="font-bold tracking-wide">{sales_point_name}</h3>
+          <h3 className="font-bold tracking-wide">Reporte Diario</h3>
+          <h2 className="font-bold tracking-wide">{sales_point_name}</h2>
           <div className="grid grid-cols-2 w-full mt-2 text-[12px]">
             <section className="font-semibold text-left">
               <p>Sucursal: </p>
@@ -73,10 +73,10 @@ const ReportTemplate = ({ session, onFinish }) => {
 
         {/* Datos de la sesión */}
         <main className=" mb-4 ">
-          <h4 className="font-semibold text-center mb-2 ">Movimiento de Caja</h4>
-          <p><span className="font-semibold">Base Inicial: </span> {formatDecimal(initial_cash, true)}</p>
-          <h3 className="font-semibold text-center mt-2">Totales por Método de Pago</h3>
-          <div className="grid grid-cols-2 w-full">
+          <h3 className="font-semibold text-center mb-2 ">Movimiento de Caja</h3>
+          <p className="text-[12px]"><span className="font-semibold">Base Inicial: </span> {formatDecimal(initial_cash, true)}</p>
+          <h2 className="font-semibold text-center mt-2">Totales por Método de Pago</h2>
+          <div className="grid grid-cols-2 text-[12px] w-full">
             <section className="font-semibold text-left">
               <p>En efectivo: </p>
               <p>En transferencias:</p>
@@ -96,7 +96,7 @@ const ReportTemplate = ({ session, onFinish }) => {
           </div>
 
           <h3 className="font-semibold text-center mt-4">Totales Generales</h3>
-          <div className="grid grid-cols-2 w-full">
+          <div className="grid grid-cols-2 text-[12px] w-full">
             <section className="font-semibold text-left">
               <p>Sub total: </p>
               <p>Iva 0%:</p>
