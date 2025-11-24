@@ -76,7 +76,7 @@ const ReportTemplate = ({ session, onFinish }) => {
           <h4 className="font-semibold text-center mb-2 ">Movimiento de Caja</h4>
           <p><span className="font-semibold">Base Inicial: </span> {formatDecimal(initial_cash, true)}</p>
           <h3 className="font-semibold text-center mt-2">Totales por Método de Pago</h3>
-          <div className="flex justify-between items-center w-full">
+          <div className="grid grid-cols-2 w-full">
             <section className="font-semibold text-left">
               <p>En efectivo: </p>
               <p>En transferencias:</p>
@@ -96,7 +96,7 @@ const ReportTemplate = ({ session, onFinish }) => {
           </div>
 
           <h3 className="font-semibold text-center mt-4">Totales Generales</h3>
-          <div className="flex justify-between items-center w-full">
+          <div className="grid grid-cols-2 w-full">
             <section className="font-semibold text-left">
               <p>Sub total: </p>
               <p>Iva 0%:</p>
