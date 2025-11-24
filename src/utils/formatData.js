@@ -16,7 +16,7 @@ export function formatDecimal(value, currency = false) {
   if (value === null || value === undefined || isNaN(value))
     return currency ? "$0" : "0 KG";
 
-  const number = Number(value);
+  const number = Number(value) < 0 ? 0 : Number(value);
 
   if (currency) {
     // Mostrar moneda sin decimales

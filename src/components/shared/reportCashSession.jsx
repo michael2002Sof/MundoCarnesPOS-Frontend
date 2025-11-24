@@ -11,9 +11,8 @@ const ReportTemplate = ({ session, onFinish }) => {
     documentTitle: `Reporte-Caja-${session?.sales_point_name || "Mundo Carnes POS"}`,
     pageStyle: `
       @page {
-        size: 80mm;
-        margin: 0;
-        padding: 2mm 4mm 2mm 2mm;
+        size: 80mm auto;
+        margin: 2mm 4mm 2mm 2mm;
       }
       body {
         -webkit-print-color-adjust: exact;
@@ -39,7 +38,7 @@ const ReportTemplate = ({ session, onFinish }) => {
   if (!session) return null;
 
   const {
-    id, branch_name, sales_point_name, opened_by, status, opened_at, closed_at, closed_by,
+    id, branch_name, sales_point_name, opened_by, opened_at, closed_at, closed_by,
     initial_cash, total_cash, total_transfer, subtotal_method, total_return, total_method,
     subtotal, tax0, tax5, tax19, total
   } = session;
@@ -47,8 +46,8 @@ const ReportTemplate = ({ session, onFinish }) => {
   return (
     <div style={{display: "none"}}>
       {/* Encabezado */}
-      <section ref={printRef} className="w-[80mm]">
-        <header className=" w-full flex flex-col items-center mb-4">
+      <section ref={printRef} className="w-full px-2">
+        <header className=" w-full flex flex-col items-center mb-4 bg-amber-400">
           <h4 className="font-bold tracking-wide">Reporte Diario</h4>
           <h3 className="font-bold tracking-wide">{sales_point_name}</h3>
           <div className="grid grid-cols-2 w-full mt-2 text-[12px]">
@@ -73,14 +72,15 @@ const ReportTemplate = ({ session, onFinish }) => {
 
 
         {/* Datos de la sesión */}
-        <main className="border mb-4">
+        <main className=" mb-4 bg-amber-300">
           <h4 className="font-semibold text-center mb-2 ">Movimiento de Caja</h4>
           <p><span className="font-semibold">Base Inicial: </span> {formatDecimal(initial_cash, true)}</p>
           <h3 className="font-semibold text-center mt-2">Totales por Método de Pago</h3>
-          <div className="grid grid-cols-2 w-full">
+          <div className="flex justify-between items-center w-full">
             <section className="font-semibold text-left">
               <p>En efectivo: </p>
               <p>En transferencias:</p>
+              <p>Sub total pagos:</p>
               <p>Devoluciones: </p>
               <p>Total Pagos:</p>
 
@@ -88,6 +88,7 @@ const ReportTemplate = ({ session, onFinish }) => {
             <section className="text-right">
               <p>{formatDecimal(total_cash, true)}</p>
               <p>{formatDecimal(total_transfer, true)}</p>
+              <p>{formatDecimal(subtotal_method, true)}</p>
               <p>{formatDecimal(total_return, true)}</p>
               <p>{formatDecimal(total_method, true)}</p>
             </section>
@@ -95,7 +96,7 @@ const ReportTemplate = ({ session, onFinish }) => {
           </div>
 
           <h3 className="font-semibold text-center mt-4">Totales Generales</h3>
-          <div className="grid grid-cols-2 w-full">
+          <div className="flex justify-between items-center w-full">
             <section className="font-semibold text-left">
               <p>Sub total: </p>
               <p>Iva 0%:</p>
