@@ -92,7 +92,7 @@ export default function OpenCloseCash ({sp, user, GET_SalePoint}) {
         GET_SalePoint()
         setShowCloseModal(false);
         // Ahora imprime
-        setTimeout(() => setPrintSession(session), 300);
+        setTimeout(() => setPrintSession(true), 300);
     };
 
     
@@ -311,7 +311,7 @@ export default function OpenCloseCash ({sp, user, GET_SalePoint}) {
                 </button>
             </section>
 
-            {session && <ReportTemplate session={printSession} onFinish={() => setPrintSession(null)}/>}
+            {printSession && <ReportTemplate session={session} onFinish={() => setPrintSession(false)}/>}
 
 
         </>

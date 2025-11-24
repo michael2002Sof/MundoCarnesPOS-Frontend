@@ -12,7 +12,6 @@
       pageStyle: `
         @page {
           size: 80mm auto;
-          margin: 0mm 6mm 2mm 2mm;
         }
         body {
           -webkit-print-color-adjust: exact;
@@ -80,7 +79,7 @@
     return (
       <div style={{display: "none"}}>
         {/* Contenido que se imprime */}
-        <div ref={printRef} className="w-full">
+        <div ref={printRef} className="w-full pr-2">
           <div
             className=" text-[11px] font-sans mx-auto"
             style={{ fontFamily: "Arial, sans-serif", lineHeight: "1.4" }}
