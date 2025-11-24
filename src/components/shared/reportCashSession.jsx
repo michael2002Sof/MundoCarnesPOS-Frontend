@@ -47,7 +47,7 @@ const ReportTemplate = ({ session, onFinish }) => {
     <div style={{display: "none"}}>
       {/* Encabezado */}
       <section ref={printRef} className="w-full px-2">
-        <header className=" w-full flex flex-col items-center mb-4 bg-amber-400">
+        <header className=" w-full flex flex-col items-center mb-4 ">
           <h4 className="font-bold tracking-wide">Reporte Diario</h4>
           <h3 className="font-bold tracking-wide">{sales_point_name}</h3>
           <div className="grid grid-cols-2 w-full mt-2 text-[12px]">
@@ -72,7 +72,7 @@ const ReportTemplate = ({ session, onFinish }) => {
 
 
         {/* Datos de la sesión */}
-        <main className=" mb-4 bg-amber-300">
+        <main className=" mb-4 ">
           <h4 className="font-semibold text-center mb-2 ">Movimiento de Caja</h4>
           <p><span className="font-semibold">Base Inicial: </span> {formatDecimal(initial_cash, true)}</p>
           <h3 className="font-semibold text-center mt-2">Totales por Método de Pago</h3>
