@@ -46,7 +46,7 @@ const ReportTemplate = ({ session, onFinish }) => {
   return (
     <div style={{display: "none"}}>
       {/* Encabezado */}
-      <section ref={printRef} className="w-full px-2">
+      <section ref={printRef} className="w-full">
         <header className=" w-full flex flex-col items-center mb-4 ">
           <h3 className="font-bold tracking-wide">Reporte Diario</h3>
           <h2 className="font-semibold tracking-wide">{sales_point_name}</h2>
