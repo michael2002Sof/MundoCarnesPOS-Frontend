@@ -12,7 +12,7 @@ const ReportTemplate = ({ session, onFinish }) => {
     pageStyle: `
       @page {
         size: 80mm auto;
-        margin: 0mm;
+        margin: 2mm;
       }
       body {
         -webkit-print-color-adjust: exact;
@@ -46,7 +46,7 @@ const ReportTemplate = ({ session, onFinish }) => {
   return (
     <div style={{display: "none"}}>
       {/* Encabezado */}
-      <section ref={printRef} className="w-full pr-2">
+      <section ref={printRef} className="w-full pr-4">
         <header className=" w-full flex flex-col items-center mb-4 ">
           <h3 className="font-bold tracking-wide">Reporte Diario</h3>
           <h2 className="font-semibold tracking-wide">{sales_point_name}</h2>
