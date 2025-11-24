@@ -12,6 +12,7 @@
       pageStyle: `
         @page {
           size: 80mm auto;
+          margin: 0mm;
         }
         body {
           -webkit-print-color-adjust: exact;
