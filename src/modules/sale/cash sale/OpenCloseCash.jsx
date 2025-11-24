@@ -1,5 +1,4 @@
-import { useState, useEffect, useRef } from "react"
-import { useReactToPrint } from "react-to-print"
+import { useState, useEffect } from "react"
 import { LockOpen, Lock, Loader2, Loader } from "lucide-react"
 
 import { ModulesHeader } from "../../../components/shared/headers"
@@ -13,23 +12,8 @@ import ReportTemplate from "../../../components/shared/reportCashSession"
 
 export default function OpenCloseCash ({sp, user, GET_SalePoint}) {
     const {isLoading, session, POST_CashSession, GET_SessionById, POST_CreditNote, PUT_CashSession} = useCashSession()
-
     const sessionActive = useSessionId(sp?.id)
-    const reportRef = useRef();
-    const handleWorkerPrint = useReactToPrint({
-        contentRef: reportRef,
-        documentTitle: `Reporte_Caja_${sessionActive}`,
-        pageStyle: `
-        @page {
-            size: 80mm auto;
-            margin: 4mm;
-        }
-        body {
-            -webkit-print-color-adjust: exact;
-            print-color-adjust: exact;
-        }
-        `,
-    });
+    const [printSession, setPrintSession] = useState(null);
 
 
 
@@ -108,7 +92,7 @@ export default function OpenCloseCash ({sp, user, GET_SalePoint}) {
         GET_SalePoint()
         setShowCloseModal(false);
         // Ahora imprime
-        setTimeout(() => handleWorkerPrint(), 300);
+        setTimeout(() => setPrintSession(session), 300);
     };
 
     
@@ -327,11 +311,9 @@ export default function OpenCloseCash ({sp, user, GET_SalePoint}) {
                 </button>
             </section>
 
-            <div style={{ display: "none" }}>
-                <div ref={reportRef}>
-                    {session && <ReportTemplate session={session} />}
-                </div>
-            </div>
+            {session && <ReportTemplate session={printSession} onFinish={() => setPrintSession(null)}/>}
+
+
         </>
     )
 }

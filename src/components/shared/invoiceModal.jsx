@@ -13,10 +13,9 @@ export default function InvoicePrinter({ invoice, onFinish }) {
       @page {
         size: 80mm auto;
         margin: 0;
+        padding: 2mm 4mm 2mm 2mm;
       }
       body {
-        margin: 4mm;
-        padding: 0;
         -webkit-print-color-adjust: exact;
         print-color-adjust: exact;
       }
@@ -76,16 +75,15 @@ export default function InvoicePrinter({ invoice, onFinish }) {
 
   // Detectar los IVAs activos antes del render
   const showIVA0 = invoiceItem.some(it => Number(it.tax5) === 0 && Number(it.tax19) === 0);
-  console.log("Mostrar IVA 0%:", showIVA0);
   const showIVA5 = invoiceItem.some(it => Number(it.tax5) > 0);
   const showIVA19 = invoiceItem.some(it => Number(it.tax19) > 0);
 
   return (
     <div style={{display: "none"}}>
       {/* Contenido que se imprime */}
-      <div ref={printRef} className="bg-white  shadow w-full">
+      <div ref={printRef} className="w-full">
         <div
-          className=" text-[11px] text-gray-900 font-sans mx-auto"
+          className=" text-[11px] font-sans mx-auto"
           style={{ fontFamily: "Arial, sans-serif", lineHeight: "1.4" }}
         >
           <section className="w-full flex justify-center">

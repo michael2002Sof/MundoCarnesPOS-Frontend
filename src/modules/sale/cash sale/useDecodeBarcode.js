@@ -40,7 +40,7 @@ export function useDecodeScale (productSiigo, weight, wh)  {
 
     return {
     code: product.code,
-    description: product.description,
+    description: product.name,
     quantity: parseFloat(realWeight.toFixed(2)),
     discount: 0,
     taxes: [ { id: product.taxes[0].id } ],
@@ -94,7 +94,7 @@ export function useDecodeNormal (productSiigo, wh) {
 
     return {
         code: product.code,
-        description: product.description,
+        description: product.name,
         quantity: 1,
         discount: 0,
         price: Number(subtotal.toFixed(2))  ,
