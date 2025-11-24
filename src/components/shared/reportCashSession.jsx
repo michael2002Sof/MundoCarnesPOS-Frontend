@@ -12,7 +12,7 @@ const ReportTemplate = ({ session, onFinish }) => {
     pageStyle: `
       @page {
         size: 80mm auto;
-        margin: 1mm 2mm;
+        margin: 1mm;
       }
       body {
         -webkit-print-color-adjust: exact;

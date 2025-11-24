@@ -3,7 +3,9 @@ import Login from "./pages/login"
 import ModuleItems from "./config/modulesItems"
 
 import AppLayout from "./layout"
+
 import Home from "./pages/home"
+import Profile from "./pages/profile"
 import CompanyProfile from "./pages/companyProfile"
 import Account from "./pages/account"
 
@@ -22,7 +24,8 @@ import Invoices from "./modules/sale/invoices"
 import CreditNote from "./modules/sale/creditNote"
 import CostCenter from "./modules/sale/cost_center"
 import PaymentMethod from "./modules/sale/payment_method"
-import { path } from "framer-motion/client"
+
+
 
 const MundoCarnesPosRoutes = [
     { path: "/", element: <Login/> },
@@ -30,6 +33,7 @@ const MundoCarnesPosRoutes = [
     { element: <AppLayout/>, 
         children: [
             { path: "/home", element:<Home/> },
+            { path: "/profile", element:<Profile/> },
             { path: "/company", element:<CompanyProfile/> },
             { path: "/account-sync", element:<Account/> },
 

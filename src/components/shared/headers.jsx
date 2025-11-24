@@ -60,7 +60,7 @@ export function AppHeader({ onToggleSidebar, modules = [] }) {
                 <span className="absolute -top-1 -right-1 w-2.5 h-2.5 bg-red-500 rounded-full border border-[#841A1A]" />
               </button>
               {/* Usuario */}
-              <button className="p-2 rounded-lg cursor-pointer bg-white/10 hover:bg-white/20 transition-all">
+              <button onClick={() => navigate("/profile")} className="p-2 rounded-lg cursor-pointer bg-white/10 hover:bg-white/20 transition-all">
                 <User size={18} />
               </button>
               {/* Company */}
