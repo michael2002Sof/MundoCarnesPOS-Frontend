@@ -69,6 +69,7 @@ export default function OpenCloseCash ({sp, user, GET_SalePoint}) {
         setShowCloseModal(true)
         setCreditNotesSuccess(true)
     }
+    console.log(session)
     useEffect(() => {
         if(creditNotesSuccess  && sessionId !== null) {
             if (sessionId) {
@@ -76,7 +77,7 @@ export default function OpenCloseCash ({sp, user, GET_SalePoint}) {
             }
             setCreditNotesSuccess(false)
         }
-    }, [creditNotesSuccess])
+    }, [creditNotesSuccess, sessionId])
 // 
     /* -- Función: Cerrar caja del día -- */
     const handleCloseRegister = async () => {
