@@ -4,6 +4,7 @@ export function useDecodeScale (productSiigo, weight, wh)  {
     const product = productSiigo
 
     if (!product) return null;
+    if (!wh) return null
 
     // ✔ Impuestos desde Siigo
     const taxObject = product.taxes[0].percentage; // porcentaje del iva que tiene aplicado el precio
@@ -61,9 +62,9 @@ export function useDecodeScale (productSiigo, weight, wh)  {
 export function useDecodeNormal (productSiigo, wh) {
 
     const product = productSiigo
-    console.log("Producto escaneado de siigo", product)
 
     if (!product) return null;
+    if (!wh) return null
 
     const taxObject = product.taxes[0].percentage; // Impuesto que incluye base_price
     const isTax0 = taxObject === 0;

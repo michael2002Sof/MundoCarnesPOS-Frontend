@@ -1,4 +1,4 @@
-import { useState, useMemo, useEffect, use } from "react"
+import { useState, useMemo, useEffect, useRef } from "react"
 import { Barcode, Loader2, ShoppingCart, Trash2} from "lucide-react"
 
 import OpenCloseCash from "./cash sale/OpenCloseCash"
@@ -24,16 +24,29 @@ export default function CashSale() {
     ===================================================================*/
     const {isLoading, POST_InvoiceSiigo, typeInvoiceSiigo} = useInvoiceSiigo()
     const {GET_ProductSiigoByCode} = useProductSiigo()
-    const {salePoints, GET_SalePoint} = useSalePoint()       
+    const {salePoints, GET_SalePoint} = useSalePoint()      
+    const {sessionId, GET_SessionId} = useSessionId() 
 
     const [selectedCustomer, setSelectedCustomer] = useState(null); // cliente elegido
     const today = new Date().toISOString().slice(0, 10);
     const token = DecodeToken()     
-    const sp = salePoints?.find(sp => sp?.user === token?.id ) //Punto de venta del usuario]
+    const sp = useMemo(() => { return salePoints?.find(sp => sp.user === token.id)}, [salePoints, token.id])  //Punto de venta del usuario]
     const wh = sp?.warehouse
     const user = token?.id
 
-    const sessionActive = useSessionId(sp?.id)
+    const calledRef = useRef({});
+    useEffect(() => {
+        if (!sp || sp.status !== "open") return;
+
+        if (calledRef.current[sp.id]) return; // ya se llamó antes
+
+        calledRef.current[sp.id] = true;
+
+        GET_SessionId(sp.id);
+    }, [sp]);
+
+    console.log("Punto de venta:", sp);
+    console.log("Sesión activa:", sessionId);
 
     /*=======================================================================
       ESTRUCURA DE DATOS PARA LA GENERACION DE FACTURA 
@@ -257,7 +270,7 @@ export default function CashSale() {
             return toast.error("El ingreso de tranferencia no es exacto")
         }
 
-        if (!sessionActive) {
+        if (!sessionId) {
             return toast.error("La caja no esta habierta")
         }
         
@@ -299,7 +312,7 @@ export default function CashSale() {
             receipt_transfer,
             repay,
             total_payment,
-            cash_session: sessionActive
+            cash_session: sessionId
         }
 
         const invoice = await POST_InvoiceSiigo(invoiceData)

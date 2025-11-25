@@ -17,7 +17,6 @@ export default function Profile() {
   const {admin, GET_Admin} = useAdmin();
   const {company, GET_Company} = useCompany()
   const {plan, GET_Plan} = usePlan()
-  console.log(company)
 
   useEffect(() => {
     GET_Admin();

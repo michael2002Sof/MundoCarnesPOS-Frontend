@@ -12,14 +12,14 @@ import ReportTemplate from "../../../components/shared/reportCashSession"
 
 export default function OpenCloseCash ({sp, user, GET_SalePoint}) {
     const {isLoading, session, POST_CashSession, GET_SessionById, POST_CreditNote, PUT_CashSession} = useCashSession()
-    const sessionActive = useSessionId(sp?.id)
+    const {sessionId, GET_SessionId} = useSessionId()
     const [printSession, setPrintSession] = useState(null);
 
 
 
 
     //console.log("Sesión del dia traida",session)
-    console.log("ID de la sesión:", sessionActive)
+    console.log("ID de la sesión:", sessionId)
     /*=======================================================================
         CONSTANTES PARA LA APERTURA DE CAJA y CREACION DE REGISTRO DIARIO
     =========================================================================*/
@@ -66,25 +66,26 @@ export default function OpenCloseCash ({sp, user, GET_SalePoint}) {
             setCreditNotesSuccess(false)
             return
         }
+        GET_SessionId(sp?.id)
         setCreditNotesSuccess(true)
     }
     useEffect(() => {
-        if(creditNotesSuccess  && sessionActive !== null) {
+        if(creditNotesSuccess  && sessionId !== null) {
             setShowCloseModal(true)
-            if (sessionActive) {
-                GET_SessionById(sessionActive)  // ← usa el ID correcto
+            if (sessionId) {
+                GET_SessionById(sessionId)  // ← usa el ID correcto
             }
             setCreditNotesSuccess(false)
         }
-    }, [creditNotesSuccess, sessionActive])
+    }, [creditNotesSuccess])
 // 
     /* -- Función: Cerrar caja del día -- */
     const handleCloseRegister = async () => {
-        if (!sessionActive) {
+        if (!sessionId) {
             return toast.error("No hay sesión activa para cerrar");
         }
         await PUT_CashSession({
-            cash_session: sessionActive,
+            cash_session: sessionId,
             sales_point: sp?.id,
             closed_by: user,
         })
@@ -92,7 +93,7 @@ export default function OpenCloseCash ({sp, user, GET_SalePoint}) {
         GET_SalePoint()
         setShowCloseModal(false);
         // Ahora imprime
-        setTimeout(() => setPrintSession(true), 300);
+        setTimeout(() => setPrintSession(true), 1000);
     };
 
     

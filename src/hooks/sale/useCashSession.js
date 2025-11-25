@@ -79,28 +79,24 @@ export function useCashSession () {
 
 
 
-export function useSessionId(point) {
+export function useSessionId() {
     const [sessionId, setSessionId] = useState(null);
 
-    useEffect(() => {
-        const fetchId = async () => {
-            if (!point) return;
+    const GET_SessionId = async (point) => {
+        if (!point) return;
 
-            try {
-                const token = DecodeToken();
-                if (!token) return;
+        try {
+            const token = DecodeToken();
+            if (!token) return;
 
-                const { company } = token;
-                const res = await axiosInstance.get(`/posinnovate/siigo/sale/cash/${company}/${point}`);
+            const { company } = token;
+            const res = await axiosInstance.get(`/posinnovate/siigo/sale/cash/${company}/${point}`);
 
-                setSessionId(res.data);
-            } catch (err) {
-                toast.error("No se pudo obtener la sesión de caja");
-            }
-        };
+            setSessionId(res.data);
+        } catch (err) {
+            toast.error("No se pudo obtener la sesión de caja");
+        }
+    };
 
-        fetchId();
-    }, [point]);
-
-    return sessionId;
+    return {sessionId, GET_SessionId};
 }
