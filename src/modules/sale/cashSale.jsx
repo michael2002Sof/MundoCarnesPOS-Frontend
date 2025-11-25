@@ -95,9 +95,32 @@ export default function CashSale() {
       PROCESOS PARA EL REGISTRO DE VENTA DE PRODUCTOS 
     =========================================================================*/
     // Estado inicial
-    const [tabs, setTabs] = useState([{ id: Date.now(), name: "Venta 1", cart: [], client: null }])
+    const initialTabs = () => {
+        const savedTabs = localStorage.getItem("cashSaleTabs");
+        if (savedTabs) {
+            try {
+                const parsedTabs = JSON.parse(savedTabs);
+                // Opcional: Si el backup está vacío, retornar el estado inicial
+                if (parsedTabs && parsedTabs.length > 0) {
+                    return parsedTabs;
+                }
+            } catch (error) {
+                console.error("Error al parsear tabs de localStorage", error);
+                // Si hay un error, se ignora el backup y se usa el estado inicial
+            }
+        }
+        // Estado inicial de fallback
+        return [{ id: Date.now(), name: "Venta 1", cart: [], client: null }];
+    };
+
+    const [tabs, setTabs] = useState(initialTabs)
+    useEffect(() => {
+        localStorage.setItem("cashSaleTabs", JSON.stringify(tabs));
+    }, [tabs]);
     const [activeTabId, setActiveTabId] = useState(tabs[0].id) //Pestaña activa
     const [barcode, setBarcode] = useState("") // Codigo escaneado
+
+
 
     // Añadir / Eliminar pestañas
     const addTab = () => {
@@ -123,6 +146,8 @@ export default function CashSale() {
     const removeItem = (index) => {
         updateActiveTab((tab) => ({ ...tab, cart: tab.cart.filter((_, i) => i !== index) }));
     };
+
+
 
     // Manejar escaneo
     const handleScan = async (e) => {
@@ -329,10 +354,16 @@ export default function CashSale() {
                 t.id === activeTabId ? { ...t, cart: [], client: null } : t
                 )
             );
+            // Actualizar localStorage también
+            const updatedTabs = tabs.map((t) =>
+                t.id === activeTabId ? { ...t, cart: [], client: null } : t
+            );
+            localStorage.setItem("cashSaleTabs", JSON.stringify(updatedTabs));
+
+            setPaymentValues({}); // limpiar pagos
+            setSelectedCustomer(null); // limpiar cliente
         }
 
-        setPaymentValues({}); // limpiar pagos
-        setSelectedCustomer(null); // limpiar cliente
     };
 
     // Detectar los IVAs activos antes del render
