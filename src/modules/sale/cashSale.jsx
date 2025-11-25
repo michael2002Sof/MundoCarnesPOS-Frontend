@@ -18,6 +18,7 @@ import toast from "react-hot-toast"
 
 
 
+
 export default function CashSale() {
     /*================================================================
       LLAMADA DE DATOS DEL SISTEMA
@@ -45,8 +46,12 @@ export default function CashSale() {
         GET_SessionId(sp.id);
     }, [sp]);
 
-    console.log("Punto de venta:", sp);
-    console.log("Sesión activa:", sessionId);
+    //console.log("Punto de venta:", sp);
+    //console.log("Sesión activa:", sessionId);
+
+    async function retrySession() {
+        await GET_SessionId(sp?.id)
+    }
 
     /*=======================================================================
       ESTRUCURA DE DATOS PARA LA GENERACION DE FACTURA 
@@ -144,7 +149,7 @@ export default function CashSale() {
             return
         }
 
-        console.log("Producto codificado de siigo", product)
+        //console.log("Producto codificado de siigo", product)
 
    
 
@@ -179,12 +184,10 @@ export default function CashSale() {
     =========================================================================*/
     // Totales del tab activo
     const activeTab = tabs.find((t) => t.id === activeTabId) || tabs[0]
-    console.log("Cariito activo", activeTab)
+    //console.log("Cariito activo", activeTab)
     const subtotal = (activeTab?.cart || []).reduce((s, it) => s + (Number(it.subtotal || 0)), 0);
     const tax5Total = (activeTab?.cart || []).reduce((s, it) => s + Number(it.tax5 || 0), 0);
     const tax19Total = (activeTab?.cart || []).reduce((s, it) => s + Number(it.tax19 || 0), 0);
-    const paymenTotalSiigo =  (activeTab?.cart || []).reduce((s, it) => s + Number(it.price || 0), 0);
-    console.log(paymenTotalSiigo)
     const total = subtotal + tax5Total + tax19Total;
 
     /* -- CONTROL DE PAGOS -- */
@@ -217,14 +220,13 @@ export default function CashSale() {
     const [paymentValues, setPaymentValues] = useState({}); //Valores ingresados en los metodos de pago
     const handlePaymentChange = (id, value) => {
         const clean = cleanNumber(value); // número sin formato
-        console.log(clean)
 
         setPaymentValues(prev => ({
             ...prev,
             [id]: clean
         }));
     };
-    console.log("Valores del metodo de pago", paymentValues)
+    //console.log("Valores del metodo de pago", paymentValues)
 
     const cash = paymentValues[cashMethodId] || 0;
     const transfer = paymentValues[transferMethodId] || 0;
@@ -242,8 +244,6 @@ export default function CashSale() {
 
         return { id: m.id, value, due_date: today };
     }).filter(p => p.value > 0);
-
-    console.log(isBuildInvoice.payments)
 
 
     /*=======================================================================
@@ -271,7 +271,10 @@ export default function CashSale() {
         }
 
         if (!sessionId) {
-            return toast.error("La caja no esta habierta")
+            await retrySession()
+            if (!sessionId) {
+                return toast.error("No hay sesión de caja activa");
+            }
         }
         
 

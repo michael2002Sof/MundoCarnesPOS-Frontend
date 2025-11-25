@@ -19,7 +19,7 @@ export default function OpenCloseCash ({sp, user, GET_SalePoint}) {
 
 
     //console.log("Sesión del dia traida",session)
-    console.log("ID de la sesión:", sessionId)
+    //console.log("ID de la sesión:", sessionId)
     /*=======================================================================
         CONSTANTES PARA LA APERTURA DE CAJA y CREACION DE REGISTRO DIARIO
     =========================================================================*/
@@ -49,14 +49,13 @@ export default function OpenCloseCash ({sp, user, GET_SalePoint}) {
         await GET_SalePoint()
         setShowOpenModal(false)
     };
-    console.log(showOpenModal)
 
     /*=======================================================================
         CONSTANTES PARA EL CIERRE DE CAJA y FINALIZACION DEL REGISTRO DIARIO
     =========================================================================*/
     const [ showCloseModal, setShowCloseModal ] = useState(false)
     const [creditNotesSuccess, setCreditNotesSuccess] = useState(false)
-    console.log("creditNotesSuccess", creditNotesSuccess)
+    //console.log("creditNotesSuccess", creditNotesSuccess)
 
     /* -- Función: Registrar Notas de Crédito antes de cerrar caja -- */
     const RegisterCreditNotes = async () => {
