@@ -13,6 +13,7 @@ import {useDecodeScale, useDecodeNormal} from "./cash sale/useDecodeBarcode"
 import useSalePoint from "../../hooks/sale/useSalePoint"
 import useProductSiigo from "../../hooks/siigo/useProduct"
 import useInvoiceSiigo from "../../hooks/siigo/useInvoice"
+import useInvoiceResolution from "../../hooks/sale/useInvoiceResolution"
 import { useSessionId } from "../../hooks/sale/useCashSession"
 import toast from "react-hot-toast"
 
@@ -27,11 +28,15 @@ export default function CashSale() {
     const {GET_ProductSiigoByCode} = useProductSiigo()
     const {salePoints, GET_SalePoint} = useSalePoint()      
     const {sessionId, GET_SessionId} = useSessionId() 
+    const {invoicesResolution} = useInvoiceResolution()
+    console.log(invoicesResolution)
 
     const [selectedCustomer, setSelectedCustomer] = useState(null); // cliente elegido
     const today = new Date().toISOString().slice(0, 10);
     const token = DecodeToken()     
     const sp = useMemo(() => { return salePoints?.find(sp => sp.user === token.id)}, [salePoints, token.id])  //Punto de venta del usuario]
+    const resolution = useMemo(() => { return invoicesResolution?.find( ir => ir.sale_point === 2)}, [2])
+    console.log("Resolucion de fatura: ", resolution)
     const wh = sp?.warehouse
     const user = token?.id
 

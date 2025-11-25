@@ -66,11 +66,11 @@ export default function OpenCloseCash ({sp, user, GET_SalePoint}) {
             return
         }
         GET_SessionId(sp?.id)
+        setShowCloseModal(true)
         setCreditNotesSuccess(true)
     }
     useEffect(() => {
         if(creditNotesSuccess  && sessionId !== null) {
-            setShowCloseModal(true)
             if (sessionId) {
                 GET_SessionById(sessionId)  // ← usa el ID correcto
             }
