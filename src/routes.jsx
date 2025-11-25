@@ -6,7 +6,6 @@ import AppLayout from "./layout"
 
 import Home from "./pages/home"
 import Profile from "./pages/profile"
-import CompanyProfile from "./pages/companyProfile"
 import Account from "./pages/account"
 
 import ModuleIndex from "./components/shared/moduleIndex"
@@ -34,7 +33,6 @@ const MundoCarnesPosRoutes = [
         children: [
             { path: "/home", element:<Home/> },
             { path: "/profile", element:<Profile/> },
-            { path: "/company", element:<CompanyProfile/> },
             { path: "/account-sync", element:<Account/> },
 
 
