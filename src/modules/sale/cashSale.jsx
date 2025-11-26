@@ -28,7 +28,7 @@ export default function CashSale() {
     const {GET_ProductSiigoByCode} = useProductSiigo()
     const {salePoints, GET_SalePoint} = useSalePoint()      
     const {sessionId, GET_SessionId} = useSessionId() 
-    const {invoicesResolution} = useInvoiceResolution()
+    const {invoicesResolution, GET_InvoiceResolution} = useInvoiceResolution()
 
     const [selectedCustomer, setSelectedCustomer] = useState(null); // cliente elegido
     const today = new Date().toISOString().slice(0, 10);
@@ -38,6 +38,12 @@ export default function CashSale() {
     //console.log("Resolucion de fatura: ", resolution)
     const wh = sp?.warehouse
     const user = token?.id
+
+    useEffect (() => {
+        if(!resolution) {
+            GET_InvoiceResolution()
+        }
+    }, [resolution, invoicesResolution])
 
     const calledRef = useRef({});
     useEffect(() => {
@@ -55,6 +61,9 @@ export default function CashSale() {
 
     async function retrySession() {
         await GET_SessionId(sp?.id)
+    }
+    async function retryResolution() {
+        await GET_InvoiceResolution()
     }
 
     /*=======================================================================
@@ -303,6 +312,9 @@ export default function CashSale() {
             if (!sessionId) {
                 return toast.error("No hay sesión de caja activa");
             }
+        }
+        if (!isBuildInvoice.document.id) {
+            await retryResolution()
         }
         
 

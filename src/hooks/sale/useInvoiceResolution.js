@@ -65,5 +65,5 @@ export default function useInvoiceResolution () {
         GET_InvoiceResolution()
     }, [])
 
-    return {isLoading, invoicesResolution, invoicesResolutionSiigo, GET_InvoiceResolutionSiigo, POST_InvoiceResolution}
+    return {isLoading, invoicesResolution, invoicesResolutionSiigo, GET_InvoiceResolutionSiigo, GET_InvoiceResolution, POST_InvoiceResolution}
 }
