@@ -69,7 +69,6 @@ export default function OpenCloseCash ({sp, user, GET_SalePoint}) {
         setShowCloseModal(true)
         setCreditNotesSuccess(true)
     }
-    console.log(session)
     useEffect(() => {
         if(creditNotesSuccess  && sessionId !== null) {
             if (sessionId) {
@@ -194,7 +193,7 @@ export default function OpenCloseCash ({sp, user, GET_SalePoint}) {
                                         </span>
                                     </div>
 
-                                    {session.tax0 === 0 && (
+                                    {Number(session.tax0) === 0 && (
                                         <div className="flex justify-between text-sm">
                                             <span>IVA 0%:</span>
                                             <span className="font-mono">
@@ -203,7 +202,7 @@ export default function OpenCloseCash ({sp, user, GET_SalePoint}) {
                                         </div>
                                     )}
 
-                                    {session.tax5 > 0 && (
+                                    {Number(session.tax5) > 0 && (
                                         <div className="flex justify-between text-sm">
                                             <span>IVA 5%:</span>
                                             <span className="font-mono">
@@ -212,7 +211,7 @@ export default function OpenCloseCash ({sp, user, GET_SalePoint}) {
                                         </div>
                                     )}
 
-                                    {session.tax19 > 0 && (
+                                    {Number(session.tax19) > 0 && (
                                         <div className="flex justify-between text-sm">
                                             <span>IVA 19%:</span>
                                             <span className="font-mono">

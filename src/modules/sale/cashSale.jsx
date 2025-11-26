@@ -174,11 +174,16 @@ export default function CashSale() {
             product = useDecodeNormal(productSiigo, wh)
         } else {
             const productCode = barcode.slice(2, 7);
-            const weightDigits = barcode.slice(7, 12); // ejemplo: 00655 -> 0.655 kg
-            const weight = parseInt(weightDigits, 10) / 1000;
             const adjust_code = productCode.padStart(6, "0")
             setBarcode(adjust_code)
             const productSiigo = await GET_ProductSiigoByCode(adjust_code)
+            const weightDigits = barcode.slice(7, 12); // ejemplo: 00655 -> 0.655 kg
+            let weight
+            if (productSiigo.unit.code === "94") {
+                weight = parseInt(weightDigits, 10) 
+            } else {
+                weight = parseInt(weightDigits, 10) / 1000;
+            }
             product = useDecodeScale(productSiigo, weight, wh) 
         }
 
