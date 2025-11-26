@@ -85,29 +85,38 @@
             className=" text-[11px] font-sans mx-auto"
             style={{ fontFamily: "Arial, sans-serif", lineHeight: "1.4" }}
           >
-            <section className="w-full flex justify-center">
-            {/* Logo */}
-            <img
-              src={"/logo_mundocarnes.svg"}
-              alt="Logo empresa"
-              className="w-16 h-auto mb-2 mt-1 object-contain"
-            />
-            </section>
+            <header className="flex items-center mx-auto justify-center relative">
+              <QRCode
+                className="absolute left-0 top-0"
+                value={cufe || "000"}
+                size={70}
+                style={{ width: "40px", height: "40px" }}
+              />
+              <div>
+                <section className="w-full flex justify-center">
+                {/* Logo */}
+                <img
+                  src={"/logo_mundocarnes.svg"}
+                  alt="Logo empresa"
+                  className="w-16 h-auto mb-2 mt-1 object-contain"
+                />
+                </section>
+                {/* Encabezado */}
+                <h2 className="text-[13px] font-bold mb-1 text-center uppercase border-b border-gray-400 pb-1">
+                  FACTURA DE VENTA
+                </h2>
+                {/* Datos de empresa */}
+                <div className="text-center mb-2">
+                  <p className="font-semibold text-[12px]">{company}</p>
+                  <p>NIT: {nit}</p>
+                  <p>{address}</p>
+                  <p>{city}</p>
+                  <p>Tel: {cell}</p>
+                  <p><strong>Caja:</strong> {caja}</p>
+                </div>  
+              </div>
+            </header>
 
-            {/* Encabezado */}
-            <h2 className="text-[13px] font-bold mb-1 text-center uppercase border-b border-gray-400 pb-1">
-              FACTURA DE VENTA
-            </h2>
-
-            {/* Datos de empresa */}
-            <div className="text-center mb-2">
-              <p className="font-semibold text-[12px]">{company}</p>
-              <p>NIT: {nit}</p>
-              <p>{address}</p>
-              <p>{city}</p>
-              <p>Tel: {cell}</p>
-              <p><strong>Caja:</strong> {caja}</p>
-            </div>
 
             {/* Datos cliente */}
             <div className="w-full border-t border-b border-gray-300 py-1 my-2 text-left">
@@ -207,16 +216,10 @@
             </p>
 
             {/* QR PEQUEÑO PARA EL CUFE */}
-            <div className="flex flex-col items-center mt-6">
-              <QRCode
-                value={cufe || "000"}
-                size={70}
-                style={{ width: "80px", height: "80px" }}
-              />
-              <p className="text-[10px] mt-1 w-[90%] font-semibold break-all text-center">
-                CUFE: {cufe}
-              </p>
-            </div>
+            <p className="text-[10px] mt-1 w-[90%] font-semibold break-all text-center">
+              CUFE: {cufe}
+            </p>
+
 
             {/* Nota legal */}
             <p className="text-[12px] mt-2 font-semibold leading-tight text-center">
@@ -227,8 +230,12 @@
               servicios descritos en este título - Valor.
             </p>
             <p className="text-[12px] mt-2 font-semibold mb-8 leading-tight text-center">
-              Número Autorización Electrónica 18764091224670 aprobado en 20250329 prefijo 
-              CMC desde el número 10001 al 20000 Vigencia: 24 Meses.
+              {code.startsWith("FV-9") ? 
+              `Número Autorización Electrónica 18764102008388 aprobado en 20251125 prefijo 
+              LCP desde el número 1 al 20000 Vigencia: 24 Meses.`
+              : `Número Autorización Electrónica 18764102008428 aprobado en 20251125 prefijo 
+              LCO desde el número 1 al 20000 Vigencia: 24 Meses.`
+            }
             </p>
           </div>
         </div>
