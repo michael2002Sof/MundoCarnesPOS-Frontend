@@ -90,8 +90,10 @@ export default function OpenCloseCash ({sp, user, GET_SalePoint}) {
         })
         await GET_SessionById(sessionId)
         await GET_SalePoint()
-        setShowCloseModal(false);
-        setTimeout(() => setPrintSession(true), 2000);
+        if (!isLoading) {
+            setShowCloseModal(false);
+            setTimeout(() => setPrintSession(true), 1000);
+        }
     };
     
     return (

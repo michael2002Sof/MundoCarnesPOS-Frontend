@@ -10,10 +10,14 @@ export function useCashSession () {
 
     const GET_SessionById = async (id) => {
         try {
+            setLoading(true)
+
             const res = await axiosInstance.get(`/posinnovate/siigo/sale/report/by/${id}`)
             setSession(res.data)
         } catch (error) {
             toast.error(error.message)
+        } finally {
+            setLoading(false)
         }
     }
 
