@@ -94,7 +94,7 @@ export default function OpenCloseCash ({sp, user, GET_SalePoint}) {
     };
 
     useEffect (() => {
-        if (sp.status === "close" && showCloseModal === true) {
+        if (sp?.status === "close" && showCloseModal === true) {
             setShowCloseModal(false);
             // Ahora imprime
             setTimeout(() => setPrintSession(true), 1000);
