@@ -34,7 +34,7 @@ export default function CashSale() {
     const today = new Date().toISOString().slice(0, 10);
     const token = DecodeToken()     
     const sp = useMemo(() => { return salePoints?.find(sp => sp.user === token.id)}, [salePoints, token.id])  //Punto de venta del usuario]
-    const resolution = useMemo(() => { return invoicesResolution?.find( ir => ir.sale_point === sp?.id)}, [sp?.id])
+    const resolution = invoicesResolution?.find( ir => ir.sale_point === sp?.id)
     //console.log("Resolucion de fatura: ", resolution)
     const wh = sp?.warehouse
     const user = token?.id
