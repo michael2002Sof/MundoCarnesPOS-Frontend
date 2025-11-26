@@ -88,18 +88,11 @@ export default function OpenCloseCash ({sp, user, GET_SalePoint}) {
             sales_point: sp?.id,
             closed_by: user,
         })
-        GET_SessionById(sessionId)
-        GET_SalePoint()
+        await GET_SessionById(sessionId)
+        await GET_SalePoint()
+        setShowCloseModal(false);
+        setTimeout(() => setPrintSession(true), 2000);
     };
-
-    useEffect (() => {
-        if (sp?.status === "close" && showCloseModal === true) {
-            setShowCloseModal(false);
-            // Ahora imprime
-            setTimeout(() => setPrintSession(true), 1000);
-        }
-    }, [sp, showCloseModal])
-
     
     return (
         <>
