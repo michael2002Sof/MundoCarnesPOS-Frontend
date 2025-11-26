@@ -1,4 +1,4 @@
-import { ShieldUser, ShoppingCart, Receipt, ScrollText, BarChart3, Settings, Store, User, Undo2, Warehouse, CreditCard } from "lucide-react"
+import { ShieldUser, ShoppingCart, Receipt, ScrollText, BarChart3, Settings, Store, FileCog, User, Undo2, Warehouse, CreditCard } from "lucide-react"
 
 const ModuleItems = {
     "Usuarios" : [
@@ -72,8 +72,13 @@ const ModuleItems = {
             name: "Métodos de Pago",
             to: "/sale/payment-method",
             description: "Crea los métodos de pago disponibles para cada punto de venta. Activa o desactiva opciones como efectivo por caja, transferencias, tarjetas y billeteras digitales según la operación de tu empresa.",
+        },
+        {
+            icon: <FileCog />,
+            name: "Resoluciones de Facturación",
+            to: "/sale/invoice-resolution",
+            description: "Registra, gestiona y controla las resoluciones de facturación autorizadas por la DIAN. Configura rangos, fechas de vigencia, numeración y valida automáticamente su uso en el punto de venta.",
         }
-
     ]
 }
 

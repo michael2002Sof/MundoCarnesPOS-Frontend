@@ -46,18 +46,11 @@ export default function useInvoiceSiigo() {
 
           const company = token.company;
           const res = await axiosInstance.get(`/posinnovate/siigo/sale/invoice/type/${company}`)
-          const types = res.data
-          console.log("Tipos de factura siigo", types)
-          const filteredTypes = types.filter((t) => t.code === "2")
-          setTypeInvoice(filteredTypes[0])
+          setTypeInvoice(res.data)
       } catch (error) {
           toast.error(error.message)
       }
   }
-
-  useEffect(() => {
-    GET_TypeInvoices()
-  }, [])
 
   return { isLoading, typeInvoiceSiigo, POST_InvoiceSiigo };
 }

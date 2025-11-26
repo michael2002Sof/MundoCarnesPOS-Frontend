@@ -24,19 +24,18 @@ export default function CashSale() {
     /*================================================================
       LLAMADA DE DATOS DEL SISTEMA
     ===================================================================*/
-    const {isLoading, POST_InvoiceSiigo, typeInvoiceSiigo} = useInvoiceSiigo()
+    const {isLoading, POST_InvoiceSiigo} = useInvoiceSiigo()
     const {GET_ProductSiigoByCode} = useProductSiigo()
     const {salePoints, GET_SalePoint} = useSalePoint()      
     const {sessionId, GET_SessionId} = useSessionId() 
     const {invoicesResolution} = useInvoiceResolution()
-    console.log(invoicesResolution)
 
     const [selectedCustomer, setSelectedCustomer] = useState(null); // cliente elegido
     const today = new Date().toISOString().slice(0, 10);
     const token = DecodeToken()     
     const sp = useMemo(() => { return salePoints?.find(sp => sp.user === token.id)}, [salePoints, token.id])  //Punto de venta del usuario]
-    const resolution = useMemo(() => { return invoicesResolution?.find( ir => ir.sale_point === 2)}, [2])
-    console.log("Resolucion de fatura: ", resolution)
+    const resolution = useMemo(() => { return invoicesResolution?.find( ir => ir.sale_point === sp?.id)}, [sp?.id])
+    //console.log("Resolucion de fatura: ", resolution)
     const wh = sp?.warehouse
     const user = token?.id
 
@@ -282,16 +281,15 @@ export default function CashSale() {
     const [isInvoicePrinting, setIsInvoicePrinting] = useState(false);
 
     useEffect(() => {
-        useHandleInputChange(setBuildInvoice, "document.id", typeInvoiceSiigo?.id)
+        useHandleInputChange(setBuildInvoice, "document.id", resolution?.id)
         useHandleInputChange(setBuildInvoice, "customer", selectedCustomer)
         useHandleInputChange(setBuildInvoice, "cost_center", sp?.cost_center)
         useHandleInputChange(setBuildInvoice, "sale_point", sp?.id)
-    }, [selectedCustomer, typeInvoiceSiigo, sp])
+    }, [selectedCustomer, resolution, sp])
 
     // Confirmar pago: registrar venta + descontar stock + imprimir factura + limpiar carrito
     const handleConfirmPayment = async () => {
 
-        console.log(isBuildInvoice)
         if (total_payment < total) {
             toast.error("El monto recibido es menor al total");
             return;
@@ -483,7 +481,7 @@ export default function CashSale() {
                     <div className="p-4 bg-[#841A1A] text-amber-100 space-y-4 flex flex-col items-center justify-center rounded-xl w-1/3">
                     <div className="text-center">
                         {/*Tipo de Facuración */}
-                        <p className="font-bold text-lg">{typeInvoiceSiigo?.type} - {typeInvoiceSiigo?.code} - {typeInvoiceSiigo?.name}</p>
+                        <p className="font-bold text-lg">{resolution?.type} - {resolution?.code} - {resolution?.name}</p>
                         {/*Centro de Costos */}
                         <p className="font-semibold">{sp?.cost_center_name}</p>
                     </div>
