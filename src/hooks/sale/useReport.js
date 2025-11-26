@@ -14,7 +14,8 @@ export default function useReport() {
       if (!token) return
 
       const company = token.company;
-      const response = await axiosInstance.get(`/posinnovate/siigo/sale/report/invoice/pos/by/${date}/${company}`);
+      const user = token.id
+      const response = await axiosInstance.get(`/posinnovate/siigo/sale/report/invoice/pos/by/${date}/${company}/${user}`);
       setIncoices(response.data);
     } catch (error) {
       console.error("Error fetching invoices:", error);
