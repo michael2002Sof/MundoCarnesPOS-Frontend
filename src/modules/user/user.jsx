@@ -5,12 +5,12 @@ import { ModulesHeader } from "../../components/shared/headers"
 import useHandleInputChange from "../../utils/useHandleInputChange"
 
 import useRole from "../../hooks/user/useRole"
-import useUserSiigo from "../../hooks/siigo/useUser"
+import useUser from "../../hooks/user/useUser"
 
 export default function User() {
     const {allRoles} = useRole()
     const [editUser, setEditUser] = useState(false)
-    const {isLoading, UsersSiigo, usersPOS, POST_User, PUT_User} = useUserSiigo()
+    const {isLoading, UsersSiigo, usersPOS, POST_User, PUT_User} = useUser()
     const [isAction, setAction] = useState("Manage User")
 
     /* ===============================================================

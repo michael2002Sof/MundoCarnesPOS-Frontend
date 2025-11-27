@@ -16,7 +16,7 @@ export default function useRole () {
             if (!token) return
 
             const company = token.company
-            const res = await axiosInstance.get(`/posinnovate/siigo/rol/${company}`)
+            const res = await axiosInstance.get(`/posinnovate/siigo/user/rol/${company}`)
 
             setAllRoles(res.data)
         } catch (error) {
@@ -35,7 +35,7 @@ export default function useRole () {
 
             const company = token.company
             const data = {...role, company: company}
-            const res = await axiosInstance.post('/posinnovate/siigo/rol', data)
+            const res = await axiosInstance.post('/posinnovate/siigo/user/rol', data)
 
             GET_AllRoles()
             toast.success(res.message)
@@ -50,7 +50,7 @@ export default function useRole () {
         try {
             setLoading(true)
 
-            const res = await axiosInstance.put('/posinnovate/siigo/rol', data)
+            const res = await axiosInstance.put('/posinnovate/siigo/user/rol', data)
             GET_AllRoles()
             toast.success(res.message)
         } catch (error) {

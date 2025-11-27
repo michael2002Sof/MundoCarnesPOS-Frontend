@@ -6,7 +6,7 @@ import handleInputChange from "../../utils/useHandleInputChange"
 import {formatDateTime} from "../../utils/formatData"
 
 import useWarehouse from "../../hooks/inventory/useWarehouse"
-import useUserSiigo from "../../hooks/siigo/useUser"
+import useUser from "../../hooks/user/useUser"
 import useBranch from "../../hooks/sale/useBranch"
 import useSalePoint from "../../hooks/sale/useSalePoint"
 import useCostCenter from "../../hooks/sale/useCostCenter"
@@ -20,7 +20,7 @@ export default function SalePoint () {
     const {branchs} = useBranch()
     const {isLoading, salePoints, POST_SalePoint, PUT_SalePoint} = useSalePoint()
     console.log("Punto de venta POS", salePoints)
-    const {usersPOS} = useUserSiigo()
+    const {usersPOS} = useUser()
     const {paymentMethods} = usePaymentMethod()
     //console.log(paymentMethods)
     const [ isAction, setAction ] = useState("Sales Point")

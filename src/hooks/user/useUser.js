@@ -4,11 +4,33 @@ import toast from "react-hot-toast";
 import axiosInstance from "../../api/axiosintance";
 import DecodeToken from "../../api/decode";
 
-export default function useUser () {
-    const [isLoading, setLoading] = useState(false)
-    const [ allUsers, setAllUsers ] = useState([])
+export default function useUser() {
+    const [UsersSiigo, setAllUsers] = useState([]);
+    const [usersPOS, setUsersPOS] = useState([])
+    const [isLoading, setLoading] = useState(false);
 
-    const GET_Users = async () => {
+    const GET_UsersSiigo = async () => {
+        try {
+            setLoading(true);
+
+            const token = DecodeToken();
+            if (!token) return;
+
+            const company = token.company;
+
+            const res = await axiosInstance.get(
+                `/posinnovate/siigo/user/${company}`
+            );
+
+            setAllUsers(res.data);
+        } catch (error) {
+            toast.error(error.message);
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    const GET_UsersPOS = async () => {
         try {
             setLoading(true)
 
@@ -16,9 +38,9 @@ export default function useUser () {
             if (!token) return
 
             const company = token.company
-            const res = await axiosInstance.get(`/posinnovate/api/user/all/${company}`)
+            const res = await axiosInstance.get(`/posinnovate/siigo/user/pos/${company}`)
 
-            setAllUsers(res.data)
+            setUsersPOS(res.data)
         } catch (error) {
             toast.error(error.message)
         } finally {
@@ -35,9 +57,9 @@ export default function useUser () {
 
             const company = token.company
             const data = {...user, company}
-            const res = await axiosInstance.post('/posinnovate/api/siigo/user/register', data)
+            const res = await axiosInstance.post('/posinnovate/siigo/user/pos', data)
 
-            GET_Users()
+            GET_UsersPOS()
             toast.success(res.message)
         } catch (error) {
             toast.error(error.message)
@@ -50,9 +72,9 @@ export default function useUser () {
         try {
             setLoading(true)
 
-            const res = await axiosInstance.put('/posinnovate/api/user/update', data)
+            const res = await axiosInstance.put('/posinnovate/siigo/user', data)
         
-            GET_Users()
+            GET_UsersPOS()
             toast.success(res.message)
         } catch (error) {
             toast.error(error.message)
@@ -61,26 +83,10 @@ export default function useUser () {
         }
     }
 
-    const DELETE_User = async (id) => {
-        if (!confirm("¿Seguro que deseas eliminar este usuario?")) return
-        try {
-            setLoading(true)
+    useEffect(() => {
+        GET_UsersSiigo();
+        GET_UsersPOS()
+    }, []);
 
-            const res = await axiosInstance.delete(`/posinnovate/app/user/delete/${id}`)
-            toast.success(res.message)
-            GET_Users()
-        } catch (error) {
-            toast.error(error.message)
-        } finally {
-            setLoading(false)
-        }
-    }
-    
-    useEffect (() => {
-        GET_Users()
-    }, [])
-
-    return {
-        isLoading, allUsers, GET_Users, POST_User, PUT_User, DELETE_User
-    }
+    return { isLoading, UsersSiigo, usersPOS, POST_User, PUT_User };
 }
