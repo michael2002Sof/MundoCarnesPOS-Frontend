@@ -21,7 +21,7 @@ export default function AppLayout() {
         if (!token){
             navigate("/")
         }
-    }, [])
+    }, [token])
 
     useEffect(() => {
         const updateHeight = () => {
