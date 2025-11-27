@@ -6,10 +6,12 @@ import {AppHeader} from "./components/shared/headers"
 import Sidebar from "./components/shared/sidebar";
 import Modules from "./config/modules"
 import useFilteredAuthorization from "./utils/useFilteredAuthorization";
+import DecodeToken from "./api/decode";
 
 export default function AppLayout() {
     
     const filteredModules = useFilteredAuthorization(Modules, "modules") // Obtener modulos del usuario
+    const token = DecodeToken()
     const headerRef = useRef()
     const navigate = useNavigate()
     const [response, setResponse] = useState(null);
