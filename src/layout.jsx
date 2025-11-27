@@ -1,5 +1,6 @@
 import { Outlet } from "react-router-dom";
 import { useState, useEffect, useRef } from "react";
+import { useNavigate } from "react-router-dom";
 
 import {AppHeader} from "./components/shared/headers"
 import Sidebar from "./components/shared/sidebar";
@@ -10,11 +11,17 @@ export default function AppLayout() {
     
     const filteredModules = useFilteredAuthorization(Modules, "modules") // Obtener modulos del usuario
     const headerRef = useRef()
+    const navigate = useNavigate()
     const [response, setResponse] = useState(null);
     const [contentHeight, setContentHeight] = useState("100vh");
     const [expanded, setExpanded] = useState(false);
 
     const onToggleSidebar = () => setExpanded(prev => !prev);
+    useEffect(() => {
+        if (!token){
+            navigate("/")
+        }
+    }, [])
 
     useEffect(() => {
         const updateHeight = () => {
