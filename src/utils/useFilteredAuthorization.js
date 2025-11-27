@@ -5,7 +5,7 @@ import useRole from "../hooks/user/useRole";
 export default function useFilteredAuthorization(items, type = "modules") {
   const token = DecodeToken();
   const { allRoles } = useRole();
-  const userRol = token.rol;
+  const userRol = token?.rol;
 
   const filtered = useMemo(() => {
 

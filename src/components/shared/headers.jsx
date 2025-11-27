@@ -52,7 +52,7 @@ export function AppHeader({ onToggleSidebar, modules = [] }) {
 
         {/* Acciones en desktop */}
         <section className="hidden lg:flex items-center gap-3">
-          {token.rol === 'admin' && 
+          {token?.rol === 'admin' && 
             <>
               {/* Notificaciones */}
               <button className="relative p-2 cursor-pointer rounded-lg bg-white/10 hover:bg-white/20 transition-all">
