@@ -90,7 +90,7 @@
                 className="absolute left-0 top-0"
                 value={cufe || "000"}
                 size={70}
-                style={{ width: "60px", height: "60px" }}
+                style={{ width: "55px", height: "55px" }}
               />
               <div>
                 <section className="w-full flex justify-center">
