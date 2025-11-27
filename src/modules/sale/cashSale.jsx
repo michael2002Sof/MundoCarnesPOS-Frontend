@@ -396,28 +396,29 @@ export default function CashSale() {
 
     return (
         <>
-            <OpenCloseCash sp={sp} user={user} GET_SalePoint={GET_SalePoint}/>
             {/*================================================================
                 VISTA DE REGISTRO DE PRODUCTO A LA VENTA
             ===================================================================*/}
-                {/* Pestañas */}
-                <div className="flex gap-2">
-                    <div className={`px-3 py-2 rounded ${tabs[0].id === activeTabId ? "bg-[#841A1A] text-amber-100" : "bg-amber-200 text-[#841A1A]"}`}>
-                        <button onClick={() => setActiveTabId(tabs[0].id)}>{tabs[0].name}</button>
-                    </div>
-                    {tabs.slice(1).map((t) => (
-                    <div key={t.id} className={`px-3 py-2 rounded ${t.id === activeTabId ? "bg-[#841A1A] text-amber-100" : "bg-amber-200 text-[#841A1A]"}`}>
-                        <button onClick={() => setActiveTabId(t.id)}>{t.name}</button>
-                        <button onClick={() => closeTab(t.id)} className="ml-2 text-sm">x</button>
-                    </div>
-                    ))}
-                    <button onClick={addTab} className="px-3 py-2 bg-green-500 text-white rounded">+ Nueva</button>
-                </div>
-                <div className="flex gap-6  container mx-auto max-w-7xl 2xl:max-w-[90%]">
+            <div className="flex gap-6  container mx-auto max-w-7xl 2xl:max-w-[90%]">
+                <div className="w-2/3 space-y-4">
+                    <OpenCloseCash sp={sp} user={user} GET_SalePoint={GET_SalePoint}/>
+                    {/* Pestañas */}
+                    <section className="flex gap-2 w-full justify-center">
+                        <div className={`px-3 py-2 rounded ${tabs[0].id === activeTabId ? "bg-[#841A1A] text-amber-100" : "bg-amber-200 text-[#841A1A]"}`}>
+                            <button onClick={() => setActiveTabId(tabs[0].id)}>{tabs[0].name}</button>
+                        </div>
+                        {tabs.slice(1).map((t) => (
+                        <div key={t.id} className={`px-3 py-2 rounded ${t.id === activeTabId ? "bg-[#841A1A] text-amber-100" : "bg-amber-200 text-[#841A1A]"}`}>
+                            <button onClick={() => setActiveTabId(t.id)}>{t.name}</button>
+                            <button onClick={() => closeTab(t.id)} className="ml-2 text-sm">x</button>
+                        </div>
+                        ))}
+                        <button onClick={addTab} className="px-3 py-2 bg-green-500 text-white rounded">+ Nueva</button>
+                    </section>
                     {/*============================================================
-                     COLUMNA DE ESCANEO Y CARRITO
+                    COLUMNA DE ESCANEO Y CARRITO
                     ==============================================================*/}
-                    <div className="space-y-4 w-2/3">
+                    <div className="space-y-4">
                     <section className="p-4 bg-[#841A1A] text-amber-100 rounded-xl">
                         <div className="flex items-center gap-3 mb-3">
                         <Barcode /><h3 className="text-lg font-bold">Escáner</h3>
@@ -435,7 +436,7 @@ export default function CashSale() {
                                         Carrito de  {tabs.find((t) => t.id === activeTabId)?.name}
                                     </p>
                                     <p>
-                                       Total items: {tabs.find((t) => t.id === activeTabId)?.cart.length} 
+                                    Total items: {tabs.find((t) => t.id === activeTabId)?.cart.length} 
                                     </p>
                                 </div>
                             )}             
@@ -491,78 +492,79 @@ export default function CashSale() {
                         )}
                     </section>
                     </div>
-
-                    {/*============================================================
-                     RESUMEN DE VENTA Y FACUTRACION 
-                    ==============================================================*/}
-                    <div className="p-4 bg-[#841A1A] text-amber-100 space-y-4 flex flex-col items-center justify-center rounded-xl w-1/3">
-                    <div className="text-center">
-                        {/*Tipo de Facuración */}
-                        <p className="font-bold text-lg">{resolution?.type} - {resolution?.code} - {resolution?.name}</p>
-                        {/*Centro de Costos */}
-                        <p className="font-semibold">{sp?.cost_center_name}</p>
-                    </div>
-                    <hr className="border-amber-200/20 w-[90%] my-2" />
-                    <h4 className="font-semibold mt-2">Resumen</h4>
-                    {/*Valores de la venta*/}
-                    <div className="text-righ w-full">
-                        <div className="flex justify-between"><span>Subtotal:</span><span>{formatDecimal(subtotal, true)}</span></div>
-                        {showIVA0 && (
-                            <div className="flex justify-between">IVA 0%: <span>$0</span></div>
-                        )}
-                        {activeTab.cart.some(it => it.tax5 > 0) && (
-                            <div className="flex justify-between">IVA 5%: <span>{formatDecimal(tax5Total, true)}</span></div>
-                        )}
-                        {activeTab.cart.some(it => it.tax19 > 0) && (
-                            <div className="flex justify-between">IVA 19%: <span>{formatDecimal(tax19Total, true)}</span></div>
-                        )}
-                        <div className="flex justify-between font-bold mt-2"><span>Total:</span><span>{formatDecimal(total, true)}</span></div>
-                    </div>
-
-                    <hr className="border-amber-200/20 w-[90%] my-4" />
-
-                    {sp?.methods.map((m) => (
-                        <section key={m.id} className="flex flex-col w-full">
-                            <label className="font-semibold text-sm">{m.name}:</label>
-                            
-                            <input
-                                type="text"
-                                className="bg-[#6E1515] w-full px-4 py-1 rounded-lg outline-none text-white"
-                                 value={formatMoney(paymentValues[m.id] || "")}
-                                onChange={(e) => handlePaymentChange(m.id, e.target.value)}
-                            />
-                        </section>
-                    ))}
-
-                    <section className="flex flex-col w-full">
-                        <label className="font-semibold text-sm">Devuelta:</label>
-                        <input
-                            type="number"
-                            readOnly
-                            value={formatMoney(repay)}
-                            className="bg-[#6E1515] w-full px-4 py-1 rounded-lg outline-none text-white opacity-70"
-                        />
-                    </section>
-
-                    <hr className="border-amber-200/20 w-[90%] my-2" />
-
-                    <ClientSearch setCustomer={setSelectedCustomer}/>
-
-                    <button onClick={() => handleConfirmPayment()} disabled={activeTab.cart.length === 0 || sp?.status === "closed"} className={`${sp?.status === "closed" && "cursor-not-allowed"} mt-4 bg-amber-200 text-[#841A1A] p-2 rounded font-semibold w-full`}>
-                        {isLoading ? 
-                            <div className="flex justify-center items-center gap-2">
-                                <Loader2 className="animate-spin mr-2 inline-block" />
-                                <p>Procesando...</p>
-                            </div> 
-                        : 
-                            <div>Confirmar Pago</div>
-                        }
-                    </button>
-                  </div>
                 </div>
 
+                {/*============================================================
+                    RESUMEN DE VENTA Y FACUTRACION 
+                ==============================================================*/}
+                <div className="p-4 bg-[#841A1A] text-amber-100 space-y-4 flex flex-col items-center justify-center rounded-xl w-1/3">
+                <div className="text-center">
+                    {/*Tipo de Facuración */}
+                    <p className="font-bold text-lg">{resolution?.type} - {resolution?.code} - {resolution?.name}</p>
+                    {/*Centro de Costos */}
+                    <p className="font-semibold">{sp?.cost_center_name}</p>
+                </div>
+                <hr className="border-amber-200/20 w-[90%] my-2" />
+                <h4 className="font-semibold mt-2">Resumen</h4>
+                {/*Valores de la venta*/}
+                <div className="text-righ w-full">
+                    <div className="flex justify-between"><span>Subtotal:</span><span>{formatDecimal(subtotal, true)}</span></div>
+                    {showIVA0 && (
+                        <div className="flex justify-between">IVA 0%: <span>$0</span></div>
+                    )}
+                    {activeTab.cart.some(it => it.tax5 > 0) && (
+                        <div className="flex justify-between">IVA 5%: <span>{formatDecimal(tax5Total, true)}</span></div>
+                    )}
+                    {activeTab.cart.some(it => it.tax19 > 0) && (
+                        <div className="flex justify-between">IVA 19%: <span>{formatDecimal(tax19Total, true)}</span></div>
+                    )}
+                    <div className="flex justify-between font-bold mt-2"><span>Total:</span><span>{formatDecimal(total, true)}</span></div>
+                </div>
+
+                <hr className="border-amber-200/20 w-[90%] my-4" />
+
+                {sp?.methods.map((m) => (
+                    <section key={m.id} className="flex flex-col w-full">
+                        <label className="font-semibold text-sm">{m.name}:</label>
+                        
+                        <input
+                            type="text"
+                            className="bg-[#6E1515] w-full px-4 py-1 rounded-lg outline-none text-white"
+                                value={formatMoney(paymentValues[m.id] || "")}
+                            onChange={(e) => handlePaymentChange(m.id, e.target.value)}
+                        />
+                    </section>
+                ))}
+
+                <section className="flex flex-col w-full">
+                    <label className="font-semibold text-sm">Devuelta:</label>
+                    <input
+                        type="number"
+                        readOnly
+                        value={formatMoney(repay)}
+                        className="bg-[#6E1515] w-full px-4 py-1 rounded-lg outline-none text-white opacity-70"
+                    />
+                </section>
+
+                <hr className="border-amber-200/20 w-[90%] my-2" />
+
+                <ClientSearch setCustomer={setSelectedCustomer}/>
+
+                <button onClick={() => handleConfirmPayment()} disabled={activeTab.cart.length === 0 || sp?.status === "closed"} className={`${sp?.status === "closed" && "cursor-not-allowed"} mt-4 bg-amber-200 text-[#841A1A] p-2 rounded font-semibold w-full`}>
+                    {isLoading ? 
+                        <div className="flex justify-center items-center gap-2">
+                            <Loader2 className="animate-spin mr-2 inline-block" />
+                            <p>Procesando...</p>
+                        </div> 
+                    : 
+                        <div>Confirmar Pago</div>
+                    }
+                </button>
+                </div>
+            </div>
+
                  
-                {isInvoicePrinting &&   <InvoiceModal invoice={isInvoicePrinting} onFinish={() => setIsInvoicePrinting(null)}/> }
+            {isInvoicePrinting &&   <InvoiceModal invoice={isInvoicePrinting} onFinish={() => setIsInvoicePrinting(null)}/> }
 
         </>
     )

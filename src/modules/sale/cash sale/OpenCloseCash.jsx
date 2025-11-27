@@ -268,7 +268,7 @@ export default function OpenCloseCash ({sp, user, GET_SalePoint}) {
             <div className="w-full flex justify-between gap-2">
                 <ModulesHeader
                     module={`Punto de Venta ${sp?.name}`}
-                    description={"Vende tus productos de forma rapida, escaneando su codigo"}
+                    description={"Venta rapida por scanner"}
                 />
                 <section
                     className={`flex text-nowrap w-full items-center justify-end gap-3 px-4 py-2 rounded-lg transition-all duration-300
