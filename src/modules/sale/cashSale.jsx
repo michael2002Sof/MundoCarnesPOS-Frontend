@@ -497,15 +497,15 @@ export default function CashSale() {
                 {/*============================================================
                     RESUMEN DE VENTA Y FACUTRACION 
                 ==============================================================*/}
-                <div className="p-4 bg-[#841A1A] text-amber-100 space-y-4 flex flex-col items-center justify-center rounded-xl w-1/3">
+                <div className="p-4 bg-[#841A1A] text-amber-100 space-y-3 flex flex-col items-center justify-center rounded-xl w-1/3">
                 <div className="text-center">
                     {/*Tipo de Facuración */}
                     <p className="font-bold text-lg">{resolution?.type} - {resolution?.code} - {resolution?.name}</p>
                     {/*Centro de Costos */}
                     <p className="font-semibold">{sp?.cost_center_name}</p>
                 </div>
-                <hr className="border-amber-200/20 w-[90%] my-2" />
-                <h4 className="font-semibold mt-2">Resumen</h4>
+                <hr className="border-amber-200/20 w-[90%] " />
+                <h4 className="font-semibold mt-1">Resumen</h4>
                 {/*Valores de la venta*/}
                 <div className="text-righ w-full">
                     <div className="flex justify-between"><span>Subtotal:</span><span>{formatDecimal(subtotal, true)}</span></div>
@@ -518,35 +518,34 @@ export default function CashSale() {
                     {activeTab.cart.some(it => it.tax19 > 0) && (
                         <div className="flex justify-between">IVA 19%: <span>{formatDecimal(tax19Total, true)}</span></div>
                     )}
-                    <div className="flex justify-between font-bold mt-2"><span>Total:</span><span>{formatDecimal(total, true)}</span></div>
+                    <div className="flex justify-between font-bold"><span>Total:</span><span>{formatDecimal(total, true)}</span></div>
                 </div>
 
-                <hr className="border-amber-200/20 w-[90%] my-4" />
+                <hr className="border-amber-200/20 w-[90%] "/>
 
                 {sp?.methods.map((m) => (
-                    <section key={m.id} className="flex flex-col w-full">
-                        <label className="font-semibold text-sm">{m.name}:</label>
+                    <section key={m.id} className="flex items-center gap-2 w-full">
+                        <label className="font-semibold w-1/2 text-nowrap overflow-hidden text-ellipsis text-sm">{m.name}:</label>
                         
                         <input
                             type="text"
-                            className="bg-[#6E1515] w-full px-4 py-1 rounded-lg outline-none text-white"
+                            className="bg-[#6E1515] w-1/2 px-4 py-1 rounded-lg outline-none text-white"
                                 value={formatMoney(paymentValues[m.id] || "")}
                             onChange={(e) => handlePaymentChange(m.id, e.target.value)}
                         />
                     </section>
                 ))}
 
-                <section className="flex flex-col w-full">
+                <section className="flex items-center gap-2 w-full">
                     <label className="font-semibold text-sm">Devuelta:</label>
                     <input
-                        type="number"
                         readOnly
                         value={formatMoney(repay)}
-                        className="bg-[#6E1515] w-full px-4 py-1 rounded-lg outline-none text-white opacity-70"
+                        className="w-full  rounded-lg outline-none font-semibold opacity-70"
                     />
                 </section>
 
-                <hr className="border-amber-200/20 w-[90%] my-2" />
+                <hr className="border-amber-200/20 w-[90%]" />
 
                 <ClientSearch setCustomer={setSelectedCustomer}/>
 
