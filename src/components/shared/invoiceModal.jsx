@@ -3,7 +3,7 @@
   import { formatDecimal } from "../../utils/formatData";
   import QRCode from "react-qr-code";
 
-  export default function InvoicePrinter({ invoice, onFinish, reload }) {
+  export default function InvoicePrinter({ invoice, onFinish }) {
     const printRef = useRef();
 
     const handlePrint = useReactToPrint({
@@ -30,7 +30,6 @@
 
         setTimeout(() => {
           onFinish?.(); // si existe, ejecute
-          reload?.()
         }, 300);
       }
     }, 50);

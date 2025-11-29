@@ -379,6 +379,7 @@ export default function CashSale() {
             localStorage.setItem("cashSaleTabs", JSON.stringify(updatedTabs));
 
             setPaymentValues({}); // limpiar pagos
+            setSelectedCustomer(null); // limpiar cliente
         }
 
     };
