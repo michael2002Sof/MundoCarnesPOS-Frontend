@@ -47,7 +47,9 @@ export default function AppLayout() {
 
     // useEffect para CARGAR el plan (solo en el montaje)
     useEffect(() => {
-        GET_Plan()
+        if(token.rol === "admin"){ 
+            GET_Plan()
+        }
     }, [])
 
     // useEffect para EVALUAR el plan (cada vez que 'plan' cambia/se carga)

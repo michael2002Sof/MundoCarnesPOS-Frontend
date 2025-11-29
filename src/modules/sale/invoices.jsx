@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Loader, Eye, Printer, FileDown } from "lucide-react";
+import { Loader, Eye, Printer, FileDown, ChevronLeft, ChevronRight } from "lucide-react";
 import moment from "moment-timezone";
 
 import {ModulesHeader} from "../../components/shared/headers"
@@ -10,19 +10,28 @@ import useReport from "../../hooks/sale/useReport";
 import { exportToExcel } from "../../utils/useExportXlsx";
 
 export default function Invoices () {
-    const {isLoading, invoices, GET_InvoicesByDate} = useReport();
-    console.log("invoices:", invoices);
+    const {isLoading, invoices, totalPages, totalCount, GET_InvoicesByDate} = useReport();
+
     const today = moment().tz("America/Bogota").format("YYYY-MM-DD");
     const [isDate, setDate] = useState(today);
     const [isPrintInvoice, setPrintInvoice] = useState(null);
+    const [localPage, setLocalPage] = useState(1);
 
     useEffect(() => {
-        GET_InvoicesByDate(isDate);
-    }, [isDate]);
+        GET_InvoicesByDate(isDate, localPage);
+    }, [isDate, localPage]);
 
     const handleExport = () => {
         exportToExcel(invoices, `Facturas_${isDate}`)
     }
+
+    const handlePrevPage = () => {
+        setLocalPage(prev => Math.max(1, prev - 1));
+    };
+
+    const handleNextPage = () => {
+        setLocalPage(prev => Math.min(totalPages, prev + 1));
+    };
 
     return (
         <>
@@ -32,7 +41,7 @@ export default function Invoices () {
             />
             <section className=" container mx-auto max-w-7xl 2xl:max-w-[90%]">
                 {/* Filtro de fecha */}
-                <div className="bg-[#841A1A] text-amber-100 w-full rounded-lg shadow p-6 mb-6">
+                <div className="bg-[#841A1A] text-amber-100 w-full rounded-lg shadow p-6 ">
                     <h1 className="text-lg font-semibold">Búsqueda por Fecha</h1>
                     <p className="text-xs">Selecciona la fecha de la factura a buscar</p>
                     <section className="flex items-center justify-between gap-4">
@@ -52,7 +61,9 @@ export default function Invoices () {
                         </button>
                     </section>
                 </div>
-
+                <section className="text-gray-700 font-medium w-full my-2  flex justify-end">
+                    <p>Total de facturas: {totalCount}</p>
+                </section>
                 <div className="overflow-x-auto">
                     <table className="w-full text-sm text-left border-collapse">
                         <thead className="bg-[#841A1A] text-white uppercase text-xs">
@@ -126,6 +137,29 @@ export default function Invoices () {
                         )}
                         </tbody>
                     </table>
+                </div>
+
+               {/* 🚨 CAMBIO 6: Implementación de los controles de paginación */}
+                <div className="flex justify-between items-center mt-6">
+                    <button 
+                        className="bg-[#841A1A] text-amber-100 px-4 py-2 rounded-lg flex items-center gap-1 hover:bg-[#6c1414] transition"
+                        onClick={handlePrevPage}
+                        disabled={localPage === 1 || isLoading} // Deshabilitar si es la primera página
+                    >
+                        <ChevronLeft size={20} />
+                        Anterior
+                    </button>
+                    <section className="text-gray-700 font-medium">
+                        <p>Página {localPage} de {isLoading ? 1 : totalPages}</p>
+                    </section>
+                    <button 
+                        className="bg-[#841A1A] text-amber-100 px-4 py-2 rounded-lg flex items-center gap-1 hover:bg-[#6c1414] transition"
+                        onClick={handleNextPage}
+                        disabled={localPage >= totalPages || isLoading} // Deshabilitar si es la última página
+                    >
+                        Siguiente
+                        <ChevronRight size={20} />
+                    </button>
                 </div>
             </section>
 

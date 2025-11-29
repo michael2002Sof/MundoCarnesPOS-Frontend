@@ -39,6 +39,7 @@ export function useDecodeScale (productSiigo, weight, wh)  {
     return {
     code: product.code,
     description: product.name,
+    base_price,
     quantity: parseFloat(weight.toFixed(2)),
     discount: 0,
     taxes: [ { id: product.taxes[0].id } ],
@@ -94,13 +95,14 @@ export function useDecodeNormal (productSiigo, wh) {
     return {
         code: product.code,
         description: product.name,
+        base_price,
         quantity: 1,
         discount: 0,
         price: Math.floor(subtotal * 100) / 100,
         warehouse: wh,
         taxes: [ { id: product.taxes[0].id } ],
         name: product.name,
-        subtotal: Number(subtotal.toFixed(2)),
+        subtotal: Math.floor(subtotal * 100) / 100,
         tax0: isTax0,
         tax5: Math.floor(tax5 * 100) / 100,
         tax19 : Math.floor(tax19 * 100) / 100,

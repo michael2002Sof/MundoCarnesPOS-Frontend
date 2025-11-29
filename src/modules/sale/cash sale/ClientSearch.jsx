@@ -4,7 +4,7 @@ import { toast } from "react-hot-toast";
 
 import useCustomerSiigo from "../../../hooks/siigo/useCustomer";
 
-export default function ClientSearch({ setCustomer }) {
+export default function ClientSearch({ setCustomer, selectedCustomer }) {
   const { GET_CustomerSiigoByIdentification } = useCustomerSiigo();
 
   const [searchTerm, setSearchTerm] = useState("");
@@ -61,7 +61,7 @@ export default function ClientSearch({ setCustomer }) {
   useEffect(() => {
     const loadDefaultCustomer = async () => {
       const result = await GET_CustomerSiigoByIdentification(CONSUMIDOR_FINAL_DOCUMENT);
-      if (result && result.length > 0) {
+      if (result && result.length > 0 && selectedCustomer === null) {
         const cf = mapCustomer(result[0]);
         setCustomer(cf);
         setSelectedClient(result[0]);
@@ -70,7 +70,7 @@ export default function ClientSearch({ setCustomer }) {
     };
 
     loadDefaultCustomer();
-  }, [setCustomer]);
+  }, [selectedCustomer]);
 
   // Búsqueda manual con Enter
   const handleSearch = async () => {

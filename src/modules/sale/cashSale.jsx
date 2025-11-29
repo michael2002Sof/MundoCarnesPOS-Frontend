@@ -337,7 +337,7 @@ export default function CashSale() {
             product_name: it.name,
             product_barcode: it.code,
             quantity: it.quantity,
-            unit_price: it.subtotal,
+            unit_price: it.base_price,
             tax0: it.tax0,
             tax5: it.tax5,
             tax19: it.tax19,
@@ -379,7 +379,7 @@ export default function CashSale() {
             localStorage.setItem("cashSaleTabs", JSON.stringify(updatedTabs));
 
             setPaymentValues({}); // limpiar pagos
-            setSelectedCustomer(null); // limpiar cliente
+            setSelectedCustomer(null); // limpiar cliente   
         }
 
     };
@@ -464,7 +464,7 @@ export default function CashSale() {
                                 <tr key={idx} className="text-nowrap">
                                     <td className="px-4">{it.name}</td>
                                     <td className="px-4 text-center py-2">{it.quantity}</td>
-                                    <td className="px-4 text-center py-2">{formatDecimal(it.subtotal, true)}</td>
+                                    <td className="px-4 text-center py-2">{formatDecimal(it.base_price, true)}</td>
                                     {showIVA0 && (
                                     <td className="px-4 text-center py-2">
                                         {it.tax0 ? "$ 0" : "-"}
@@ -545,7 +545,7 @@ export default function CashSale() {
 
                 <hr className="border-amber-200/20 w-[90%]" />
 
-                <ClientSearch setCustomer={setSelectedCustomer}/>
+                <ClientSearch setCustomer={setSelectedCustomer} selectedCustomer={selectedCustomer}/>
 
                 <button onClick={() => handleConfirmPayment()} disabled={activeTab.cart.length === 0 || sp?.status === "closed"} className={`${sp?.status === "closed" && "cursor-not-allowed"} mt-4 bg-amber-200 text-[#841A1A] p-2 rounded font-semibold w-full`}>
                     {isLoading ? 
