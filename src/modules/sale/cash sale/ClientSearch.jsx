@@ -70,7 +70,7 @@ export default function ClientSearch({ setCustomer }) {
     };
 
     loadDefaultCustomer();
-  }, []);
+  }, [setCustomer]);
 
   // Búsqueda manual con Enter
   const handleSearch = async () => {

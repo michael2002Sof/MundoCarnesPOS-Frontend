@@ -346,6 +346,7 @@ export default function CashSale() {
 
         const invoiceData = {
             ...isBuildInvoice, 
+            customer: selectedCustomer,
             items: itemsPayload, 
             invoiceItem, subtotal, 
             tax0: 0, 
@@ -378,7 +379,6 @@ export default function CashSale() {
             localStorage.setItem("cashSaleTabs", JSON.stringify(updatedTabs));
 
             setPaymentValues({}); // limpiar pagos
-            setSelectedCustomer(null); // limpiar cliente
         }
 
     };

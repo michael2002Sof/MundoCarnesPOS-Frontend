@@ -16,7 +16,7 @@ export default function AppLayout() {
     const token = DecodeToken()
     const {plan, GET_Plan} = usePlan()
 
-    const today = "2025-12-18"
+    const today = moment().tz("America/Bogota").format("YYYY-MM-DD")
     const [showPaymentWarning, setShowPaymentWarning] = useState(false)
     const daysRemaining = moment(plan?.end_date).diff(moment(today), 'days');
 
