@@ -7,6 +7,7 @@ import AppLayout from "./layout"
 import Home from "./pages/home"
 import Profile from "./pages/profile"
 import Account from "./pages/account"
+import PaymentMethodPage from "./pages/paymentMethod"
 
 import ModuleIndex from "./components/shared/moduleIndex"
 
@@ -32,9 +33,10 @@ const MundoCarnesPosRoutes = [
 
     { element: <AppLayout/>, 
         children: [
-            { path: "/home", element:<Home/> },
-            { path: "/profile", element:<Profile/> },
-            { path: "/account-sync", element:<Account/> },
+            { path: "/home", element: <Home/> },
+            { path: "/profile", element: <Profile/> },
+            { path: "/account-sync", element: <Account/> },
+            { path: "/payment-method", element: <PaymentMethodPage/> },
 
 
             /*========================================================

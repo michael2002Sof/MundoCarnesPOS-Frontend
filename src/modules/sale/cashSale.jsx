@@ -192,7 +192,7 @@ export default function CashSale() {
             return
         }
 
-        //console.log("Producto codificado de siigo", product)
+        console.log("Producto codificado de siigo", product)
 
    
 
@@ -253,10 +253,7 @@ export default function CashSale() {
         if (!value) return 0; // evita el error
 
         return Number(
-            value
-                .toString()
-                .replace(/\./g, "")
-                .replace(/,/g, "")
+            Math.round(value.toString().replace(/\./g, "").replace(/,/g, ""))
         ) || 0;
     }
 

@@ -8,7 +8,7 @@ import {
 
 
 import { ModulesHeader } from "../components/shared/headers";
-import {formatDateTime, formatDecimal} from "../utils/formatData"
+import {formatDecimal} from "../utils/formatData"
 import useAdmin from "../hooks/admin/useAdmin";
 import useCompany from "../hooks/admin/useCompany";
 import usePlan from "../hooks/admin/usePlan";
@@ -164,8 +164,8 @@ export default function Profile() {
               { label: "Almacenamiento", value: `${plan.storage_used} KB / ${plan.storage_limit} GB`, icon: HardDrive },
               { label: "Precio", value: formatDecimal(plan.price, true), icon: DollarSign },
               { label: "Ciclo de facturación", value: plan.billing_cycle === "monthly" ? "Mensual" : "Anual", icon: CalendarDays },
-              { label: "Inicio del plan", value: formatDateTime(plan.start_date), icon: CalendarDays },
-              { label: "Vence", value: formatDateTime(plan.end_date), icon: CalendarDays },
+              { label: "Inicio del plan", value: plan.start_date, icon: CalendarDays },
+              { label: "Vence", value: plan.end_date, icon: CalendarDays },
               { label: "Estado", value: plan.status, icon: BadgeCheck }
             ].map((item, index) => (
               <div key={index} className="p-4 bg-white/5 backdrop-blur-sm rounded-lg border border-white/10 hover:bg-white/10 transition">

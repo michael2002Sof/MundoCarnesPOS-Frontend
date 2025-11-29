@@ -20,6 +20,5 @@ export default function usePlan() {
             toast.error(error.message)
         }
     }
-  // Aquí puedes agregar la lógica para manejar el estado y las funciones relacionadas con el administrador
   return { plan, GET_Plan };
 }

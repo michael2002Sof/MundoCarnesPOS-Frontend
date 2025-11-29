@@ -25,14 +25,14 @@ export function useDecodeScale (productSiigo, weight, wh)  {
     if (hasTax5) {
     subtotal = total / 1.05
     price = base_price / 1.05
-    tax5 = Math.round(subtotal * 0.05)
+    tax5 = subtotal * 0.05
     }
 
     // ✔ Si tiene IVA 19%
     if (hasTax19) {
     subtotal = total / 1.19
     price = base_price / 1.19
-    tax19 = Math.round(subtotal * 0.19)
+    tax19 = subtotal * 0.19
     }
 
 
@@ -43,12 +43,12 @@ export function useDecodeScale (productSiigo, weight, wh)  {
     discount: 0,
     taxes: [ { id: product.taxes[0].id } ],
     name: product.name,
-    price: Number(price.toFixed(2))  ,
-    subtotal: Math.round(subtotal),
+    price: Math.floor(price * 100) / 100,
+    subtotal: Math.floor(subtotal * 100) / 100,
     warehouse: wh,
     tax0: isTax0,
-    tax5,
-    tax19,
+    tax5: Math.floor(tax5 * 100) / 100,
+    tax19 : Math.floor(tax19 * 100) / 100,
     total: total,
     isScale: true,
     };
@@ -69,6 +69,7 @@ export function useDecodeNormal (productSiigo, wh) {
     const hasTax19 = taxObject === 19;
 
     const base_price = product.prices[0].price_list[0].value  // Precio unit con iva
+    console.log("Precio del producto en siigo con iva", base_price)
     
     const total = base_price;
     let subtotal = total
@@ -95,14 +96,14 @@ export function useDecodeNormal (productSiigo, wh) {
         description: product.name,
         quantity: 1,
         discount: 0,
-        price: Number(subtotal.toFixed(2))  ,
+        price: Math.floor(subtotal * 100) / 100,
         warehouse: wh,
         taxes: [ { id: product.taxes[0].id } ],
         name: product.name,
-        subtotal: Math.round(subtotal),
+        subtotal: Number(subtotal.toFixed(2)),
         tax0: isTax0,
-        tax5: Math.round(tax5),
-        tax19 : Math.round(tax19),
+        tax5: Math.floor(tax5 * 100) / 100,
+        tax19 : Math.floor(tax19 * 100) / 100,
         total,
         isScale: false
     };

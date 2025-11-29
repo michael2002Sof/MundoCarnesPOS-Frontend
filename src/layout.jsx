@@ -1,20 +1,27 @@
-import { Outlet } from "react-router-dom";
+import { Link, Outlet } from "react-router-dom";
 import { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
+import { MailWarning } from "lucide-react";
 
 import {AppHeader} from "./components/shared/headers"
 import Sidebar from "./components/shared/sidebar";
 import Modules from "./config/modules"
 import useFilteredAuthorization from "./utils/useFilteredAuthorization";
 import DecodeToken from "./api/decode";
+import usePlan from "./hooks/admin/usePlan";
+import moment from "moment-timezone";
 
 export default function AppLayout() {
-    
     const filteredModules = useFilteredAuthorization(Modules, "modules") // Obtener modulos del usuario
     const token = DecodeToken()
+    const {plan, GET_Plan} = usePlan()
+
+    const today = "2025-12-18"
+    const [showPaymentWarning, setShowPaymentWarning] = useState(false)
+    const daysRemaining = moment(plan?.end_date).diff(moment(today), 'days');
+
     const headerRef = useRef()
     const navigate = useNavigate()
-    const [response, setResponse] = useState(null);
     const [contentHeight, setContentHeight] = useState("100vh");
     const [expanded, setExpanded] = useState(false);
 
@@ -38,28 +45,37 @@ export default function AppLayout() {
         return () => window.removeEventListener("resize", updateHeight);
     }, []);
 
+    // useEffect para CARGAR el plan (solo en el montaje)
     useEffect(() => {
-        const handleMessage = () => {
-            const stored = localStorage.getItem("responseMessage");
-            if (stored) {
-            const parsed = JSON.parse(stored);
-            setResponse(parsed);
-            setTimeout(() => {
-                setResponse(null);
-                localStorage.removeItem("responseMessage");
-            }, 2000);
+        GET_Plan()
+    }, [])
+
+    // useEffect para EVALUAR el plan (cada vez que 'plan' cambia/se carga)
+    useEffect(() => {
+        if (plan && plan?.payment_notice && plan?.end_date) {
+            // Convertir las fechas a objetos moment para una comparación robusta
+            const paymentNoticeDate = moment(plan.payment_notice)
+            const endDate = moment(plan.end_date)
+            const currentDate = moment(today)
+            console.log(currentDate)
+
+            // Evalúa si la fecha actual está DENTRO del período de aviso:
+            // Es decir, si la fecha actual es >= fecha de aviso Y <= fecha de fin
+            if (currentDate.isSameOrAfter(paymentNoticeDate, 'day') && currentDate.isSameOrBefore(endDate, 'day')) {
+                // Además, si el aviso es sobre 2 días, puedes añadir una condición más:
+                const daysRemaining = endDate.diff(currentDate, 'days')
+
+                // Condición: Estamos dentro del período de aviso Y quedan 2 días o menos.
+                if (currentDate.isSameOrAfter(paymentNoticeDate, 'day') && daysRemaining <= 2) {
+                    setShowPaymentWarning(true)
+                } else {
+                    setShowPaymentWarning(false)
+                }
+            } else {
+                setShowPaymentWarning(false)
             }
-        };
-
-        handleMessage();
-        window.addEventListener("responseMessageUpdated", handleMessage);
-        window.addEventListener("storage", handleMessage);
-
-        return () => {
-            window.removeEventListener("responseMessageUpdated", handleMessage);
-            window.removeEventListener("storage", handleMessage);
-        };
-    }, []);
+        }
+    }, [plan, today])
 
  
     return (
@@ -80,10 +96,13 @@ export default function AppLayout() {
 
                 {/* Contenido */}
                 <div className="relative flex-1 w-full p-4 sm:p-8 bg-amber-50  space-y-6 flex flex-col items-center overflow-hidden">
-                    {response && (
-                    <div className="fixed top-20 right-4 border-l-2 z-50 px-6 py-3 rounded-lg shadow-md font-medium bg-[#841A1A] text-amber-100">
-                        {response.message}
-                    </div>
+                    {showPaymentWarning && (
+                        <section className="bg-amber-200 w-full px-4 py-2 border rounded-lg flex justify-between border-amber-300">
+                            <p className="text-amber-700 flex gap-2"><MailWarning/> Tu plan pronto se vencera, {daysRemaining} dias para que termine</p>
+                            <Link to={"/payment-method"} className="underline text-amber-700 cursor-pointer">
+                                Ir al metodo de Pago
+                            </Link>
+                        </section>
                     )}
                     <Outlet />
                 </div>

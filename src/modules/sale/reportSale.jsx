@@ -49,15 +49,6 @@ export default function ReportSale() {
   const { data: sesiones, loading } = useFetchCashSessions(filterFechaInicio);
   console.log("Sesión seleccionada para reporte:", sesiones);
 
-  // --- Estadísticas base ---
- 
-
-  // --- Funciones utilitarias ---
-  const formatCurrency = (amount) => new Intl.NumberFormat('es-CO', {
-    style: 'currency',
-    currency: 'COP'
-  }).format(amount);
-
 
   // Convertir valores string a número usando Number() o parseFloat()
   const safeNumber = (valor) => Number(valor) || 0;
