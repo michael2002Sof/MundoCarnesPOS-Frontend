@@ -253,7 +253,7 @@ export default function CashSale() {
         if (!value) return 0; // evita el error
 
         return Number(
-            Math.round(value.toString().replace(/\./g, "").replace(/,/g, ""))
+            value.toString().replace(/\./g, "").replace(/,/g, "")
         ) || 0;
     }
 

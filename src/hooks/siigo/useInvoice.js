@@ -15,8 +15,8 @@ export default function useInvoiceSiigo() {
           const token = DecodeToken();
           if (!token) return;
 
-          const company = token.company;
-          const seller = token.id
+          const company = token?.company;
+          const seller = token?.id
           const data = {...invoice, company, seller}
           console.log("Factura generada", data)
 
