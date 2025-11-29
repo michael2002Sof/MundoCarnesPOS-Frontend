@@ -1,11 +1,13 @@
 import { useEffect, useState } from "react";
-import { Loader, Eye, Printer } from "lucide-react";
+import { Loader, Eye, Printer, FileDown } from "lucide-react";
 import moment from "moment-timezone";
 
 import {ModulesHeader} from "../../components/shared/headers"
 import  {formatDecimal} from "../../utils/formatData"
 import InvoicePrinter from "../../components/shared/invoiceModal";
 import useReport from "../../hooks/sale/useReport";
+
+import { exportToExcel } from "../../utils/useExportXlsx";
 
 export default function Invoices () {
     const {isLoading, invoices, GET_InvoicesByDate} = useReport();
@@ -18,6 +20,10 @@ export default function Invoices () {
         GET_InvoicesByDate(isDate);
     }, [isDate]);
 
+    const handleExport = () => {
+        exportToExcel(invoices, `Facturas_${isDate}`)
+    }
+
     return (
         <>
             <ModulesHeader 
@@ -29,12 +35,22 @@ export default function Invoices () {
                 <div className="bg-[#841A1A] text-amber-100 w-full rounded-lg shadow p-6 mb-6">
                     <h1 className="text-lg font-semibold">Búsqueda por Fecha</h1>
                     <p className="text-xs">Selecciona la fecha de la factura a buscar</p>
-                    <input
-                    type="date"
-                    className="px-4 py-2 rounded-lg mt-4 border-b focus:outline-none cursor-pointer"
-                    value={isDate}
-                    onChange={(e) => setDate(e.target.value)}
-                    />
+                    <section className="flex items-center justify-between gap-4">
+                        <input
+                        type="date"
+                        className="px-4 py-2 rounded-lg mt-4 border-b focus:outline-none cursor-pointer"
+                        value={isDate}
+                        onChange={(e) => setDate(e.target.value)}
+                        />
+                        <button
+                            className="bg-amber-100 mt-3 cursor-pointer text-[#841A1A] px-4 py-2 rounded-lg font-bold flex items-center h-fit gap-2 hover:bg-amber-200 transition"
+                            onClick={handleExport} // Llamada a la función
+                            disabled={isLoading || !invoices?.length}
+                        >
+                            <FileDown size={20} />
+                            Exportar a Excel
+                        </button>
+                    </section>
                 </div>
 
                 <div className="overflow-x-auto">
