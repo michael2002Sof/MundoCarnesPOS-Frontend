@@ -25,14 +25,14 @@ export function useDecodeScale (productSiigo, weight, wh)  {
     if (hasTax5) {
     subtotal = total / 1.05
     price = base_price / 1.05
-    tax5 = subtotal * 0.05
+    tax5 = (subtotal * 0.05).toFixed(2)
     }
 
     // ✔ Si tiene IVA 19%
     if (hasTax19) {
     subtotal = total / 1.19
     price = base_price / 1.19
-    tax19 = subtotal * 0.19
+    tax19 = (subtotal * 0.19).toFixed(2)
     }
 
 
@@ -81,13 +81,13 @@ export function useDecodeNormal (productSiigo, wh) {
     // ✔ Si tiene IVA 5%
     if (hasTax5) {
     subtotal = total / 1.05
-    tax5 = subtotal * 0.05
+    tax5 = (subtotal * 0.05).toFixed(2)
     }
 
     // ✔ Si tiene IVA 19%
     if (hasTax19) {
     subtotal = total / 1.19
-    tax19 = subtotal * 0.19
+    tax19 = (subtotal * 0.19).toFixed(2)
     }
 
   

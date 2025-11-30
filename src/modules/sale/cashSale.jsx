@@ -236,8 +236,6 @@ export default function CashSale() {
     const tax5Total = (activeTab?.cart || []).reduce((s, it) => s + Number(it.tax5 || 0), 0);
     const tax19Total = (activeTab?.cart || []).reduce((s, it) => s + Number(it.tax19 || 0), 0);
     let total = subtotal + tax5Total + tax19Total;
-    console.log(subtotal)
-    console.log(tax19Total)
     total = parseFloat(total.toFixed(2))
 
     /* -- CONTROL DE PAGOS -- */
