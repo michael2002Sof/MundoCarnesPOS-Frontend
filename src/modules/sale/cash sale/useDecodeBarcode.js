@@ -16,7 +16,7 @@ export function useDecodeScale (productSiigo, weight, wh)  {
     let tax5 = 0;
     let tax19 = 0;
 
-    const total = base_price * parseFloat(weight.toFixed(2));  // total con iva incluido
+    const total = base_price * Math.trunc(weight * 100) /100;  // total con iva incluido
     let subtotal = total
 
     let price = base_price
@@ -40,16 +40,16 @@ export function useDecodeScale (productSiigo, weight, wh)  {
     code: product.code,
     description: product.name,
     base_price,
-    quantity: parseFloat(weight.toFixed(2)),
+    quantity: Math.trunc(weight * 100) /100,
     discount: 0,
     taxes: [ { id: product.taxes[0].id } ],
     name: product.name,
-    price: Math.floor(price * 100) / 100,
-    subtotal: Math.floor(subtotal * 100) / 100,
+    price: Math.trunc(price * 100) / 100,
+    subtotal: Math.trunc(subtotal * 100) / 100,
     warehouse: wh,
     tax0: isTax0,
-    tax5: Math.floor(tax5 * 100) / 100,
-    tax19 : Math.floor(tax19 * 100) / 100,
+    tax5: Math.trunc(tax5 * 100) / 100,
+    tax19 : Math.trunc(tax19 * 100) / 100,
     total: total,
     isScale: true,
     };
@@ -98,14 +98,14 @@ export function useDecodeNormal (productSiigo, wh) {
         base_price,
         quantity: 1,
         discount: 0,
-        price: Math.floor(subtotal * 100) / 100,
+        price: Math.trunc(subtotal * 100) / 100,
         warehouse: wh,
         taxes: [ { id: product.taxes[0].id } ],
         name: product.name,
-        subtotal: Math.floor(subtotal * 100) / 100,
+        subtotal: Math.trunc(subtotal * 100) / 100,
         tax0: isTax0,
-        tax5: Math.floor(tax5 * 100) / 100,
-        tax19 : Math.floor(tax19 * 100) / 100,
+        tax5: Math.trunc(tax5 * 100) / 100,
+        tax19 : Math.trunc(tax19 * 100) / 100,
         total,
         isScale: false
     };

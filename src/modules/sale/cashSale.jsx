@@ -16,6 +16,7 @@ import useInvoiceSiigo from "../../hooks/siigo/useInvoice"
 import useInvoiceResolution from "../../hooks/sale/useInvoiceResolution"
 import { useSessionId } from "../../hooks/sale/useCashSession"
 import toast from "react-hot-toast"
+import moment from "moment-timezone"
 
 
 
@@ -31,7 +32,7 @@ export default function CashSale() {
     const {invoicesResolution, GET_InvoiceResolution} = useInvoiceResolution()
 
     const [selectedCustomer, setSelectedCustomer] = useState(null); // cliente elegido
-    const today = new Date().toISOString().slice(0, 10);
+    const today = moment().tz("America/Bogota").format("YYYY-MM-DD");
     const token = DecodeToken()     
     const sp = useMemo(() => { return salePoints?.find(sp => sp.user === token.id)}, [salePoints, token.id])  //Punto de venta del usuario]
     const resolution = invoicesResolution?.find( ir => ir.sale_point === sp?.id)
@@ -88,6 +89,9 @@ export default function CashSale() {
         additional_fields: {},
 
         //Para mi pos
+        customerName: "",
+        customerCC: "",
+        customerAddress: "",
         sale_point: "",
         cash_session: "",
         receipt_cash: 0,
@@ -231,7 +235,8 @@ export default function CashSale() {
     const subtotal = (activeTab?.cart || []).reduce((s, it) => s + (Number(it.subtotal || 0)), 0);
     const tax5Total = (activeTab?.cart || []).reduce((s, it) => s + Number(it.tax5 || 0), 0);
     const tax19Total = (activeTab?.cart || []).reduce((s, it) => s + Number(it.tax19 || 0), 0);
-    const total = subtotal + tax5Total + tax19Total;
+    let total = subtotal + tax5Total + tax19Total;
+    total = Math.trunc(total * 100) / 100;
 
     /* -- CONTROL DE PAGOS -- */
     const getCashMethodId = () => {
@@ -273,16 +278,16 @@ export default function CashSale() {
     const cash = paymentValues[cashMethodId] || 0;
     const transfer = paymentValues[transferMethodId] || 0;
 
-    const repay = Math.max((cash + transfer) - total, 0);  // nunca negativo
+    const repay = Math.max((cash + transfer) - total, 0) // nunca negativo
 
-    const receipt_cash =  Math.floor((cash - repay) * 100) / 100
-    const receipt_transfer = Math.floor(transfer * 100) / 100
-    const total_payment = Math.floor((receipt_cash + receipt_transfer) * 100) / 100
+    const receipt_cash =  cash - repay
+    const receipt_transfer = transfer 
+    const total_payment = receipt_cash + receipt_transfer
 
     let payments = sp?.methods.map(m => {
         let value = 0;
-        if (m.id === cashMethodId) value = Math.floor(receipt_cash * 100) / 100;
-        if (m.id === transferMethodId) value = Math.floor(receipt_transfer * 100) / 100;
+        if (m.id === cashMethodId) value = receipt_cash 
+        if (m.id === transferMethodId) value = receipt_transfer
 
         return { id: m.id, value, due_date: today };
     }).filter(p => p.value > 0);
@@ -349,12 +354,15 @@ export default function CashSale() {
         const invoiceData = {
             ...isBuildInvoice, 
             customer: selectedCustomer,
+            customerName: selectedCustomer.name.join(" "),
+            customerCC: selectedCustomer.identification,
+            customerAddress: selectedCustomer.address.address,
             items: itemsPayload, 
             invoiceItem, subtotal, 
             tax0: 0, 
             tax5: tax5Total, 
             tax19: tax19Total, 
-            total: Math.floor(total * 100) / 100,
+            total,
             payments,
             receipt_cash,
             receipt_transfer,
