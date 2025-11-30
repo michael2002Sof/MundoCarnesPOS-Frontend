@@ -259,7 +259,9 @@ export default function CashSale() {
 
     const [paymentValues, setPaymentValues] = useState({}); //Valores ingresados en los metodos de pago
     const handlePaymentChange = (id, value) => {
-        const clean = cleanNumber(value); // número sin formato
+        const notFormat = cleanNumber(value); // número sin formato
+        const clean = Math.floor(notFormat * 100) / 100
+
 
         setPaymentValues(prev => ({
             ...prev,
@@ -273,14 +275,14 @@ export default function CashSale() {
 
     const repay = Math.max((cash + transfer) - total, 0);  // nunca negativo
 
-    const receipt_cash = cash - repay
-    const receipt_transfer = transfer
-    const total_payment = receipt_cash + receipt_transfer
+    const receipt_cash =  Math.floor((cash - repay) * 100) / 100
+    const receipt_transfer = Math.floor(transfer * 100) / 100
+    const total_payment = Math.floor((receipt_cash + receipt_transfer) * 100) / 100
 
     let payments = sp?.methods.map(m => {
         let value = 0;
-        if (m.id === cashMethodId) value = receipt_cash;
-        if (m.id === transferMethodId) value = receipt_transfer;
+        if (m.id === cashMethodId) value = Math.floor(receipt_cash * 100) / 100;
+        if (m.id === transferMethodId) value = Math.floor(receipt_transfer * 100) / 100;
 
         return { id: m.id, value, due_date: today };
     }).filter(p => p.value > 0);
@@ -352,7 +354,7 @@ export default function CashSale() {
             tax0: 0, 
             tax5: tax5Total, 
             tax19: tax19Total, 
-            total,
+            total: Math.floor(total * 100) / 100,
             payments,
             receipt_cash,
             receipt_transfer,
