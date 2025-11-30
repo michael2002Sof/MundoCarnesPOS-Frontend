@@ -309,8 +309,6 @@ export default function CashSale() {
 
     // Confirmar pago: registrar venta + descontar stock + imprimir factura + limpiar carrito
     const handleConfirmPayment = async () => {
-        console.log(total_payment)
-        console.log(total)
         if (total_payment < total) {
             toast.error("El monto recibido es menor al total");
             return;
@@ -327,6 +325,9 @@ export default function CashSale() {
         }
         if (!isBuildInvoice.document.id) {
             await retryResolution()
+        }
+        if (!selectedCustomer){
+            return toast.error("No hay cliente seleccionado, intentalo de nuevo")
         }
         
 

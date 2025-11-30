@@ -18,12 +18,12 @@ export default function useInvoiceSiigo() {
           const company = token.company;
           const seller = token.id
           const data = {...invoice, company, seller}
-          //console.log("Factura generada", data)
+          console.log("Factura generada", data)
 
           const res = await axiosInstance.post( `/posinnovate/siigo/sale/invoice`, data);
           toast.success(res.message)
 
-          //const invoicePOS = { ...invoice, company, seller, code: "FV-9-25", client: "36faa3ab-12cf-45b8-b144-d3c91e6731d2", cufe: "de8090e67b44005a05e698e3d606542addc6573b99209263c6313f9e66fa979c7cc66bd6839ac0e0d0118ca9050602af"}
+          //const invoicePOS = { ...invoice, company, seller, code: "FV-10-140", client: "36faa3ab-12cf-45b8-b144-d3c91e6731d2", cufe: "a9420c5d03cbb0d6616931bb956a85a13db1ecc092a7a35701c751308eda9e82467814903521eae4b7b11e19db958934"}
 
           const invoicePOS = {
             ...data, 
