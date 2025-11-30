@@ -236,6 +236,9 @@ export default function CashSale() {
     const tax5Total = (activeTab?.cart || []).reduce((s, it) => s + Number(it.tax5 || 0), 0);
     const tax19Total = (activeTab?.cart || []).reduce((s, it) => s + Number(it.tax19 || 0), 0);
     let total = subtotal + tax5Total + tax19Total;
+    console.log(subtotal)
+    console.log(tax19Total)
+    total = parseFloat(total.toFixed(2))
 
     /* -- CONTROL DE PAGOS -- */
     const getCashMethodId = () => {
@@ -279,7 +282,7 @@ export default function CashSale() {
 
     const repay = Math.max((cash + transfer) - total, 0) // nunca negativo
 
-    const receipt_cash =  cash - repay
+    const receipt_cash =  parseFloat((cash - repay).toFixed(2))
     const receipt_transfer = transfer 
     const total_payment = receipt_cash + receipt_transfer
 
@@ -306,7 +309,8 @@ export default function CashSale() {
 
     // Confirmar pago: registrar venta + descontar stock + imprimir factura + limpiar carrito
     const handleConfirmPayment = async () => {
-
+        console.log(total_payment)
+        console.log(total)
         if (total_payment < total) {
             toast.error("El monto recibido es menor al total");
             return;
