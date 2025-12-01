@@ -355,7 +355,7 @@ export default function CashSale() {
 
         const invoiceData = {
             ...isBuildInvoice, 
-            customer: selectedCustomer || "36faa3ab-12cf-45b8-b144-d3c91e6731d2",
+            customer: selectedCustomer,
             customerName: selectedCustomer.name.join(" ") || "Consumidor Final",
             customerCC: selectedCustomer.identification || "222222222222",
             customerAddress: selectedCustomer.address.address || "Sin Direccioón",

@@ -18,13 +18,13 @@ export default function ClientSearch({ setCustomer, selectedCustomer }) {
     const city = client?.address?.city || {};
 
     return {
-      person_type: client.person_type || null,
-      id_type: client.id_type?.code || null,
-      identification: client.identification || null,
+      person_type: client.person_type || 'Person',
+      id_type: client.id_type?.code || "13",
+      identification: client.identification || "222222222222",
       branch_office: client.branch_office || 0,
-      name: client.name || [],
+      name: client.name || [ "Consumidor", "Final" ],
       address: {
-        address: client.address?.address || null,
+        address: client.address?.address || "Sin Dirección",
         city: {
           country_code: city.country_code || null,
           country_name: city.country_name || null,
@@ -44,8 +44,8 @@ export default function ClientSearch({ setCustomer, selectedCustomer }) {
       ],
       contacts: [
         {
-          first_name: client.contacts?.[0]?.first_name || null,
-          last_name: client.contacts?.[0]?.last_name || null,
+          first_name: client.contacts?.[0]?.first_name || "Consumidor",
+          last_name: client.contacts?.[0]?.last_name || "Final",
           email: client.contacts?.[0]?.email || null,
           phone: {
             indicative: client.contacts?.[0]?.phone?.indicative || null,
