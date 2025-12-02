@@ -40,7 +40,7 @@ const ReportTemplate = ({ session, onFinish }) => {
   const {
     id, branch_name, sales_point_name, opened_by, opened_at, closed_at, closed_by,
     initial_cash, total_cash, total_transfer, subtotal_method, total_return, total_method,
-    subtotal, tax0, tax5, tax19, total
+    subtotal, tax0, tax5, tax19, total, totalSales
   } = session;
 
   return (
@@ -75,6 +75,7 @@ const ReportTemplate = ({ session, onFinish }) => {
         <main className=" mb-4 ">
           <h3 className="font-semibold text-center mb-2 ">Movimiento de Caja</h3>
           <p className="text-[12px]"><span className="font-semibold">Base Inicial: </span> {formatDecimal(initial_cash, true)}</p>
+          <p className="text-[12px]"><span className="font-semibold">Ventas del Día: </span> {totalSales}</p>
           <h2 className="font-semibold text-center mt-2">Totales por Método de Pago</h2>
           <div className="flex justify-between items-center text-[12px] w-full">
             <section className="font-semibold text-left">

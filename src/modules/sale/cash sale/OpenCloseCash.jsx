@@ -139,6 +139,15 @@ export default function OpenCloseCash ({sp, user, GET_SalePoint}) {
                         {session ? (
                             <>
                                 <div className="bg-[#6E1515] p-4 rounded-lg mb-6 space-y-2">
+                                    <div className="flex justify-between">
+                                        <h3 className="font-semibold">Ventas del día:</h3>
+                                        <span className="font-mono">
+                                            {session.totalSales}
+                                        </span>
+                                    </div>
+                                </div>
+                                <div className="bg-[#6E1515] p-4 rounded-lg mb-6 space-y-2">
+
                                     <h3 className="font-semibold mb-3">Metodos de Pago:</h3>
 
                                     <div className="flex justify-between text-sm">

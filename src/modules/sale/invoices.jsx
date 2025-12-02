@@ -8,21 +8,30 @@ import InvoicePrinter from "../../components/shared/invoiceModal";
 import useReport from "../../hooks/sale/useReport";
 
 import { exportToExcel } from "../../utils/useExportXlsx";
+import DecodeToken from "../../api/decode";
+import useUser from "../../hooks/user/useUser";
 
 export default function Invoices () {
-    const {isLoading, invoices, totalPages, totalCount, GET_InvoicesByDate} = useReport();
+    const {isLoading, invoices, totalPages, totalCount, GET_InvoicesByDate, GET_InvoicesToExport} = useReport();
+    const token = DecodeToken()
+    const {usersPOS} = useUser()
 
     const today = moment().tz("America/Bogota").format("YYYY-MM-DD");
     const [isDate, setDate] = useState(today);
+    const [isUser, setUser] = useState(token?.id)
     const [isPrintInvoice, setPrintInvoice] = useState(null);
     const [localPage, setLocalPage] = useState(1);
+    const [exporting, setExporting] = useState(false)
 
     useEffect(() => {
-        GET_InvoicesByDate(isDate, localPage);
-    }, [isDate, localPage]);
+        GET_InvoicesByDate(isDate, isUser, localPage);
+    }, [isDate, isUser, localPage]);
 
-    const handleExport = () => {
-        exportToExcel(invoices, `Facturas_${isDate}`)
+    const handleExport = async () => {
+        setExporting(true)
+        const invoicesExport = await GET_InvoicesToExport(isDate, isUser)
+        exportToExcel(invoicesExport, `Facturas_${isDate}`)
+        setExporting(false)
     }
 
     const handlePrevPage = () => {
@@ -45,20 +54,47 @@ export default function Invoices () {
                     <h1 className="text-lg font-semibold">Búsqueda por Fecha</h1>
                     <p className="text-xs">Selecciona la fecha de la factura a buscar</p>
                     <section className="flex items-center justify-between gap-4">
+                        <div className="gap-4 flex items-center">
                         <input
                         type="date"
                         className="px-4 py-2 rounded-lg mt-4 border-b focus:outline-none cursor-pointer"
                         value={isDate}
                         onChange={(e) => setDate(e.target.value)}
                         />
-                        <button
-                            className="bg-amber-100 mt-3 cursor-pointer text-[#841A1A] px-4 py-2 rounded-lg font-bold flex items-center h-fit gap-2 hover:bg-amber-200 transition"
-                            onClick={handleExport} // Llamada a la función
-                            disabled={isLoading || !invoices?.length}
-                        >
-                            <FileDown size={20} />
-                            Exportar a Excel
-                        </button>
+                        {token?.rol === "admin" && (
+                            <select 
+                                type="text" 
+                                className="px-4 py-2 rounded-lg mt-4 border-b focus:outline-none cursor-pointer"
+                                value={isUser}
+                                onChange={(e) => setUser(e.target.value)}
+                            >
+                            <option value={token?.id}>Todas</option>
+                            {usersPOS?.map(u => (
+                                <option value={u.id}>{u.name}</option>
+                            ))}
+                        </select>
+                        )}
+                        </div>
+                        {token?.rol === "admin" && (
+                            <button
+                                className="bg-amber-100 mt-3 cursor-pointer text-[#841A1A] px-4 py-2 rounded-lg font-bold flex items-center h-fit gap-2 hover:bg-amber-200 transition"
+                                onClick={handleExport} // Llamada a la función
+                                disabled={isLoading || !invoices?.length}
+                            >
+                                {exporting ? (
+                                    <div className=" flex items-center justify-center gap-2">
+                                        <Loader className="w-5 h-5 animate-spin" />
+                                        Cargando Facturas...
+                                    </div>
+                                ) :
+                                (
+                                    <>
+                                        <FileDown size={20} />
+                                        Exportar a Excel
+                                    </>
+                                )}
+                            </button>
+                        )}
                     </section>
                 </div>
                 <section className="text-gray-700 font-medium w-full my-2  flex justify-end">

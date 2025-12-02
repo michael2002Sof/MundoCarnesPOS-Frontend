@@ -151,11 +151,13 @@ export default function ReportSale() {
                 <div className="w-full max-w-md mt-6 border-t border-[#841A1A]/30 pt-4 space-y-3">
                     <h2 className="text-2xl font-semibold mb-2">Movimiento de Caja</h2>
                     <p><span className="font-semibold">Base Inicial:</span> {formatDecimal(s.initial_cash, true)}</p>
+                    <p className='-mt-3'><span className="font-semibold ">Ventas del día:</span> {s.totalSales}</p>
+
 
                     {/* Totales por métodos de pago */}
                     <div className="bg-[#841A1A]/10 rounded-xl py-3 mt-4 border border-[#841A1A]/20 shadow-sm">
                     <h3 className="font-bold text-xl mb-2">
-                        Totales por Método de Pago
+                      Totales por Método de Pago
                     </h3>
                     <p><span className="font-semibold">Ingreso en Efectivo:</span> {formatDecimal(s.total_cash, true)}</p>
                     <p><span className="font-semibold">Ingreso en Transferencias:</span> {formatDecimal(s.total_transfer, true)}</p>

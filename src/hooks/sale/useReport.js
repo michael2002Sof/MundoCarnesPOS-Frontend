@@ -8,7 +8,7 @@ export default function useReport() {
   const [totalCount, setTotalCount] = useState(1);
   const [invoices, setInvoices] = useState([]);
 
-  const GET_InvoicesByDate = async (date, page = 1) => {
+  const GET_InvoicesByDate = async (date, user, page = 1) => {
     try {
       setLoading(true);
 
@@ -16,10 +16,8 @@ export default function useReport() {
       if (!token) return
 
       const company = token.company;
-      const user = token.id
 
       const res = await axiosInstance.get(`/posinnovate/siigo/sale/report/invoice/pos/by/${date}/${company}/${user}/${page}`);
-      console.log(res.data)
       const {invoices, totalCount, totalPages } = res.data
 
       setInvoices(invoices);
@@ -32,5 +30,22 @@ export default function useReport() {
     }
   };
 
-  return { isLoading, totalPages, invoices, totalCount, GET_InvoicesByDate };
+  const GET_InvoicesToExport = async (date, user) => {
+    try {
+      const token = DecodeToken()
+      if (!token) return
+
+      const company = token.company;
+
+      const res = await axiosInstance.get(`/posinnovate/siigo/sale/report/invoice/pos/by/${date}/${company}/${user}`);
+      return res.data
+    
+    } catch (error) {
+      console.error("Error fetching invoices:", error);
+    }
+  };
+
+
+
+  return { isLoading, totalPages, invoices, totalCount, GET_InvoicesByDate, GET_InvoicesToExport };
 }
