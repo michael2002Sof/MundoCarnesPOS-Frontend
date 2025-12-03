@@ -132,7 +132,7 @@ export default function OpenCloseCash ({sp, user, GET_SalePoint}) {
                 MODAL PARA CONFIRMAR CIERRE DE CAJA
             ===================================================================*/}
             {showCloseModal && (
-                <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 min-h-screen">
+                <div className="fixed inset-0 bg-black/50 flex items-center overflow-auto justify-center z-50 min-h-screen">
                     <div className="bg-[#841A1A] text-amber-100 p-8 rounded-xl w-[480px]">
                         <h2 className="text-xl font-semibold mb-6">Cierre de Caja</h2>
 
