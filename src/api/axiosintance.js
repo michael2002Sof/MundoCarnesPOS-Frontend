@@ -3,7 +3,48 @@ import axios from "axios";
 
 const api = axios.create({
   baseURL: import.meta.env.VITE_API_URL,
+  timeout:  60000
 });
+
+
+// ---- INTERCEPTOR DE REINTENTOS ---- //
+api.interceptors.response.use(
+  (response) => response, // si responde correctamente, devolverlo
+  async (error) => {
+    const config = error.config;
+
+    // Si no hay config, no se puede reintentar
+    if (!config) {
+      return Promise.reject(error);
+    }
+
+    // Crear contador si no existe
+    config.__retryCount = config.__retryCount || 0;
+
+    // Detectar timeout o fallo de conexión
+    const isTimeout =
+      error.code === "ECONNABORTED" ||
+      error.message?.includes("timeout") ||
+      error.message?.includes("Network Error");
+
+    if (isTimeout && config.__retryCount < 2) {
+      config.__retryCount++;
+
+      console.warn(
+        `Timeout o fallo de red. Reintentando (${config.__retryCount}/2)...`
+      );
+
+      // pequeño delay antes de reintentar
+      await new Promise((resolve) => setTimeout(resolve, 300));
+
+      return api.request(config);
+    }
+
+    // Si ya no se puede reintentar, rechazar el error real
+    return Promise.reject(error);
+  }
+);
+
 
 
 const axiosInstance = {
@@ -12,8 +53,8 @@ const axiosInstance = {
       const response = await api.get(url, config);
       return response?.data;
     } catch (error) {
-      console.error("Error in GET request:", error.response.data);
-      throw error.response.data;
+      console.error("Error in GET request:", error?.response?.data);
+      throw error?.response?.data;
     }
   },
 
@@ -29,10 +70,10 @@ const axiosInstance = {
         },
       });
 
-      return response.data;
+      return response?.data;
     } catch (error) {
       console.error("Error in POST request:", error.response.data);
-      throw error.response.data;
+      throw error?.response?.data;
     }
   },
 
@@ -48,10 +89,10 @@ const axiosInstance = {
         },
       });
 
-      return response.data;
+      return response?.data;
     } catch (error) {
-      console.error("Error in PUT request:", error.response?.data || error);
-      throw error.response?.data || error;
+      console.error("Error in PUT request:", error?.response?.data || error);
+      throw error?.response?.data || error;
     }
   },
   
@@ -60,8 +101,8 @@ const axiosInstance = {
       const response = await api.delete(url, config);
       return response?.data;
     } catch (error) {
-      console.error("Error in DELETE request:", error.response?.data || error);
-      throw error.response.data || error;
+      console.error("Error in DELETE request:", error?.response?.data || error);
+      throw error?.response?.data || error;
     }
   },
 };

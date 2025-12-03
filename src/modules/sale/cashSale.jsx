@@ -34,7 +34,7 @@ export default function CashSale() {
     const [selectedCustomer, setSelectedCustomer] = useState(null); // cliente elegido
     const today = moment().tz("America/Bogota").format("YYYY-MM-DD");
     const token = DecodeToken()     
-    const sp = useMemo(() => { return salePoints?.find(sp => sp.user === token.id)}, [salePoints, token.id])  //Punto de venta del usuario]
+    const sp = useMemo(() => { return salePoints?.find(sp => sp.user === token.id)}, [salePoints, token?.id])  //Punto de venta del usuario]
     const resolution = invoicesResolution?.find( ir => ir.sale_point === sp?.id)
     //console.log("Resolucion de fatura: ", resolution)
     const wh = sp?.warehouse
@@ -48,13 +48,13 @@ export default function CashSale() {
 
     const calledRef = useRef({});
     useEffect(() => {
-        if (!sp || sp.status !== "open") return;
+        if (!sp || sp?.status !== "open") return;
 
         if (calledRef.current[sp.id]) return; // ya se llamó antes
 
-        calledRef.current[sp.id] = true;
+        calledRef.current[sp?.id] = true;
 
-        GET_SessionId(sp.id);
+        GET_SessionId(sp?.id);
     }, [sp]);
 
     //console.log("Punto de venta:", sp);
@@ -241,11 +241,11 @@ export default function CashSale() {
     /* -- CONTROL DE PAGOS -- */
     const getCashMethodId = () => {
         if (!sp?.methods) return null;
-        return sp.methods.find(m => m.name.toLowerCase().includes("efectivo"))?.id || null;
+        return sp?.methods?.find(m => m.name.toLowerCase().includes("efectivo"))?.id || null;
     };
     const getTransferMethodId = () => {
         if (!sp?.methods) return null;
-        return sp.methods.find(m =>  m.name.toLowerCase().includes("bancolombia") )?.id || null;
+        return sp?.methods?.find(m =>  m.name.toLowerCase().includes("bancolombia") )?.id || null;
     };
     const cashMethodId = getCashMethodId();
     const transferMethodId = getTransferMethodId();
@@ -356,9 +356,9 @@ export default function CashSale() {
         const invoiceData = {
             ...isBuildInvoice, 
             customer: selectedCustomer,
-            customerName: selectedCustomer.name.join(" ") || "Consumidor Final",
-            customerCC: selectedCustomer.identification || "222222222222",
-            customerAddress: selectedCustomer.address.address || "Sin Direccioón",
+            customerName: selectedCustomer?.name?.join(" ") || "Consumidor Final",
+            customerCC: selectedCustomer?.identification || "222222222222",
+            customerAddress: selectedCustomer?.address?.address || "Sin Direccioón",
             items: itemsPayload, 
             invoiceItem, subtotal, 
             tax0: 0, 
