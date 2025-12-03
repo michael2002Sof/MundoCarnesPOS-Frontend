@@ -30,7 +30,7 @@ export default function useInvoiceSiigo() {
             ...data, 
             code: res?.data?.name, 
             client, 
-            cufe: res?.data?.stamp?.cufe || "--------------------------------"
+            cufe: res?.data?.stamp?.cufe || "Pendiente..."
           }
 
           //console.log("Factura para enviar a mi pos: ", invoicePOS)
