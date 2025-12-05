@@ -1,5 +1,5 @@
 import { useState, useMemo, useEffect, useRef } from "react"
-import { Barcode, Loader2, ShoppingCart, Trash2} from "lucide-react"
+import { Barcode, Loader, Loader2, ShoppingCart, Trash2} from "lucide-react"
 
 import OpenCloseCash from "./cash sale/OpenCloseCash"
 import DecodeToken from "../../api/decode"
@@ -30,6 +30,29 @@ export default function CashSale() {
     const {salePoints, GET_SalePoint} = useSalePoint()      
     const {sessionId, GET_SessionId} = useSessionId() 
     const {invoicesResolution, GET_InvoiceResolution} = useInvoiceResolution()
+
+    const [loadingProduct, setLoadingProduct] = useState(false)
+    const inputScannerRef = useRef()
+    useEffect(() => {
+        // Esta función enfoca el input.
+        const focusInput = () => {
+            if (inputScannerRef.current && !loadingProduct) {
+                inputScannerRef.current.focus();
+            }
+        };
+
+        // 1. Enfoca inmediatamente al cargar
+        focusInput();
+
+        // 2. Escucha el evento 'keydown' en toda la ventana
+        // Cada vez que se presiona una tecla (el escáner lo simula), re-enfoca.
+        window.addEventListener('keydown', focusInput);
+
+        // 3. Limpieza: Remueve el listener cuando el componente se desmonte
+        return () => {
+            window.removeEventListener('keydown', focusInput);
+        };
+    }, [loadingProduct]); // Se re-ejecuta si loadingProduct cambia
 
     const [selectedCustomer, setSelectedCustomer] = useState(null); // cliente elegido
     const today = moment().tz("America/Bogota").format("YYYY-MM-DD");
@@ -174,9 +197,11 @@ export default function CashSale() {
         const prefix = parseInt(barcode.slice(0, 2), 10);
         let product 
         if (barcode.length < 12 && prefix < 20 || prefix > 29) {
+            setLoadingProduct(true)
             const productSiigo = await GET_ProductSiigoByCode(barcode)
             product = useDecodeNormal(productSiigo, wh)
         } else {
+            setLoadingProduct(true)
             const productCode = barcode.slice(2, 7);
             const adjust_code = productCode.padStart(6, "0")
             setBarcode(adjust_code)
@@ -224,6 +249,7 @@ export default function CashSale() {
         });
 
         setBarcode("");
+        setLoadingProduct(false)
     };
 
     /*=======================================================================
@@ -433,8 +459,22 @@ export default function CashSale() {
                         <div className="flex items-center gap-3 mb-3">
                         <Barcode /><h3 className="text-lg font-bold">Escáner</h3>
                         </div>
-                        <form onSubmit={handleScan} className="flex gap-2">
-                            <input value={barcode} onChange={(e) => setBarcode(e.target.value)} className="flex-1 p-2 focus:outline-none rounded-lg bg-[#6E1515]" placeholder="Escanea o escribe código" autoFocus />
+                        <form onSubmit={handleScan} className="flex gap-2 items-center relative">
+                            <input 
+                                ref={inputScannerRef} 
+                                value={barcode}  
+                                disabled={loadingProduct} 
+                                onChange={(e) => setBarcode(e.target.value)} 
+                                className="flex-1 p-2 focus:outline-none rounded-lg bg-[#6E1515]" 
+                                placeholder="Escanea o escribe código" 
+                                autoFocus 
+                            />
+                            {loadingProduct && (
+                                <div className="flex gap-2 absolute text-amber-100/50 right-2 items-center">
+                                    <Loader className="animate-spin self-center" size={24}/>
+                                    <p>Cargando producto...</p>
+                                </div>
+                            )}
                         </form>
                     </section>
 
