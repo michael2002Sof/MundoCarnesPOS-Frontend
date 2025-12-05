@@ -34,25 +34,31 @@ export default function CashSale() {
     const [loadingProduct, setLoadingProduct] = useState(false)
     const inputScannerRef = useRef()
     useEffect(() => {
-        // Esta función enfoca el input.
-        const focusInput = () => {
-            if (inputScannerRef.current && !loadingProduct) {
-                inputScannerRef.current.focus();
+        const focusInput = (e) => {
+            if (!inputScannerRef.current || loadingProduct) return;
+
+            const active = document.activeElement;
+
+            // Si el elemento activo es un input, textarea o select → NO ROBAR FOCO
+            const isTypingField =
+                ["INPUT", "TEXTAREA", "SELECT"].includes(active.tagName);
+
+            if (isTypingField) {
+                // Solo dejar que tome el foco si ES el input del escáner
+                if (active !== inputScannerRef.current) return;
             }
+
+            // Caso contrario → forzar foco al escáner
+            inputScannerRef.current.focus();
         };
 
-        // 1. Enfoca inmediatamente al cargar
-        focusInput();
+        // Usar solo keydown de ESCÁNER → evitar uso normal del teclado
+        window.addEventListener("keydown", focusInput);
 
-        // 2. Escucha el evento 'keydown' en toda la ventana
-        // Cada vez que se presiona una tecla (el escáner lo simula), re-enfoca.
-        window.addEventListener('keydown', focusInput);
+        return () => window.removeEventListener("keydown", focusInput);
+    }, [loadingProduct]);
 
-        // 3. Limpieza: Remueve el listener cuando el componente se desmonte
-        return () => {
-            window.removeEventListener('keydown', focusInput);
-        };
-    }, [loadingProduct]); // Se re-ejecuta si loadingProduct cambia
+
 
     const [selectedCustomer, setSelectedCustomer] = useState(null); // cliente elegido
     const today = moment().tz("America/Bogota").format("YYYY-MM-DD");
@@ -582,6 +588,7 @@ export default function CashSale() {
                             className="bg-[#6E1515] w-1/2 px-4 py-1 rounded-lg outline-none text-white"
                                 value={formatMoney(paymentValues[m.id] || "")}
                             onChange={(e) => handlePaymentChange(m.id, e.target.value)}
+                            name="payment"
                         />
                     </section>
                 ))}
@@ -592,6 +599,7 @@ export default function CashSale() {
                         readOnly
                         value={formatMoney(repay)}
                         className="w-full  rounded-lg outline-none font-semibold opacity-70"
+                        name="repay"
                     />
                 </section>
 
