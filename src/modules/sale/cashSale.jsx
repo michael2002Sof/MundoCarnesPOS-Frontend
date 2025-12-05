@@ -33,6 +33,8 @@ export default function CashSale() {
 
     const [loadingProduct, setLoadingProduct] = useState(false)
     const inputScannerRef = useRef()
+    const cashInputRef = useRef(null); 
+    const transferInputRef = useRef(null);
     useEffect(() => {
         const focusInput = (e) => {
             if (!inputScannerRef.current || loadingProduct) return;
@@ -57,6 +59,37 @@ export default function CashSale() {
 
         return () => window.removeEventListener("keydown", focusInput);
     }, [loadingProduct]);
+    // ... useEffect para el focus del escáner (existing)
+
+    // 🆕 NUEVO useEffect PARA ATAJOS DE PAGO
+    useEffect(() => {
+        const handlePaymentShortcuts = (e) => {
+            // Asegúrate de que Ctrl (o Cmd en Mac) esté presionado
+            if (!e.ctrlKey && !e.metaKey) return; 
+
+            // Determinar a qué input dirigir el foco
+            let targetRef = null;
+
+            if (e.key === 'e' || e.key === 'E') {
+                targetRef = cashInputRef;
+            } else if (e.key === 'b' || e.key === 'B') {
+                targetRef = transferInputRef;
+            }
+
+            if (targetRef && targetRef.current) {
+                e.preventDefault(); // Previene el comportamiento por defecto (ej. buscar en el navegador)
+                targetRef.current.focus();
+                // Opcional: Seleccionar el texto actual para facilitar la sobreescritura
+                targetRef.current.select(); 
+            }
+        };
+
+        window.addEventListener("keydown", handlePaymentShortcuts);
+
+        return () => window.removeEventListener("keydown", handlePaymentShortcuts);
+    }, []); // El array de dependencias vacío asegura que se ejecute solo una vez al montar
+
+    // ... lógica de cliente, fechas, token
 
 
 
@@ -584,9 +617,10 @@ export default function CashSale() {
                         <label className="font-semibold w-1/2 text-nowrap overflow-hidden text-ellipsis text-sm">{m.name}:</label>
                         
                         <input
+                            ref={m.id === cashMethodId ? cashInputRef : m.id === transferMethodId ? transferInputRef : null}
                             type="text"
                             className="bg-[#6E1515] w-1/2 px-4 py-1 rounded-lg outline-none text-white"
-                                value={formatMoney(paymentValues[m.id] || "")}
+                            value={formatMoney(paymentValues[m.id] || "")}
                             onChange={(e) => handlePaymentChange(m.id, e.target.value)}
                             name="payment"
                         />
