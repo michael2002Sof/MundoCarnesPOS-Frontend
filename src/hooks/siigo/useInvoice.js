@@ -6,7 +6,6 @@ import DecodeToken from "../../api/decode";
 
 export default function useInvoiceSiigo() {
   const [isLoading, setLoading] = useState(false);
-  const [typeInvoiceSiigo, setTypeInvoice] = useState()
 
   const POST_InvoiceSiigo = async (invoice) => {
       try {
@@ -44,19 +43,5 @@ export default function useInvoiceSiigo() {
       }
   };
 
-
-  const GET_TypeInvoices = async () => {
-      try {
-          const token = DecodeToken();
-          if (!token) return;
-
-          const company = token.company;
-          const res = await axiosInstance.get(`/posinnovate/siigo/sale/invoice/type/${company}`)
-          setTypeInvoice(res.data)
-      } catch (error) {
-          toast.error(error.message)
-      }
-  }
-
-  return { isLoading, typeInvoiceSiigo, POST_InvoiceSiigo };
+  return { isLoading, POST_InvoiceSiigo };
 }
