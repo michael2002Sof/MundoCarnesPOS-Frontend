@@ -112,7 +112,7 @@ export default function useInvoiceSiigo() {
         company: token?.company, 
         seller: token?.id
       }
-      //console.log("Factura generada", data)
+      console.log("Factura generada", data)
 
 
       // -------------------------------------------------------
@@ -135,7 +135,7 @@ export default function useInvoiceSiigo() {
         client: resSiigo?.data?.customer?.id || "36faa3ab-12cf-45b8-b144-d3c91e6731d2", 
         cufe: resSiigo?.data?.stamp?.cufe || "SIN-CUFE"
       }
-      //console.log("Enviando a POS:", invoicePOS);
+      console.log("Enviando a POS:", invoicePOS);
 
       // -------------------------------------------------------
       // 2. FACTURA POS (CON RETRY & FALLBACK)
