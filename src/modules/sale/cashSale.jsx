@@ -356,7 +356,7 @@ export default function CashSale() {
     let payments = sp?.methods.map(m => {
         let value = 0;
         if (m.id === cashMethodId) value = receipt_cash 
-        if (m.id === transferMethodId) value = receipt_transfer
+        if (m.id === transferMethodId) value = total
 
         return { id: m.id, value, due_date: today };
     }).filter(p => p.value > 0);
@@ -376,7 +376,7 @@ export default function CashSale() {
 
     // Confirmar pago: registrar venta + descontar stock + imprimir factura + limpiar carrito
     const handleConfirmPayment = async () => {
-        if (total_payment < total) {
+        if (total_payment < Math.round(total)) {
             toast.error("El monto recibido es menor al total");
             return;
         }
@@ -433,7 +433,7 @@ export default function CashSale() {
             tax0: 0, 
             tax5: tax5Total, 
             tax19: tax19Total, 
-            total,
+            total: Math.round(total),
             payments,
             receipt_cash,
             receipt_transfer,
