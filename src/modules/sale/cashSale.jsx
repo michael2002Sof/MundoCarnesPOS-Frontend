@@ -277,11 +277,15 @@ export default function CashSale() {
         } else {
             const newCart = [...tab.cart];
             const found = { ...newCart[existingIndex] };
-            found.quantity = (found.quantity || 1) + 1;
-            found.subtotal = found.subtotal + product.subtotal
-            found.tax5 = found.tax5 + product.tax5; // si tu iva es por unidad ajustar según lógica
-            found.tax19 = found.tax19 + product.tax19;
-            found.total = Math.round(found.total + product.total);
+            found.quantity += 1
+            found.subtotal = found.subtotal * found.quantity
+            console.log(found.subtotal)
+            found.tax5 = found.tax5 > 0 && Number( (found.subtotal * 0.05).toFixed(2) ); // si tu iva es por unidad ajustar según lógica
+            found.tax19 = found.tax19 > 0 && Number( (found.subtotal * 0.19).toFixed(2) )
+            console.log(found.tax19)
+            found.total = found.subtotal + found.tax5 + found.tax19
+            console.log(found.subtotal, found.tax5, found.tax19)
+            console.log(found.total)
             newCart[existingIndex] = found;
             return { ...tab, cart: newCart };
         }
