@@ -356,7 +356,7 @@ export default function CashSale() {
     let payments = sp?.methods.map(m => {
         let value = 0;
         if (m.id === cashMethodId) value = receipt_cash 
-        if (m.id === transferMethodId) value = total
+        if (m.id === transferMethodId) value = receipt_transfer
 
         return { id: m.id, value, due_date: today };
     }).filter(p => p.value > 0);
