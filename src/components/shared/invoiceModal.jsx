@@ -43,12 +43,7 @@
     if (!invoice) return null;
 
     const {
-      company,
       code,
-      nit,
-      address,
-      city,
-      cell,
       caja,
       created_at,
       client,
@@ -107,11 +102,11 @@
                 </h2>
                 {/* Datos de empresa */}
                 <div className="text-center mb-2">
-                  <p className="font-semibold text-[12px]">{company}</p>
-                  <p>NIT: {nit}</p>
-                  <p>{address}</p>
-                  <p>{city}</p>
-                  <p>Tel: {cell}</p>
+                  <p className="font-semibold text-[12px]">Mundo Carnes SAS</p>
+                  <p>NIT: 901586875-0</p>
+                  <p>LC P1 27 CENABASTOS</p>
+                  <p>Cúcuta</p>
+                  <p>Tel: 3135670567</p>
                   <p><strong>Caja:</strong> {caja}</p>
                 </div>  
               </div>
@@ -123,8 +118,8 @@
               <p><strong>Factura N°:</strong> {code}</p>
               <p><strong>Fecha:</strong> {created_at}</p>
               <p><strong>Cliente:</strong> {client || "Consumidor Final"}</p>
-              <p><strong>CC/NIT:</strong> {cc || "----"}</p>
-              <p><strong>Dirección:</strong> {address_client || "----"}</p>
+              <p><strong>CC/NIT:</strong> {cc || "222222222222"}</p>
+              <p><strong>Dirección:</strong> {address_client || "Sin Dirección"}</p>
               <p><strong>Vendedor:</strong> {vendedor}</p>
             </div>
 
