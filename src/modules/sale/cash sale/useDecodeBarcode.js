@@ -23,16 +23,16 @@ export function useDecodeScale (productSiigo, weight, wh)  {
 
     // ✔ Si tiene IVA 5%
     if (hasTax5) {
-    subtotal = Number((total / 1.05).toFixed(2))
+    subtotal = Number( (total / 0.05).toFixed(2) )
     price = base_price / 1.05
-    tax5 = (subtotal * 0.05).toFixed(2)
+    tax5 = Number( (subtotal * 0.05).toFixed(2) )
     }
 
     // ✔ Si tiene IVA 19%
     if (hasTax19) {
-    subtotal = Number((total / 1.19).toFixed(2))
+    subtotal = Number( (total / 1.19).toFixed(2) )
     price = base_price / 1.19
-    tax19 = (subtotal * 0.19).toFixed(2)
+    tax19 = Number( (subtotal * 0.19).toFixed(2) )
     }
 
 
@@ -48,9 +48,9 @@ export function useDecodeScale (productSiigo, weight, wh)  {
     subtotal,
     warehouse: wh,
     tax0: isTax0,
-    tax5: Math.trunc(tax5 * 100) / 100,
-    tax19 : Math.trunc(tax19 * 100) / 100,
-    total: total,
+    tax5,
+    tax19,
+    total,
     isScale: true,
     };
 };
@@ -80,14 +80,14 @@ export function useDecodeNormal (productSiigo, wh) {
 
     // ✔ Si tiene IVA 5%
     if (hasTax5) {
-    subtotal = Number((total / 0.05).toFixed(2))
-    tax5 = (subtotal * 0.05).toFixed(2)
+    subtotal = Number( (total / 0.05).toFixed(2) )
+    tax5 = Number( (subtotal * 0.05).toFixed(2) )
     }
 
     // ✔ Si tiene IVA 19%
     if (hasTax19) {
-    subtotal = Number((total / 1.19).toFixed(2))
-    tax19 = (subtotal * 0.19).toFixed(2)
+    subtotal = Number( (total / 1.19).toFixed(2) )
+    tax19 = Number( (subtotal * 0.19).toFixed(2) )
     }
 
   
@@ -104,8 +104,8 @@ export function useDecodeNormal (productSiigo, wh) {
         name: product.name,
         subtotal,
         tax0: isTax0,
-        tax5: Math.trunc(tax5 * 100) / 100,
-        tax19 : Math.trunc(tax19 * 100) / 100,
+        tax5,
+        tax19,
         total,
         isScale: false
     };
