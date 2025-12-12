@@ -350,7 +350,7 @@ export default function CashSale() {
     const repay = Math.max((cash + transfer) - total, 0) // nunca negativo
 
     const receipt_cash =  parseFloat((cash - repay).toFixed(2))
-    const receipt_transfer = transfer 
+    const receipt_transfer = Math.round(total) === transfer ? total : transfer
     const total_payment = receipt_cash + receipt_transfer
 
     let payments = sp?.methods.map(m => {
@@ -376,7 +376,7 @@ export default function CashSale() {
 
     // Confirmar pago: registrar venta + descontar stock + imprimir factura + limpiar carrito
     const handleConfirmPayment = async () => {
-        if (total_payment < Math.round(total)) {
+        if (total_payment < total) {
             toast.error("El monto recibido es menor al total");
             return;
         }
@@ -429,16 +429,17 @@ export default function CashSale() {
             customerCC: selectedCustomer?.identification || "222222222222",
             customerAddress: selectedCustomer?.address?.address || "Sin Direccioón",
             items: itemsPayload, 
-            invoiceItem, subtotal, 
+            invoiceItem, 
+            subtotal: Math.round(subtotal), 
             tax0: 0, 
             tax5: tax5Total, 
             tax19: tax19Total, 
             total: Math.round(total),
             payments,
-            receipt_cash,
-            receipt_transfer,
-            repay,
-            total_payment,
+            receipt_cash: Math.round(receipt_cash),
+            receipt_transfer: Math.round(receipt_transfer),
+            repay: Math.round( (repay).toFixed(2) ),
+            total_payment: Math.round(total_payment),
             cash_session: sessionId
         }
 
