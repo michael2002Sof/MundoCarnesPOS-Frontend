@@ -23,13 +23,13 @@ export default function SalesBySessionChart({ data = [], from, to }) {
     }
 
     const DAYS_ES = {
-        Sun: "Dom",
-        Mon: "Lun",
-        Tue: "Mar",
-        Wed: "Mié",
-        Thu: "Jue",
-        Fri: "Vie",
-        Sat: "Sáb"
+        Sun: "Domingo",
+        Mon: "Lunes",
+        Tue: "Martes",
+        Wed: "Miércoles",
+        Thu: "Jueves",
+        Fri: "Viernes",
+        Sat: "Sábado"
     };
 
     function getWeekOfMonth(date) {
