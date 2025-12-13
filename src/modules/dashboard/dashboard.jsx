@@ -28,7 +28,7 @@ export default function Dashboard() {
     const stats = [
         {
             icon: <DollarSign />,
-            title: "Ganancias",
+            title: "Total en Ventas",
             valor: formatDecimal(totalGanancias, true),
             color: "bg-[#841A1A] text-amber-100"
         },
