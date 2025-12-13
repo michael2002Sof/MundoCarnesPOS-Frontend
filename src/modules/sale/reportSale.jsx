@@ -66,25 +66,25 @@ export default function ReportSale() {
       title: "Total Ventas",
       icon: <DollarSign />,
       valor: formatDecimal(totalVentas, true),
-      color: "bg-[#841A1A] text-white",
+      color: "bg-[#841A1A] text-amber-100",
     },
     {
       title: "Promedio por Caja",
       icon: <Target />,
       valor: formatDecimal(promedioVentas, true),
-      color: "bg-[#841A1A] text-white",
+      color: "bg-[#841A1A] text-amber-100",
     },
     {
       title: "Total en Efectivo",
       icon: <Wallet />,
       valor: formatDecimal(totalEfectivo, true),
-      color: "bg-[#841A1A] text-white",
+      color: "bg-[#841A1A] text-amber-100",
     },
     {
       title: "Total en Transferencias",
       icon: <CreditCard />,
       valor: formatDecimal(totalTransferencias, true),
-      color: "bg-[#841A1A] text-white",
+      color: "bg-[#841A1A] text-amber-100",
     }
   ];
 

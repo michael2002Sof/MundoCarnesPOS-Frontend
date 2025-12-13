@@ -4,6 +4,7 @@ import { useNavigate } from "react-router-dom";
 
 import axiosInstance from "../api/axiosintance";
 import handleInputChange from "../utils/useHandleInputChange";
+import DecodeToken from "../api/decode";
 
 export default function Login() {
   const navigate = useNavigate()
@@ -20,7 +21,13 @@ export default function Login() {
       res = await axiosInstance.post("/posinnovate/siigo/auth/login", user)
       setMessage(res.message)
       sessionStorage.setItem("token", res.token)
-      setTimeout(() => {  navigate("/home") }, 2000);
+
+      const token = DecodeToken()
+      if (token?.rol === "admin") {
+        setTimeout(() => {  navigate("/dashboard") }, 2000);
+      } else {
+        setTimeout(() => {  navigate("/sale") }, 2000);
+      }
     } catch (error) {
       setMessage(error.message)
     } finally {

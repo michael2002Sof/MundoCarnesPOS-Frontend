@@ -9,6 +9,8 @@ import Profile from "./pages/profile"
 import Account from "./pages/account"
 import PaymentMethodPage from "./pages/paymentMethod"
 
+import Dashboard from "./modules/dashboard/dashboard"
+
 import ModuleIndex from "./components/shared/moduleIndex"
 
 import Role from "./modules/user/role"
@@ -37,6 +39,8 @@ const MundoCarnesPosRoutes = [
             { path: "/profile", element: <Profile/> },
             { path: "/account-sync", element: <Account/> },
             { path: "/payment-method", element: <PaymentMethodPage/> },
+
+            {path: "/dashboard", element: <Dashboard/> },
 
 
             /*========================================================

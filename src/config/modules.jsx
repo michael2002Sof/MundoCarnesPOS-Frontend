@@ -1,6 +1,12 @@
-import { Boxes, ShoppingCart, Users, UserCog } from "lucide-react"
+import { Boxes, ShoppingCart, UserCog, LayoutDashboard } from "lucide-react"
 
 const Modules = [
+    {
+        icon: <LayoutDashboard/>,
+        name: "Dasboard",
+        description: "Mira las estadisticas de tu empresa",
+        to: "/dashboard"
+    },
     {
         icon: <UserCog/>,
         name: "Usuarios",

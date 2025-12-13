@@ -7,6 +7,7 @@ export default function useReport() {
   const [totalPages, setTotalPages] = useState(1);
   const [totalCount, setTotalCount] = useState(1);
   const [invoices, setInvoices] = useState([]);
+  const [sessionStatic, setSessionStatic] = useState([])
 
   const GET_InvoicesByDate = async (date, user, page = 1) => {
     try {
@@ -45,7 +46,25 @@ export default function useReport() {
     }
   };
 
+  const GET_SessionStatic = async (from, to) => {
+    try {
+      setLoading(true)
+
+      const token = DecodeToken()
+      if (!token) return
+
+      const company = token.company
+      const res = await axiosInstance.get(`/posinnovate/siigo/sale/report/session/${company}/${from}/${to}`)
+      setSessionStatic(res.data)
+      
+    } catch (error) {
+      console.log(error)
+    } finally {
+      setLoading(false)
+    }
+  }
 
 
-  return { isLoading, totalPages, invoices, totalCount, GET_InvoicesByDate, GET_InvoicesToExport };
+
+  return { isLoading, totalPages, invoices, totalCount, sessionStatic, GET_SessionStatic, GET_InvoicesByDate, GET_InvoicesToExport };
 }
