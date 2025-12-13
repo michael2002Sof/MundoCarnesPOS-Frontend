@@ -9,13 +9,12 @@ import {formatDecimal} from "../../utils/formatData"
 
 export default function Dashboard() {
     const { sessionStatic, GET_SessionStatic, loading } = useReport();
-    console.log(sessionStatic)
 
     const [from, setFrom] = useState(
         moment().startOf("month").format("YYYY-MM-DD")
     );
     const [to, setTo] = useState(
-        moment().endOf("month").format("YYYY-MM-DD")
+        moment().format("YYYY-MM-DD")
     );
     useEffect(() => {
         GET_SessionStatic(from, to);

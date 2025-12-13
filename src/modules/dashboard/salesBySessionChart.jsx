@@ -43,7 +43,7 @@ export default function SalesBySessionChart({ data = [], from, to }) {
         const map = {};
 
         data.forEach(row => {
-            const date = moment(row.period);
+            const date = moment.utc(row.period);
 
             let label;
             if (mode === "day") label = DAYS_ES[date.format("ddd")];
