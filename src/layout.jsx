@@ -123,7 +123,7 @@ export default function AppLayout() {
             </header>
            <main className="flex flex-1">
                 {/* Sidebar */}
-                {plan?.status !== 'suspended' && (
+                {!showSuspendedWarning && (
                     <div
                         style={{ height: contentHeight }}
                         className={`bg-[#841A1A] text-amber-100 overflow-y-auto hidden lg:flex p-3 flex-col items-center space-y-2 min-h-full transition-all duration-300 ${

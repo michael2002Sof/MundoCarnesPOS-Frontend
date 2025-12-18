@@ -80,14 +80,20 @@ export function useDecodeNormal (productSiigo, wh) {
 
     // ✔ Si tiene IVA 5%
     if (hasTax5) {
-    subtotal = Number( (total / 0.05).toFixed(2) )
-    tax5 = Number( (subtotal * 0.05).toFixed(2) )
+        const rawSubtotal = total / 1.05
+        const rawTax = rawSubtotal * 0.05
+
+        subtotal = Number((rawSubtotal).toFixed(2))
+        tax5 = Number((rawTax).toFixed(2))
     }
 
     // ✔ Si tiene IVA 19%
     if (hasTax19) {
-    subtotal = Number( (total / 1.19).toFixed(2) )
-    tax19 = Number( (subtotal * 0.19).toFixed(2) )
+        const rawSubtotal = total / 1.19
+        const rawTax = rawSubtotal * 0.19
+
+        subtotal = Number(rawSubtotal.toFixed(2))
+        tax19 = Number(rawTax.toFixed(2))
     }
 
   
