@@ -100,7 +100,7 @@ export default function useInvoiceSiigo() {
       console.log("Enviando a POS:", payloadPOS);
 
       // 2) Backup local *DESPUÉS* de Siigo y *ANTES* de POS
-      const backupId = `${payloadPOS.code}-${Date.now()}`;
+      const backupId = `${payloadPOS.code}`;
       upsertBackup({
         backupId,
         status: "SIIGO_OK_POS_PENDING",
