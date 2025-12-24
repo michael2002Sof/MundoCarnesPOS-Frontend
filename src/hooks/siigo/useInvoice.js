@@ -108,19 +108,18 @@ export default function useInvoiceSiigo() {
       });
 
       // 3) Facturar en POS (payload mínimo)
-      try {
-        const resPOS = await axiosInstance.post(`/posinnovate/siigo/sale/invoice/pos`, payloadPOS);
-        toast.success(resPOS.message);
-      } catch (error) {
-        toast.error( "Factura creada en Siigo, pero no se pudo registrar en POS. Se reintentará automáticamente.");
-      }
+      const resPOS = await axiosInstance.post(`/posinnovate/siigo/sale/invoice/pos`, payloadPOS);
+      toast.success(resPOS?.message);
 
       // 4) Eliminar backup si todo salió bien
       removeBackup(backupId);
 
       return resPOS?.data;
     } catch (error) {
-      toast.error(error.message);
+      toast.error(error?.message);
+      if (localStorage.getItem("backup_invoices")) {
+        console.log("Factura hecha unicamente en Siigo. Se ha guardado un backup para reintentar más tarde en POS.");
+      }
     } finally {
       setLoading(false);
     }
