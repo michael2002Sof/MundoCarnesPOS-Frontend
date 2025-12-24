@@ -117,7 +117,7 @@ export default function useInvoiceSiigo() {
       return resPOS?.data;
     } catch (error) {
       toast.error(error?.message);
-      if (localStorage.getItem("backup_invoices")) {
+      if (localStorage.getItem(LS_KEY_BACKUP_INVOICES)?.length > 0) {
         console.log("Factura hecha unicamente en Siigo. Se ha guardado un backup para reintentar más tarde en POS.");
       }
     } finally {
