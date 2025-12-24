@@ -1,160 +1,124 @@
-import { useEffect, useState, useRef, useCallback } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import toast from "react-hot-toast";
 
 import axiosInstance from "../../api/axiosintance";
 import DecodeToken from "../../api/decode";
 
-const LS_KEY_FAILED_INVOICES = "failed_pos_invoices";
 
 export default function useInvoiceSiigo() {
   const [isLoading, setLoading] = useState(false);
-  const isSyncingRef = useRef(false);
+  const LS_KEY_BACKUP_INVOICES = "backup_invoices";
+  const isProcessingRef = useRef(false);
+  const timerRef = useRef(null);
 
-  // -------------------------------------------------------
-  // HELPER: RETRY LOGIC (Genérico)
-  // -------------------------------------------------------
-  const retryRequest = async (callback, retries = 1, delay = 1500) => {
+
+  // --- backups helpers (mínimo) ---
+  const readBackups = () => {
+    try { return JSON.parse(localStorage.getItem(LS_KEY_BACKUP_INVOICES) || "[]"); }
+    catch { return []; }
+  };
+  const writeBackups = (list) => localStorage.setItem(LS_KEY_BACKUP_INVOICES, JSON.stringify(list));
+  const upsertBackup = (backup) => {
+    const list = readBackups();
+    const idx = list.findIndex((b) => b.backupId === backup.backupId);
+    if (idx >= 0) list[idx] = backup; else list.unshift(backup);
+    writeBackups(list);
+  };
+  const removeBackup = (backupId) => writeBackups(readBackups().filter((b) => b.backupId !== backupId));
+
+  // --- reprocesar backups pendientes ---
+  const processBackups = useCallback(async () => {
+    if (isProcessingRef.current) return;
+
+    const backups = readBackups();
+    if (backups.length === 0) return;
+
+    isProcessingRef.current = true;
+
     try {
-      return await callback();
-    } catch (err) {
-      if (retries <= 0) throw err;
-      await new Promise((res) => setTimeout(res, delay));
-      return retryRequest(callback, retries - 1, delay);
+      const backup = backups[backups.length - 1]; // el más antiguo
+      const { backupId, payloadPOS } = backup;
+
+      console.log("⏳ Reintentando backup:", backupId);
+
+      await axiosInstance.post(
+        `/posinnovate/siigo/sale/invoice/pos`,
+        payloadPOS
+      );
+
+      console.log("✅ Backup procesado:", backupId);
+      removeBackup(backupId);
+    } catch (error) {
+      console.log("❌ Falló reproceso, se mantiene en cola");
+      // NO se elimina
+    } finally {
+      isProcessingRef.current = false;
     }
-  };
-
-  // -------------------------------------------------------
-  // HELPER: LOCAL STORAGE MANAGER (Lectura segura)
-  // -------------------------------------------------------
-  const getQueue = () => {
-    try {
-      return JSON.parse(localStorage.getItem(LS_KEY_FAILED_INVOICES) || "[]");
-    } catch (e) {
-      return [];
-    }
-  };
-
-  const addToQueue = (invoice) => {
-    const current = getQueue();
-    // Evitar duplicados basados en el código de factura si es posible
-    if (!current.find((i) => i.code === invoice.code)) {
-      localStorage.setItem(LS_KEY_FAILED_INVOICES, JSON.stringify([...current, invoice]));
-    }
-  };
-
-  // -------------------------------------------------------
-  // PROCESO DE FONDO (BACKGROUND SYNC)
-  // -------------------------------------------------------
-  const processPendingInvoices = useCallback(async () => {
-    // Si ya está sincronizando, no hacer nada (semáforo)
-    if (isSyncingRef.current) return;
-    
-    const queue = getQueue();
-    if (queue.length === 0) return;
-
-    isSyncingRef.current = true;
-    console.log(`🔄 Sincronizando ${queue.length} facturas pendientes...`);
-
-    const successfulCodes = [];
-
-    // Iteramos secuencialmente para no saturar el servidor
-    for (const invoice of queue) {
-      try {
-        await axiosInstance.post(`/posinnovate/siigo/sale/invoice/pos`, invoice);
-        
-        // Solo mostramos toast si es relevante, para no spamear al usuario
-        toast.success(`Factura ${invoice.code} sincronizada correctamente`, { id: `sync-${invoice.code}` });
-        successfulCodes.push(invoice.code);
-      } catch (err) {
-        console.warn(`⚠️ Falló reintento background para ${invoice.code}:`, err.message);
-        // No hacemos nada, se queda en la lista para la próxima vuelta
-      }
-    }
-
-    // Actualización SEGURA del LocalStorage
-    if (successfulCodes.length > 0) {
-      // Re-leemos la cola por si se agregó algo nuevo mientras procesábamos (Concurrency safety)
-      const currentQueue = getQueue(); 
-      const newQueue = currentQueue.filter(inv => !successfulCodes.includes(inv.code));
-      localStorage.setItem(LS_KEY_FAILED_INVOICES, JSON.stringify(newQueue));
-    }
-
-    isSyncingRef.current = false;
   }, []);
 
-
-  // -------------------------------------------------------
-  // USE EFFECT: INTERVALO
-  // -------------------------------------------------------
   useEffect(() => {
-    // Ejecutar al montar para limpiar pendientes viejos
-    processPendingInvoices();
+    const tick = async () => {
+      await processBackups();
+      timerRef.current = setTimeout(tick, 60000); // 1 minuto
+    };
 
-    const interval = setInterval(() => {
-      processPendingInvoices();
-    }, 3 * 60 * 1000); // 3 minutos
+    timerRef.current = setTimeout(tick, 60000);
 
-    return () => clearInterval(interval);
-  }, [processPendingInvoices]);
+    return () => {
+      if (timerRef.current) clearTimeout(timerRef.current);
+    };
+  }, [processBackups]);
 
 
-  // -------------------------------------------------------
-  // FUNCIÓN PRINCIPAL: CREAR FACTURA
-  // -------------------------------------------------------
+
+
   const POST_InvoiceSiigo = async (invoice) => {
     setLoading(true);
+
+    const token = DecodeToken();
+    if (!token) {
+      setLoading(false);
+      return;
+    }
+
+    // Datos base (los que se envían a Siigo)
+    const baseData = { ...invoice, company: token?.company, seller: token?.id };
+    console.log("Factura generada", baseData );
+
     try {
-      const token = DecodeToken();
-      if (!token) return;
+      // 1) Crear factura en Siigo
+      const resSiigo = await axiosInstance.post(`/posinnovate/siigo/sale/invoice`, baseData);
+      toast.success(resSiigo?.message);
 
-      const data = {
-        ...invoice, 
-        company: token?.company, 
-        seller: token?.id
-      }
-      console.log("Factura generada", data)
+      const siigoInvoice = resSiigo?.data;
 
+      const code = siigoInvoice?.name  || "Pendiente...";
+      const client = siigoInvoice?.customer?.id || "36faa3ab-12cf-45b8-b144-d3c91e6731d2";
+      const cufe = siigoInvoice?.stamp?.cufe || "Pendiente...";
 
-      // -------------------------------------------------------
-      // 1. CREAR FACTURA EN SIIGO
-      // Si falla aquí, se detiene todo y lanza error.
-      // -------------------------------------------------------
-      let resSiigo
+      const payloadPOS = { ...baseData, code, client, cufe };
+      console.log("Enviando a POS:", payloadPOS);
+
+      // 2) Backup local *DESPUÉS* de Siigo y *ANTES* de POS
+      const backupId = `${payloadPOS.code}-${Date.now()}`;
+      upsertBackup({
+        backupId,
+        status: "SIIGO_OK_POS_PENDING",
+        payloadPOS,
+      });
+
+      // 3) Facturar en POS (payload mínimo)
       try {
-        resSiigo = await axiosInstance.post( `/posinnovate/siigo/sale/invoice`, data);
-        toast.success(resSiigo.message)
+        const resPOS = await axiosInstance.post(`/posinnovate/siigo/sale/invoice/pos`, payloadPOS);
+        toast.success(resPOS.message);
       } catch (error) {
-        toast.error(error.message);
-        throw error
+        toast.error( "Factura creada en Siigo, pero no se pudo registrar en POS. Se reintentará automáticamente.");
       }
 
-      // Preparar datos para POS con la info oficial de Siigo
-      const invoicePOS = {
-        ...data, 
-        code: resSiigo?.data?.name || "SIN-CODIGO", 
-        client: resSiigo?.data?.customer?.id || "36faa3ab-12cf-45b8-b144-d3c91e6731d2", 
-        cufe: resSiigo?.data?.stamp?.cufe || "SIN-CUFE"
-      }
-      console.log("Enviando a POS:", invoicePOS);
+      // 4) Eliminar backup si todo salió bien
+      removeBackup(backupId);
 
-      // -------------------------------------------------------
-      // 2. FACTURA POS (CON RETRY & FALLBACK)
-      // -------------------------------------------------------
-      const registerPOS = async () => axiosInstance.post( `/posinnovate/siigo/sale/invoice/pos`, invoicePOS)
-      try {
-        const resPOS = await retryRequest(registerPOS, 1)
-        toast.success(resPOS.message)
-        return resPOS.data
-      } catch (error) {
-        // -------------------------------------------------------
-        // 3. FALLBACK: GUARDAR EN LOCAL (OFFLINE MODE)
-        // -------------------------------------------------------
-        addToQueue(invoicePOS);
-        toast("Factura guardada localmente. Se sincronizará automáticamente en 3 minutos", {
-          icon: '⚠️',
-          duration: 5000
-        });
-      }
+      return resPOS?.data;
     } catch (error) {
       toast.error(error.message);
     } finally {
