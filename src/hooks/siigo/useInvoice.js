@@ -82,7 +82,7 @@ export default function useInvoiceSiigo() {
     }
 
     // Datos base (los que se envían a Siigo)
-    const baseData = { ...invoice, company: token?.company, seller: token?.id };
+    const baseData = { ...invoice, company: token.company, seller: token.id };
     console.log("Factura generada", baseData );
 
     try {
@@ -90,11 +90,15 @@ export default function useInvoiceSiigo() {
       const resSiigo = await axiosInstance.post(`/posinnovate/siigo/sale/invoice`, baseData);
       toast.success(resSiigo?.message);
 
-      const siigoInvoice = resSiigo?.data;
+      const siigoInvoice = resSiigo?.data ?? {};
 
-      const code = siigoInvoice?.name  || "Pendiente...";
-      const client = siigoInvoice?.customer?.id || "36faa3ab-12cf-45b8-b144-d3c91e6731d2";
-      const cufe = siigoInvoice?.stamp?.cufe || "Pendiente...";
+      const code = siigoInvoice?.name  ?? "Pendiente...";
+      const client = siigoInvoice?.customer?.id ?? "36faa3ab-12cf-45b8-b144-d3c91e6731d2";
+      const cufe = siigoInvoice?.stamp?.cufe ?? "Pendiente...";
+
+      // const code = "FV-10-1663";
+      // const client = "36faa3ab-12cf-45b8-b144-d3c91e6731d2";
+      // const cufe = "17673e54ebc213df6522ae9ff659684b6f3768b80764753de655b1f41b0080dc75956bc9f90f071e3cfbd286599f2cbd  ";
 
       const payloadPOS = { ...baseData, code, client, cufe };
       console.log("Enviando a POS:", payloadPOS);
