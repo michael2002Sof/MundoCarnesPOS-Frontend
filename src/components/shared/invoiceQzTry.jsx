@@ -43,26 +43,31 @@ QPaP+tXAMtcm5OQtiVuURG916Gu5QmHXRg==
 
     // Configurar Firma
     qz.security.setSignaturePromise((toSign) => {
-        return new Promise((resolve, reject) => {
-            console.log("🔑 [PASO 3]: Solicitando firma al servidor para:", toSign.substring(0, 20) + "...");
-            
-            fetch("https://posinno.luidev02.com/qz/sign", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ toSign })
-            })
-            .then(res => {
-                if (!res.ok) throw new Error(`Error en servidor: ${res.status}`);
-                return res.json();
-            })
-            .then(data => {
-                console.log("✅ [PASO 4]: Firma recibida correctamente.");
-                resolve(data.signature);
-            })
-            .catch(err => {
-                console.error("❌ [ERROR]: Falló la comunicación con el servidor de firmas:", err);
-                reject(err);
-            });
+        console.log("🔑 [PASO 3]: Solicitando firma al servidor para:", toSign.substring(0, 30) + "...");
+        
+        return fetch("https://posinno.luidev02.com/posinnovate/siigo/qz/sign", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ toSign })
+        })
+        .then(res => {
+            if (!res.ok) {
+                console.error(`❌ [ERROR BACKEND]: El servidor respondió con status ${res.status}`);
+                throw new Error(`Error en servidor de firma: ${res.status}`);
+            }
+            return res.json();
+        })
+        .then(data => {
+            if (!data.signature) {
+                console.error("❌ [ERROR DATA]: El servidor no envió la propiedad 'signature'");
+                throw new Error("Respuesta de firma inválida");
+            }
+            console.log("✅ [PASO 4]: Firma recibida con éxito del backend.");
+            return data.signature;
+        })
+        .catch(err => {
+            console.error("💥 [FALLO FIRMA]: Error en la comunicación con la API:", err.message);
+            throw err; // Es vital re-lanzar el error para que QZ Tray sepa que falló
         });
     });
 
