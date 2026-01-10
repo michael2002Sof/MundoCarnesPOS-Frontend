@@ -5,14 +5,17 @@ import { renderToStaticMarkup } from "react-dom/server";
 import { formatDecimal } from "../../utils/formatData";
 import QRCode from "react-qr-code";
 
-const setuQz = () => {
-    if (qz.security.getCertificate()) {
-        console.log("🟢 QZ: El certificado ya estaba configurado.");
-        return;
-    }
+// Bandera global para evitar re-configurar las promesas
+let isQzSecurityConfigured = false;
 
+const setuQz = () => {
+    if (isQzSecurityConfigured) return;
+
+    console.log("🛠️ [PASO 1]: Configurando Seguridad QZ (v2.2.5)");
+
+    // Configurar Certificado
     qz.security.setCertificatePromise((resolve) => {
-        console.log("ℹ️ QZ: Cargando certificado en el cliente...");
+        console.log("ℹ️ [PASO 2]: Entregando certificado público al cliente");
         resolve(`-----BEGIN CERTIFICATE-----
 MIID1TCCAr2gAwIBAgIUP3UkWvE5+owVkbOfUCD11KKDrfQwDQYJKoZIhvcNAQEL
 BQAwejELMAkGA1UEBhMCQ08xGzAZBgNVBAgMEk5vcnRlIGRlIFNhbnRhbmRlcjEP
@@ -38,30 +41,35 @@ QPaP+tXAMtcm5OQtiVuURG916Gu5QmHXRg==
 -----END CERTIFICATE-----`);
     });
 
+    // Configurar Firma
     qz.security.setSignaturePromise((toSign) => {
-        console.log("🔑 QZ: Solicitando firma al backend para:", toSign.substring(0, 30) + "...");
-        return fetch("https://posinno.luidev02.com/qz/sign", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ toSign })
-        })
-        .then(res => {
-            if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
-            return res.json();
-        })
-        .then(r => {
-            if (!r.signature) throw new Error("El backend no devolvió la propiedad 'signature'");
-            console.log("✅ QZ: Firma recibida con éxito del servidor.");
-            return r.signature;
-        })
-        .catch(err => {
-            console.error("❌ QZ Error en setSignaturePromise:", err);
-            throw err;
+        return new Promise((resolve, reject) => {
+            console.log("🔑 [PASO 3]: Solicitando firma al servidor para:", toSign.substring(0, 20) + "...");
+            
+            fetch("https://posinno.luidev02.com/qz/sign", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ toSign })
+            })
+            .then(res => {
+                if (!res.ok) throw new Error(`Error en servidor: ${res.status}`);
+                return res.json();
+            })
+            .then(data => {
+                console.log("✅ [PASO 4]: Firma recibida correctamente.");
+                resolve(data.signature);
+            })
+            .catch(err => {
+                console.error("❌ [ERROR]: Falló la comunicación con el servidor de firmas:", err);
+                reject(err);
+            });
         });
     });
+
+    isQzSecurityConfigured = true;
 };
 
-// ... (InvoiceDesign se mantiene igual)
+// ... (InvoiceDesign igual que antes)
 
 export default function InvoicePrinter({ invoice, onFinish }) {
     const [status, setStatus] = useState("Iniciando...");
@@ -75,56 +83,58 @@ export default function InvoicePrinter({ invoice, onFinish }) {
 
         const printTicket = async () => {
             try {
-                console.log("🚀 Iniciando proceso de impresión para factura:", invoice.code);
-                
+                console.log("🚀 [INICIO]: Intentando imprimir factura", invoice.code);
+
+                // Conectar Socket
                 if (!qz.websocket.isActive()) {
-                    console.log("🔌 Intentando conectar con QZ Tray local...");
+                    console.log("🔌 [SOCKET]: No activo, conectando...");
                     setStatus("Conectando con QZ Tray...");
                     await qz.websocket.connect();
-                    console.log("✅ Conectado a QZ Tray.");
+                    console.log("🔌 [SOCKET]: Conectado con éxito.");
                 }
 
-                console.log("🔍 Buscando impresora predeterminada...");
+                // Obtener Impresora
+                console.log("🔍 [IMPRESORA]: Buscando impresora predeterminada...");
                 const printerName = await qz.printers.getDefault();
-                console.log("🖨️ Impresora detectada:", printerName);
-                
+                console.log("🖨️ [IMPRESORA]: Usando:", printerName);
+
                 const config = qz.configs.create(printerName, {
-                    scaleContent: true,
                     rasterize: true,
                     delay: 0.5,
-                    margins: 0,
-                    units: 'mm',
-                    size: { width: 80 }
+                    size: { width: 80 },
+                    units: 'mm'
                 });
 
-                console.log("📄 Renderizando HTML a Static Markup...");
+                // Preparar HTML
                 const invoiceHtml = renderToStaticMarkup(<InvoiceDesign invoice={invoice} />);
-
-                const htmlData = `<html><body>${invoiceHtml}</body></html>`;
-
                 const data = [{
                     type: 'pixel',
                     format: 'html',
                     flavor: 'plain',
-                    data: htmlData
+                    data: `<html><body style="margin:0;">${invoiceHtml}</body></html>`
                 }];
 
-                console.log("📤 Enviando datos de impresión a QZ...");
+                console.log("📤 [ENVÍO]: Enviando datos a QZ Tray...");
                 setStatus("Enviando a impresora...");
                 await qz.print(config, data);
                 
-                console.log("🎉 Impresión completada con éxito.");
+                console.log("🎉 [ÉXITO]: Impresión enviada.");
                 setStatus("¡Impreso!");
-                setTimeout(() => onFinish?.(), 1000);
-                
+                setTimeout(() => onFinish?.(), 1500);
+
             } catch (err) {
-                console.error("💥 FALLO EXTRACCIÓN QZ:", err);
-                // Analizamos mensajes específicos
-                if (err.message.includes("blocked")) {
-                    console.error("🛑 BLOQUEO: QZ Tray local rechazó la conexión. Revisa el Site Manager de QZ Tray.");
+                console.error("💥 [FALLO]:", err);
+                
+                // Mensaje amigable para errores comunes
+                let friendlyError = err.message;
+                if (err.message.includes("Connection blocked")) {
+                    friendlyError = "Bloqueado por QZ Tray (Configura Allowed Sites)";
+                } else if (err.message.includes("Could not find printer")) {
+                    friendlyError = "No se encontró la impresora predeterminada";
                 }
-                setStatus("Error: " + err.message);
-                setTimeout(() => onFinish?.(), 3000);
+
+                setStatus("Error: " + friendlyError);
+                setTimeout(() => onFinish?.(), 4000);
             }
         };
 
