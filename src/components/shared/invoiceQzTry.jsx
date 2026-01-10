@@ -42,7 +42,7 @@ if (typeof window !== "undefined") {
   });
 
   qz.security.setSignaturePromise((toSign) => {
-    return (resolve) => resolve();
+    return (resolve) => resolve(toSign);
   });
 }
 
@@ -128,7 +128,7 @@ const InvoiceDesign = ({ invoice }) => {
             <span>IVA (19%):</span> <span>{formatDecimal(tax19, true)}</span>
           </div>
         )}
-        <div style={{ display: "flex", justifyContent: "space-between", fontWeight: "bold", fontSize: "13px", marginTop: "4px" }}>
+        <div style={{ display: "flex", justifyContent: "space-between", fontWeight: "bold", fontSize: "11px", marginTop: "4px" }}>
           <span>TOTAL A PAGAR:</span> <span>{formatDecimal(total, true)}</span>
         </div>
       </div>
@@ -158,7 +158,7 @@ const InvoiceDesign = ({ invoice }) => {
         <div style={{ marginBottom: "8px" }}>
           <QRCode value={cufe || code || "MundoCarnes"} size={90} />
         </div>
-        <p style={{ fontSize: "7px", wordBreak: "break-all", color: "#444", margin: "5px 0" }}>
+        <p style={{ fontSize: "7px", wordBreak: "break-all", margin: "5px 0" }}>
           <strong>CUFE:</strong> {cufe || "PROCESANDO FIRMA ELECTRÓNICA..."}
         </p>
         <p style={{ fontSize: "10px", fontWeight: "bold" }}>*** GRACIAS POR PREFERIRNOS ***</p>
