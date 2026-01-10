@@ -7,6 +7,7 @@ import ClientSearch from "./cash sale/ClientSearch"
 import useHandleInputChange from "../../utils/useHandleInputChange"
 import { formatDecimal } from "../../utils/formatData"
 import InvoiceModal from "../../components/shared/invoiceModal"
+import InvoicePrinter from "../../components/shared/invoiceQzTry"
 
 import {useDecodeScale, useDecodeNormal} from "./cash sale/useDecodeBarcode"
 
@@ -657,7 +658,7 @@ export default function CashSale() {
             </div>
 
                  
-            {isInvoicePrinting &&   <InvoiceModal invoice={isInvoicePrinting} onFinish={() => setIsInvoicePrinting(null)}/> }
+            {isInvoicePrinting && <InvoicePrinter invoice={isInvoicePrinting} onFinish={() => setIsInvoicePrinting(null)}/> }
 
         </>
     )
