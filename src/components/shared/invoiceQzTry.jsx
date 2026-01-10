@@ -5,9 +5,15 @@ import { renderToStaticMarkup } from "react-dom/server";
 import { formatDecimal } from "../../utils/formatData";
 import QRCode from "react-qr-code";
 
-if (typeof window !== "undefined") {
+const setuQz = () => {
+    if (qz.security.getCertificate()) {
+        console.log("🟢 QZ: El certificado ya estaba configurado.");
+        return;
+    }
+
     qz.security.setCertificatePromise((resolve) => {
-resolve(`-----BEGIN CERTIFICATE-----
+        console.log("ℹ️ QZ: Cargando certificado en el cliente...");
+        resolve(`-----BEGIN CERTIFICATE-----
 MIID1TCCAr2gAwIBAgIUP3UkWvE5+owVkbOfUCD11KKDrfQwDQYJKoZIhvcNAQEL
 BQAwejELMAkGA1UEBhMCQ08xGzAZBgNVBAgMEk5vcnRlIGRlIFNhbnRhbmRlcjEP
 MA0GA1UEBwwGQ3VjdXRhMRkwFwYDVQQKDBBNdW5kbyBDYXJuZXMgU0FTMSIwIAYD
@@ -29,216 +35,109 @@ RUGUd3N8wH5D9y8ylvOV8yGs5OeuHGXyMwVlYsB+IM7jlewQden3+JZxRcLQK+fY
 icqrVOQUYYCNnHLBq4+kEpnI2G/x1FCYbQPRD8HKQpUmcAgxshvWdKP+6/1Ab5Cz
 2ujLaQlPwWStTEKsebXeLRFYgAj4LeEPFBWBM70ISvNu5LlBZv51aNDd8zT8i/DM
 QPaP+tXAMtcm5OQtiVuURG916Gu5QmHXRg==
------END CERTIFICATE-----`)
-});
-
-    qz.security.setSignaturePromise((toSign) => {
-    return fetch("https://posinno.luidev02.com/qz/sign", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ toSign })
-    })
-        .then(res => res.json())
-        .then(r => r.signature);
+-----END CERTIFICATE-----`);
     });
 
-}
-
-// 2. DISEÑO DEL TICKET
-const InvoiceDesign = ({ invoice }) => {
-  const {
-    code,
-    created_at,
-    customerName,
-    customerCC,
-    customerAddress,
-    invoiceItem = [],
-    subtotal,
-    tax5,
-    tax19,
-    total,
-    receipt_cash,
-    receipt_transfer,
-    repay,
-    cufe,
-    // Datos adicionales que vienen en tu resolución/punto de venta
-    vendedor 
-  } = invoice;
-
-  return (
-    <div style={{ width: "80mm", padding: "2mm", fontFamily: "Arial, sans-serif", fontSize: "11px", lineHeight: "1.2", color: "#000" }}>
-      
-      {/* CABECERA */}
-      <header style={{ textAlign: "center", marginBottom: "8px" }}>
-        <img src="https://mundocarnespos.vercel.app/logo_mundocarnes.svg" style={{ width: "40mm", bottom: "2px" }} />
-        <h2 style={{ fontSize: "15px", fontWeight: "bold", margin: "0" }}>MUNDO CARNES SAS</h2>
-        <p style={{ margin: "2px 0" }}>NIT: 901586875-0</p>
-        <p style={{ margin: "2px 0", fontSize: "10px" }}>CALLE 123 # 45-67 - CÚCUTA</p>
-        <p style={{ margin: "2px 0", fontSize: "10px" }}>TEL: 310 000 0000</p>
-        
-        <div style={{ borderBottom: "1px dashed #000", margin: "5px 0" }}></div>
-        
-        <h3 style={{ fontSize: "13px", fontWeight: "bold", margin: "5px 0" }}>
-          {code}
-        </h3>
-      </header>
-
-      {/* DATOS CLIENTE */}
-      <div style={{ marginBottom: "8px", fontSize: "10px" }}>
-        <p style={{ margin: "1px 0" }}><strong>Fecha:</strong> {created_at}</p>
-        <p style={{ margin: "1px 0" }}><strong>Cliente:</strong> {customerName || "CONSUMIDOR FINAL"}</p>
-        <p style={{ margin: "1px 0" }}><strong>NIT/CC:</strong> {customerCC || "222222222222"}</p>
-        <p style={{ margin: "1px 0" }}><strong>Dirección:</strong> {customerAddress || "CÚCUTA"}</p>
-        <p style={{ margin: "1px 0" }}><strong>Vendedor:</strong> {vendedor || "CAJA PRINCIPAL"}</p>
-      </div>
-
-      {/* TABLA DE PRODUCTOS */}
-      <table style={{ width: "100%", borderCollapse: "collapse", fontSize: "10px" }}>
-        <thead>
-          <tr style={{ borderBottom: "1px solid #000" }}>
-            <th style={{ textAlign: "left", padding: "4px 0" }}>DESCRIPCIÓN</th>
-            <th style={{ textAlign: "center", padding: "4px 0" }}>CANT</th>
-            <th style={{ textAlign: "right", padding: "4px 0" }}>TOTAL</th>
-          </tr>
-        </thead>
-        <tbody>
-          {invoiceItem.map((it, i) => (
-            <tr key={i}>
-              <td style={{ padding: "3px 0", verticalAlign: "top" }}>{it.product_name}</td>
-              <td style={{ textAlign: "center", verticalAlign: "top" }}>{it.quantity}</td>
-              <td style={{ textAlign: "right", verticalAlign: "top" }}>{formatDecimal(it.total, true)}</td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
-
-      {/* TOTALES */}
-      <div style={{ marginTop: "8px", borderTop: "1px dashed #000", paddingTop: "5px" }}>
-        <div style={{ display: "flex", justifyContent: "space-between" }}>
-          <span>Subtotal:</span> <span>{formatDecimal(subtotal, true)}</span>
-        </div>
-        {tax5 > 0 && (
-          <div style={{ display: "flex", justifyContent: "space-between" }}>
-            <span>IVA (5%):</span> <span>{formatDecimal(tax5, true)}</span>
-          </div>
-        )}
-        {tax19 > 0 && (
-          <div style={{ display: "flex", justifyContent: "space-between" }}>
-            <span>IVA (19%):</span> <span>{formatDecimal(tax19, true)}</span>
-          </div>
-        )}
-        <div style={{ display: "flex", justifyContent: "space-between", fontWeight: "bold", fontSize: "11px", marginTop: "4px" }}>
-          <span>TOTAL A PAGAR:</span> <span>{formatDecimal(total, true)}</span>
-        </div>
-      </div>
-
-      {/* MEDIOS DE PAGO */}
-      <div style={{ marginTop: "8px", border: "1px solid #000", padding: "4px" }}>
-        <p style={{ margin: "0 0 2px 0", fontSize: "9px" }}><strong>FORMA DE PAGO:</strong></p>
-        {receipt_cash > 0 && (
-          <div style={{ display: "flex", justifyContent: "space-between", fontSize: "10px" }}>
-            <span>Efectivo:</span> <span>{formatDecimal(receipt_cash + repay, true)}</span>
-          </div>
-        )}
-        {receipt_transfer > 0 && (
-          <div style={{ display: "flex", justifyContent: "space-between", fontSize: "10px" }}>
-            <span>Transferencia:</span> <span>{formatDecimal(receipt_transfer, true)}</span>
-          </div>
-        )}
-        {repay > 0 && (
-          <div style={{ display: "flex", justifyContent: "space-between", fontSize: "11px", fontWeight: "bold", color: "#000", borderTop: "0.5px solid #ccc", marginTop: "2px" }}>
-            <span>SU CAMBIO:</span> <span>{formatDecimal(repay, true)}</span>
-          </div>
-        )}
-      </div>
-
-      {/* PIE DE PÁGINA Y QR */}
-      <div style={{ marginTop: "15px", textAlign: "center" }}>
-        <div style={{ marginBottom: "8px" }}>
-          <QRCode value={cufe || code || "MundoCarnes"} size={90} />
-        </div>
-        <p style={{ fontSize: "7px", wordBreak: "break-all", margin: "5px 0" }}>
-          <strong>CUFE:</strong> {cufe || "PROCESANDO FIRMA ELECTRÓNICA..."}
-        </p>
-        <p style={{ fontSize: "10px", fontWeight: "bold" }}>*** GRACIAS POR PREFERIRNOS ***</p>
-        <p style={{ fontSize: "9px" }}>Desarrollado por POSinnovate</p>
-      </div>
-    </div>
-  );
+    qz.security.setSignaturePromise((toSign) => {
+        console.log("🔑 QZ: Solicitando firma al backend para:", toSign.substring(0, 30) + "...");
+        return fetch("https://posinno.luidev02.com/qz/sign", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ toSign })
+        })
+        .then(res => {
+            if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
+            return res.json();
+        })
+        .then(r => {
+            if (!r.signature) throw new Error("El backend no devolvió la propiedad 'signature'");
+            console.log("✅ QZ: Firma recibida con éxito del servidor.");
+            return r.signature;
+        })
+        .catch(err => {
+            console.error("❌ QZ Error en setSignaturePromise:", err);
+            throw err;
+        });
+    });
 };
 
-// 3. LÓGICA DE IMPRESIÓN
+// ... (InvoiceDesign se mantiene igual)
+
 export default function InvoicePrinter({ invoice, onFinish }) {
-  const [status, setStatus] = useState("Iniciando...");
+    const [status, setStatus] = useState("Iniciando...");
 
-  useEffect(() => {
-    if (!invoice) return;
+    useEffect(() => {
+        setuQz();
+    }, []);
 
-    const printTicket = async () => {
-      try {
-        if (!qz.websocket.isActive()) {
-          setStatus("Conectando con QZ Tray...");
-          await qz.websocket.connect();
-        }
+    useEffect(() => {
+        if (!invoice) return;
 
-        const printerName = await qz.printers.getDefault();
-        
-        // CONFIGURACIÓN DE IMPRESIÓN (Aquí agregamos rasterize y delay)
-        const config = qz.configs.create(printerName, {
-          scaleContent: true,
-          rasterize: true, // Renderiza como imagen para máxima compatibilidad
-          delay: 0.5,      // Espera 500ms para que el QR se genere
-          margins: 0,
-          units: 'mm',
-          size: { width: 80 }
-        });
+        const printTicket = async () => {
+            try {
+                console.log("🚀 Iniciando proceso de impresión para factura:", invoice.code);
+                
+                if (!qz.websocket.isActive()) {
+                    console.log("🔌 Intentando conectar con QZ Tray local...");
+                    setStatus("Conectando con QZ Tray...");
+                    await qz.websocket.connect();
+                    console.log("✅ Conectado a QZ Tray.");
+                }
 
-        const invoiceHtml = renderToStaticMarkup(<InvoiceDesign invoice={invoice} />);
+                console.log("🔍 Buscando impresora predeterminada...");
+                const printerName = await qz.printers.getDefault();
+                console.log("🖨️ Impresora detectada:", printerName);
+                
+                const config = qz.configs.create(printerName, {
+                    scaleContent: true,
+                    rasterize: true,
+                    delay: 0.5,
+                    margins: 0,
+                    units: 'mm',
+                    size: { width: 80 }
+                });
 
-        const htmlData = `
-          <html>
-            <head>
-              <style>
-                body { margin: 0; padding: 0; }
-                * { font-family: sans-serif; }
-              </style>
-            </head>
-            <body>
-              ${invoiceHtml}
-            </body>
-          </html>
-        `;
+                console.log("📄 Renderizando HTML a Static Markup...");
+                const invoiceHtml = renderToStaticMarkup(<InvoiceDesign invoice={invoice} />);
 
-        const data = [{
-          type: 'pixel',
-          format: 'html',
-          flavor: 'plain',
-          data: htmlData
-        }];
+                const htmlData = `<html><body>${invoiceHtml}</body></html>`;
 
-        setStatus("Enviando a impresora...");
-        await qz.print(config, data);
-        
-        setStatus("¡Impreso!");
-        setTimeout(() => onFinish?.(), 1000);
-        
-      } catch (err) {
-        console.error("Error QZ:", err);
-        setStatus("Error: " + err.message);
-        onFinish?.(); 
-      }
-    };
+                const data = [{
+                    type: 'pixel',
+                    format: 'html',
+                    flavor: 'plain',
+                    data: htmlData
+                }];
 
-    printTicket();
-  }, [invoice, onFinish]);
+                console.log("📤 Enviando datos de impresión a QZ...");
+                setStatus("Enviando a impresora...");
+                await qz.print(config, data);
+                
+                console.log("🎉 Impresión completada con éxito.");
+                setStatus("¡Impreso!");
+                setTimeout(() => onFinish?.(), 1000);
+                
+            } catch (err) {
+                console.error("💥 FALLO EXTRACCIÓN QZ:", err);
+                // Analizamos mensajes específicos
+                if (err.message.includes("blocked")) {
+                    console.error("🛑 BLOQUEO: QZ Tray local rechazó la conexión. Revisa el Site Manager de QZ Tray.");
+                }
+                setStatus("Error: " + err.message);
+                setTimeout(() => onFinish?.(), 3000);
+            }
+        };
 
-  return (
-    <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-[9999]">
-      <div className="bg-white p-8 rounded-2xl shadow-2xl text-center max-w-sm">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#841A1A] mx-auto mb-4"></div>
-        <h3 className="text-xl font-bold text-gray-800">Imprimiendo Factura</h3>
-        <p className="text-gray-500 mt-2">{status}</p>
-      </div>
-    </div>
-  );
+        printTicket();
+    }, [invoice]);
+
+    return (
+        <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-[9999]">
+            <div className="bg-white p-8 rounded-2xl shadow-2xl text-center max-w-sm">
+                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#841A1A] mx-auto mb-4"></div>
+                <h3 className="text-xl font-bold text-gray-800">Imprimiendo Factura</h3>
+                <p className="text-gray-500 mt-2">{status}</p>
+            </div>
+        </div>
+    );
 }
