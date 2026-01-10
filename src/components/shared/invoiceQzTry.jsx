@@ -8,42 +8,37 @@ import QRCode from "react-qr-code";
 // 1. CONFIGURACIÓN DE SEGURIDAD GLOBAL
 // Evita que Vercel falle al compilar (SSR) y configura el certificado
 if (typeof window !== "undefined") {
-  qz.security.setCertificatePromise((resolve) => {
-    resolve(
-      "-----BEGIN CERTIFICATE-----\n" +
-      "MIIDdTCCAl2gAwIBAgIBADANBgkqhkiG9w0BAQsFADBoMQswCQYDVQQGEwJVUzEL\n" +
-      "MAkGA1UECAwCTlkxEDAOBgNVBAcMB0NhbmFzdG90YTEVsCoGA1UECgwLUVogSW5k\n" +
-      "dXN0cmllczEPMA0GA1UECwwGU3VwcG9ydDEVBzABBgNVBAMMAWxvY2FsaG9zdDAe\n" +
-      "Fw0xOTAxMDYxODQzNDBaFw00OTAxMDYxODQzNDBaMGgxCzAJBgNVBAYTAlVTMQsw\n" +
-      "CQYDVQQIDAJOWTEQMA4GA1UEBwwHQ2FuYXN0b3RhMRUwKwYDVQQKDBRRWiBJbmR1\n" +
-      "c3RyaWVzLCBMTEMxDzANBgNVBAsMBlN1cHBvcnQxFTATBgNVBAMMDCouZm9vLmJh\n" +
-      "cjCCASIwDQYJKoZIhvcNAQEBBQADggEPADCCAQoCggEBAMTzC1e1S+lJ49Z/n4M0\n" +
-      "bKjWq7zYwZ1Z2w7Wb8wT+7Q5WC1m6/O7O2yF0d/0D0c0h5w4/1Z5z6/1Z5z6/1Z5\n" +
-      "z6/1Z5z6/1Z5z6/1Z5z6/1Z5z6/1Z5z6/1Z5z6/1Z5z6/1Z5z6/1Z5z6/1Z5z6/1\n" +
-      "Z5z6/1Z5z6/1Z5z6/1Z5z6/1Z5z6/1Z5z6/1Z5z6/1Z5z6/1Z5z6/1Z5z6/1Z5z6\n" +
-      "/1Z5z6/1Z5z6/1Z5z6/1Z5z6/1Z5z6/1Z5z6/1Z5z6/1Z5z6/1Z5z6/1Z5z6/1Z5\n" +
-      "z68CAwEAAaMhMB8wHQYDVR0OBBYEFN/f2zV1j2/1Z5z6/1Z5z6/1Z5z6MA0GCSqG\n" +
-      "SIb3DQEBCwUAA4IBAQBD/1Z5z6/1Z5z6/1Z5z6/1Z5z6/1Z5z6/1Z5z6/1Z5z6/1\n" +
-      "Z5z6/1Z5z6/1Z5z6/1Z5z6/1Z5z6/1Z5z6/1Z5z6/1Z5z6/1Z5z6/1Z5z6/1Z5z6\n" +
-      "c5w/1Z5z6/1Z5z6/1Z5z6/1Z5z6/1Z5z6/1Z5z6/1Z5z6/1Z5z6/1Z5z6/1Z5z6/\n" +
-      "1Z5z6/1Z5z6/1Z5z6/1Z5z6/1Z5z6/1Z5z6/1Z5z6/1Z5z6/1Z5z6/1Z5z6/1Z5z\n" +
-      "6/1Z5z6/1Z5z6/1Z5z6/1Z5z6/1Z5z6/1Z5z6/1Z5z6/1Z5z6/1Z5z6/1Z5z6/1Z\n" +
-      "5z6/1Z5z6/1Z5z6/1Z5z6/1Z5z6/1Z5z6/1Z5z6/1Z5z6/1Z5z6/1Z5z6/1Z5z6/\n" +
-      "1Z5z6/1Z5z6/1Z5z6/1Z5z6/1Z5z6/1Z5z6/1Z5z6/1Z5z6/1Z5z6/1Z5z6/1Z5z\n" +
-      "6/1Z5z6/1Z5z6/1Z5z6/1Z5z6/1Z5z6/1Z5z6/1Z5z6/1Z5z6/1Z5z6/1Z5z6/1Z\n" +
-      "5z6/1Z5z6/1Z5z6/1Z5z6/1Z5z6/1Z5z6/1Z5z6/1Z5z6/1Z5z6/1Z5z6/1Z5z6/\n" +
-      "1Z5z6/1Z5z6/1Z5z6/1Z5z6/1Z5z6/1Z5z6/1Z5z6/1Z5z6/1Z5z6/1Z5z6/1Z5z\n" +
-      "6/1Z5z6/1Z5z6/1Z5z6/1Z5z6/1Z5z6/1Z5z6/1Z5z6/1Z5z6/1Z5z6/1Z5z6/1Z\n" +
-      "5z6/1Z5z6/1Z5z6/1Z5z6/1Z5z6/1Z5z6/1Z5z6/1Z5z6/1Z5z6/1Z5z6/1Z5z6/\n" +
-      "1Z5z6/1Z5z6/1Z5z6/1Z5z6/1Z5z6/1Z5z6/1Z5z6/1Z5z6/1Z5z6/1Z5z6/1Z5z\n" +
-      "6/1Z5z6/1Z5z6/1Z5z6/1Z5z6/1Z5z6/1Z5z6/1Z5z6/1Z5z6/1Z5z6/1Z5z6/1Z\n" +
-      "-----END CERTIFICATE-----\n"
-    );
-  });
+    qz.security.setCertificatePromise((resolve) => {
+    resolve(`-----BEGIN CERTIFICATE-----
+    MIID1TCCAr2gAwIBAgIUP3UkWvE5+owVkbOfUCD11KKDrfQwDQYJKoZIhvcNAQEL
+    BQAwejELMAkGA1UEBhMCQ08xGzAZBgNVBAgMEk5vcnRlIGRlIFNhbnRhbmRlcjEP
+    MA0GA1UEBwwGQ3VjdXRhMRkwFwYDVQQKDBBNdW5kbyBDYXJuZXMgU0FTMSIwIAYD
+    VQQDDBltdW5kb2Nhcm5lc3Bvcy52ZXJjZWwuYXBwMB4XDTI2MDExMDE0MTk0NloX
+    DTM2MDEwODE0MTk0NlowejELMAkGA1UEBhMCQ08xGzAZBgNVBAgMEk5vcnRlIGRl
+    IFNhbnRhbmRlcjEPMA0GA1UEBwwGQ3VjdXRhMRkwFwYDVQQKDBBNdW5kbyBDYXJu
+    ZXMgU0FTMSIwIAYDVQQDDBltdW5kb2Nhcm5lc3Bvcy52ZXJjZWwuYXBwMIIBIjAN
+    BgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEArZYLWNqmmuwn2G+G0lAywVsgf0Bm
+    GPXIIe5mXyWeWc6TcqcxysHS/7OOV76Q307Phmg6tyFh8atTtcKJ9OvGlzvjNgr0
+    j2a0CPBGYZSjK2XY8RhVCm8sdzS6Akl5Hh4D/4uq1FMzoR467hlos+SyDNGvt0Uc
+    18zgn/G/KjCHskfknF4gdop7s/qmUTwoobXIuzlsc8ZPD+zfJ5yHZvtrqZSM0v2b
+    QF1QYWMq6UqBEb0YpAOoiAdGkHNJ0bXpGOrkSFMEaPU8m91HmZvbCtD/HXZ9k/Sd
+    1YD4INOoMHLP2LN2ZfbLyu0B//kwCI8TjCDRDRAVM8/GS/0jf/ifp4R4uwIDAQAB
+    o1MwUTAdBgNVHQ4EFgQUWUgBNcDsWDaex6QM2qnQOJd25kIwHwYDVR0jBBgwFoAU
+    WUgBNcDsWDaex6QM2qnQOJd25kIwDwYDVR0TAQH/BAUwAwEB/zANBgkqhkiG9w0B
+    AQsFAAOCAQEAa/xJwPWAEPfzmtvQpOyhr/eKpL5uVcBHhck6gAc2pO4h3qymxp+O
+    1pZWDFxDf9wDd/OxcKOxvDC+bwgB1CaJ9LmbnYt0/2BklVH9eIxC+k/q0mdEVC23
+    RUGUd3N8wH5D9y8ylvOV8yGs5OeuHGXyMwVlYsB+IM7jlewQden3+JZxRcLQK+fY
+    icqrVOQUYYCNnHLBq4+kEpnI2G/x1FCYbQPRD8HKQpUmcAgxshvWdKP+6/1Ab5Cz
+    2ujLaQlPwWStTEKsebXeLRFYgAj4LeEPFBWBM70ISvNu5LlBZv51aNDd8zT8i/DM
+    QPaP+tXAMtcm5OQtiVuURG916Gu5QmHXRg==
+    -----END CERTIFICATE-----`)
+    })
 
-  qz.security.setSignaturePromise((toSign) => {
-    return (resolve) => resolve(toSign);
-  });
+
+    qz.security.setSignaturePromise((resolve) => {
+        resolve()
+    })
+
 }
 
 // 2. DISEÑO DEL TICKET
@@ -68,7 +63,7 @@ const InvoiceDesign = ({ invoice }) => {
   } = invoice;
 
   return (
-    <div style={{ width: "80mm", padding: "1mm", fontFamily: "Arial, sans-serif", fontSize: "11px", lineHeight: "1.2", color: "#000" }}>
+    <div style={{ width: "80mm", padding: "2mm", fontFamily: "Arial, sans-serif", fontSize: "11px", lineHeight: "1.2", color: "#000" }}>
       
       {/* CABECERA */}
       <header style={{ textAlign: "center", marginBottom: "8px" }}>
@@ -227,7 +222,6 @@ export default function InvoicePrinter({ invoice, onFinish }) {
       } catch (err) {
         console.error("Error QZ:", err);
         setStatus("Error: " + err.message);
-        alert("Asegúrate de que QZ Tray esté abierto.");
         onFinish?.(); 
       }
     };
