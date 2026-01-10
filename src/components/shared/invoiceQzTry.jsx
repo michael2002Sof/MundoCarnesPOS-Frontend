@@ -68,7 +68,7 @@ const InvoiceDesign = ({ invoice }) => {
   } = invoice;
 
   return (
-    <div style={{ width: "72mm", padding: "1mm", fontFamily: "Arial, sans-serif", fontSize: "11px", lineHeight: "1.2", color: "#000" }}>
+    <div style={{ width: "80mm", padding: "1mm", fontFamily: "Arial, sans-serif", fontSize: "11px", lineHeight: "1.2", color: "#000" }}>
       
       {/* CABECERA */}
       <header style={{ textAlign: "center", marginBottom: "8px" }}>
@@ -162,7 +162,7 @@ const InvoiceDesign = ({ invoice }) => {
           <strong>CUFE:</strong> {cufe || "PROCESANDO FIRMA ELECTRÓNICA..."}
         </p>
         <p style={{ fontSize: "10px", fontWeight: "bold" }}>*** GRACIAS POR PREFERIRNOS ***</p>
-        <p style={{ fontSize: "9px" }}>Desarrollado por TuSoftwarePOS</p>
+        <p style={{ fontSize: "9px" }}>Desarrollado por POSinnovate</p>
       </div>
     </div>
   );
