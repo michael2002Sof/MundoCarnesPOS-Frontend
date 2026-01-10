@@ -4,15 +4,12 @@ import { createBrowserRouter, RouterProvider } from 'react-router-dom'
 import MundoCarnesPosRoutes from './routes'
 import { Toaster } from 'react-hot-toast'
 import './index.css'
-import { initQZSecurity } from "./lib/qzSecurity"
 
 
 const router = createBrowserRouter ( [
   ...MundoCarnesPosRoutes,
   { path: "*" }
 ])
-
-initQZSecurity()
 
 const root = ReactDOM.createRoot(document.getElementById("root"))
 
