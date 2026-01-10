@@ -72,6 +72,7 @@ const InvoiceDesign = ({ invoice }) => {
       
       {/* CABECERA */}
       <header style={{ textAlign: "center", marginBottom: "8px" }}>
+        <img src="https://mundocarnespos.vercel.app/logo_mundocarnes.svg" style={{ width: "40mm", bottom: "2px" }} />
         <h2 style={{ fontSize: "15px", fontWeight: "bold", margin: "0" }}>MUNDO CARNES SAS</h2>
         <p style={{ margin: "2px 0" }}>NIT: 901586875-0</p>
         <p style={{ margin: "2px 0", fontSize: "10px" }}>CALLE 123 # 45-67 - CÚCUTA</p>
