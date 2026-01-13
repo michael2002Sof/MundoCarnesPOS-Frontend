@@ -216,6 +216,8 @@ export default function InvoicePrinter({ invoice, onFinish }) {
 
         const printTicket = async () => {
             try {
+                setuQz(); // 🔴 AQUÍ, no solo en useEffect
+
                 console.log("🚀 [INICIO]: Intentando imprimir factura", invoice.code);
 
                 // Conectar Socket
