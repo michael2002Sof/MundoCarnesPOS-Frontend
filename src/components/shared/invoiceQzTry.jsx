@@ -16,8 +16,8 @@ const setuQz = () => {
     console.log("🛠️ [PASO 1]: Configurando Seguridad QZ (v2.2.5)");
 
     // Configurar Certificado
-    qz.security.setCertificatePromise(() => {
-      return Promise.resolve(`-----BEGIN CERTIFICATE-----
+    qz.security.setCertificatePromise((resolve) => {
+      resolve(`-----BEGIN CERTIFICATE-----
 MIID1TCCAr2gAwIBAgIUP3UkWvE5+owVkbOfUCD11KKDrfQwDQYJKoZIhvcNAQEL
 BQAwejELMAkGA1UEBhMCQ08xGzAZBgNVBAgMEk5vcnRlIGRlIFNhbnRhbmRlcjEP
 MA0GA1UEBwwGQ3VjdXRhMRkwFwYDVQQKDBBNdW5kbyBDYXJuZXMgU0FTMSIwIAYD
