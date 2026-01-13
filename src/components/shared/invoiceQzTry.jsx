@@ -14,9 +14,8 @@ const setuQz = () => {
     console.log("🛠️ [PASO 1]: Configurando Seguridad QZ (v2.2.5)");
 
     // Configurar Certificado
-    qz.security.setCertificatePromise(() => {
-      console.log("ℹ️ [PASO 2]: Entregando certificado público al cliente");
-      return Promise.resolve(`-----BEGIN CERTIFICATE-----
+    qz.security.setCertificatePromise((resolve) => {
+      resolve(`-----BEGIN CERTIFICATE-----
 MIID1TCCAr2gAwIBAgIUP3UkWvE5+owVkbOfUCD11KKDrfQwDQYJKoZIhvcNAQEL
 BQAwejELMAkGA1UEBhMCQ08xGzAZBgNVBAgMEk5vcnRlIGRlIFNhbnRhbmRlcjEP
 MA0GA1UEBwwGQ3VjdXRhMRkwFwYDVQQKDBBNdW5kbyBDYXJuZXMgU0FTMSIwIAYD
@@ -40,6 +39,8 @@ icqrVOQUYYCNnHLBq4+kEpnI2G/x1FCYbQPRD8HKQpUmcAgxshvWdKP+6/1Ab5Cz
 QPaP+tXAMtcm5OQtiVuURG916Gu5QmHXRg==
 -----END CERTIFICATE-----`);
     });
+
+    console.log("ℹ️ [PASO 2]: Entregando certificado público al cliente");
 
     // Configurar Firma
     qz.security.setSignaturePromise((toSign) => {
