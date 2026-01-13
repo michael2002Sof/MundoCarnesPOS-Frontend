@@ -10,6 +10,7 @@ import { exportToExcel } from "../../utils/useExportXlsx";
 import DecodeToken from "../../api/decode";
 import useUser from "../../hooks/user/useUser";
 import InvoicePrinter from "../../components/shared/invoiceQzTry";
+import InvoiceModal from "../../components/shared/invoiceModal"
 
 export default function Invoices () {
     const {isLoading, invoices, totalPages, totalCount, GET_InvoicesByDate, GET_InvoicesToExport} = useReport();
@@ -199,7 +200,7 @@ export default function Invoices () {
                 </div>
             </section>
 
-            {isPrintInvoice &&  <InvoicePrinter invoice={isPrintInvoice} onFinish={() => setPrintInvoice(null)}/> }
+            {isPrintInvoice &&  <InvoiceModal invoice={isPrintInvoice} onFinish={() => setPrintInvoice(null)}/> }
         </>
     )
 }
