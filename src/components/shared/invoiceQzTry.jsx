@@ -50,17 +50,24 @@ QPaP+tXAMtcm5OQtiVuURG916Gu5QmHXRg==
     console.log("📥 toSign recibido:", toSign);
     console.log("📏 Longitud:", toSign.length);
 
-    return axiosInstance.post(`/posinnovate/siigo/qz/sign`, {toSign} )
-      .then((res) => {
-        console.log("✅ Respuesta del backend:", res);
-        isQzSecurityConfigured = true;
-        return res.data;
-      })
-      .catch((error) => {
-      console.error("❌ Error en firma QZ:", error);
-      throw error;
+    return new Promise((resolve, reject) => {
+      axiosInstance
+        .post("/posinnovate/siigo/qz/sign", { toSign })
+        .then((res) => {
+          console.log("✅ Firma recibida del backend");
+          console.groupEnd();
+
+          // ⚠️ QZ QUIERE SOLO EL STRING BASE64
+          resolve(res.data);
+        })
+        .catch((error) => {
+          console.error("❌ Error en firma QZ:", error);
+          console.groupEnd();
+          reject(error);
+        });
     });
-  })
+  });
+
 };
 
 // 2. DISEÑO DEL TICKET
