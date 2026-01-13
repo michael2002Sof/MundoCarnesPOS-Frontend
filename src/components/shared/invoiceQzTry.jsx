@@ -1,9 +1,9 @@
 // src/components/shared/invoiceQzTry.jsx
 import { useEffect, useState } from "react";
-import qz from "qz-tray";
 import { renderToStaticMarkup } from "react-dom/server";
 import { formatDecimal } from "../../utils/formatData";
 import QRCode from "react-qr-code";
+import qz from "qz-tray"
 
 import axiosInstance from "../../api/axiosintance";
 
@@ -16,8 +16,8 @@ const setuQz = () => {
     console.log("🛠️ [PASO 1]: Configurando Seguridad QZ (v2.2.5)");
 
     // Configurar Certificado
-    qz.security.setCertificatePromise((resolve) => {
-      resolve(`-----BEGIN CERTIFICATE-----
+    qz.security.setCertificatePromise(() => {
+      return Promise.resolve(`-----BEGIN CERTIFICATE-----
 MIID1TCCAr2gAwIBAgIUP3UkWvE5+owVkbOfUCD11KKDrfQwDQYJKoZIhvcNAQEL
 BQAwejELMAkGA1UEBhMCQ08xGzAZBgNVBAgMEk5vcnRlIGRlIFNhbnRhbmRlcjEP
 MA0GA1UEBwwGQ3VjdXRhMRkwFwYDVQQKDBBNdW5kbyBDYXJuZXMgU0FTMSIwIAYD
@@ -45,29 +45,13 @@ QPaP+tXAMtcm5OQtiVuURG916Gu5QmHXRg==
     console.log("ℹ️ [PASO 2]: Entregando certificado público al cliente");
 
   // Configurar Firma
-  qz.security.setSignaturePromise((toSign) => {
-    console.group("🔐 QZ SIGNATURE FLOW");
-    console.log("📥 toSign recibido:", toSign);
-    console.log("📏 Longitud:", toSign.length);
-
-    return new Promise((resolve, reject) => {
-      axiosInstance
-        .post("/posinnovate/siigo/qz/sign", { toSign })
-        .then((res) => {
-          console.log("✅ Firma recibida del backend");
-          console.groupEnd();
-
-          // ⚠️ QZ QUIERE SOLO EL STRING BASE64
-          resolve(res.data);
-        })
-        .catch((error) => {
-          console.error("❌ Error en firma QZ:", error);
-          console.groupEnd();
-          reject(error);
-        });
-    });
+  qz.security.setSignaturePromise(async (toSign) => {
+    const res = await axiosInstance.post("/posinnovate/siigo/qz/sign", { toSign });
+    console.log("El backend devolvio la clave", res.data)
+    return res.data;
   });
 
+  isQzSecurityConfigured = true;
 };
 
 // 2. DISEÑO DEL TICKET
@@ -206,8 +190,6 @@ export default function InvoicePrinter({ invoice, onFinish }) {
 
         const printTicket = async () => {
             try {
-                setuQz(); // 🔴 AQUÍ, no solo en useEffect
-
                 console.log("🚀 [INICIO]: Intentando imprimir factura", invoice.code);
 
                 // Conectar Socket

@@ -4,12 +4,12 @@ import moment from "moment-timezone";
 
 import {ModulesHeader} from "../../components/shared/headers"
 import  {formatDecimal} from "../../utils/formatData"
-import InvoicePrinter from "../../components/shared/invoiceModal";
 import useReport from "../../hooks/sale/useReport";
 
 import { exportToExcel } from "../../utils/useExportXlsx";
 import DecodeToken from "../../api/decode";
 import useUser from "../../hooks/user/useUser";
+import InvoicePrinter from "../../components/shared/invoiceQzTry";
 
 export default function Invoices () {
     const {isLoading, invoices, totalPages, totalCount, GET_InvoicesByDate, GET_InvoicesToExport} = useReport();
