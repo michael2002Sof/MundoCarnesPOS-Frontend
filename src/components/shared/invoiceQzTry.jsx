@@ -15,8 +15,8 @@ const setuQz = () => {
 
     // Configurar Certificado
     qz.security.setCertificatePromise(() => {
-        console.log("ℹ️ [PASO 2]: Entregando certificado público al cliente");
-        Promise.resolve(`-----BEGIN CERTIFICATE-----
+      console.log("ℹ️ [PASO 2]: Entregando certificado público al cliente");
+      return Promise.resolve(`-----BEGIN CERTIFICATE-----
 MIID1TCCAr2gAwIBAgIUP3UkWvE5+owVkbOfUCD11KKDrfQwDQYJKoZIhvcNAQEL
 BQAwejELMAkGA1UEBhMCQ08xGzAZBgNVBAgMEk5vcnRlIGRlIFNhbnRhbmRlcjEP
 MA0GA1UEBwwGQ3VjdXRhMRkwFwYDVQQKDBBNdW5kbyBDYXJuZXMgU0FTMSIwIAYD
