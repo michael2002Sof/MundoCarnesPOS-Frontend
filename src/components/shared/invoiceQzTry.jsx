@@ -14,9 +14,9 @@ const setuQz = () => {
     console.log("🛠️ [PASO 1]: Configurando Seguridad QZ (v2.2.5)");
 
     // Configurar Certificado
-    qz.security.setCertificatePromise((resolve) => {
+    qz.security.setCertificatePromise(() => {
         console.log("ℹ️ [PASO 2]: Entregando certificado público al cliente");
-        resolve(`-----BEGIN CERTIFICATE-----
+        return Promise.resolve(`-----BEGIN CERTIFICATE-----
 MIID1TCCAr2gAwIBAgIUP3UkWvE5+owVkbOfUCD11KKDrfQwDQYJKoZIhvcNAQEL
 BQAwejELMAkGA1UEBhMCQ08xGzAZBgNVBAgMEk5vcnRlIGRlIFNhbnRhbmRlcjEP
 MA0GA1UEBwwGQ3VjdXRhMRkwFwYDVQQKDBBNdW5kbyBDYXJuZXMgU0FTMSIwIAYD
@@ -43,32 +43,38 @@ QPaP+tXAMtcm5OQtiVuURG916Gu5QmHXRg==
 
     // Configurar Firma
     qz.security.setSignaturePromise((toSign) => {
-        console.log("🔑 [PASO 3]: Solicitando firma al servidor para:", toSign.substring(0, 30) + "...");
-        
-        return fetch("https://posinno.luidev02.com/posinnovate/siigo/qz/sign", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ toSign })
-        })
-        .then(res => {
-            if (!res.ok) {
-                console.error(`❌ [ERROR BACKEND]: El servidor respondió con status ${res.status}`);
-                throw new Error(`Error en servidor de firma: ${res.status}`);
-            }
-            return res.json();
-        })
-        .then(data => {
-            if (!data.signature) {
-                console.error("❌ [ERROR DATA]: El servidor no envió la propiedad 'signature'");
-                throw new Error("Respuesta de firma inválida");
-            }
-            console.log("✅ [PASO 4]: Firma recibida con éxito del backend.");
-            return data.signature;
-        })
-        .catch(err => {
-            console.error("💥 [FALLO FIRMA]: Error en la comunicación con la API:", err.message);
-            throw err; // Es vital re-lanzar el error para que QZ Tray sepa que falló
-        });
+      console.log("🔑 [PASO 3]: Solicitando firma al servidor para:", toSign.substring(0, 30) + "...");
+      
+      return fetch(`${import.meta.env.VITE_API_URL}/posinnovate/siigo/qz/sign`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ toSign })
+      })
+      .then(res => {
+          if (!res.ok) {
+              console.error(`❌ [ERROR BACKEND]: El servidor respondió con status ${res.status}`);
+              throw new Error(`Error en servidor de firma: ${res.status}`);
+          }
+          return res.json();
+      })
+      .then(data => {
+          console.log("📥 [RESPUESTA BACKEND]:", data);
+
+          if (data.error) {
+            console.error("❌ [ERROR BACKEND LOGIC]:", data.error);
+            throw new Error(data.error);
+          }
+          if (!data.signature) {
+            console.error("❌ [ERROR DATA]: Firma ausente", data);
+            throw new Error("Respuesta de firma inválida");
+          }
+          console.log("✅ [PASO 4]: Firma recibida con éxito del backend.");
+          return data.signature;
+      })
+      .catch(err => {
+          console.error("💥 [FALLO FIRMA]: Error en la comunicación con la API:", err.message);
+          throw err; // Es vital re-lanzar el error para que QZ Tray sepa que falló
+      });
     });
 
     isQzSecurityConfigured = true;
@@ -227,7 +233,7 @@ export default function InvoicePrinter({ invoice, onFinish }) {
 
                 const config = qz.configs.create(printerName, {
                     rasterize: true,
-                    delay: 0.5,
+                    delay: 500,
                     size: { width: 80 },
                     units: 'mm'
                 });
