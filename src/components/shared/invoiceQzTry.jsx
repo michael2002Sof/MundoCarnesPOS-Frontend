@@ -5,6 +5,8 @@ import { renderToStaticMarkup } from "react-dom/server";
 import { formatDecimal } from "../../utils/formatData";
 import QRCode from "react-qr-code";
 
+import axiosInstance from "../../api/axiosintance";
+
 // Bandera global para evitar re-configurar las promesas
 let isQzSecurityConfigured = false;
 
@@ -42,35 +44,23 @@ QPaP+tXAMtcm5OQtiVuURG916Gu5QmHXRg==
 
     console.log("ℹ️ [PASO 2]: Entregando certificado público al cliente");
 
-    // Configurar Firma
-    qz.security.setSignaturePromise((toSign) => {
-      console.log("🔑 [PASO 3]: Solicitando firma al servidor para:", toSign.substring(0, 30) + "...");
-      
-      return new Promise((resolve, reject) => {
-        fetch(`${import.meta.env.VITE_API_URL}/posinnovate/siigo/qz/sign`, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ toSign })
-        })
-        .then(res => {
-          console.log("3️⃣ Respuesta recibida del servidor");
-          console.log("   → HTTP status:", res.status);
-          return res.json();
-        })
-        .then(data => {
-          console.log("4️⃣ Payload recibido:", data);
-          if (data.signature) resolve(data.signature);
-          else reject(data.error || "Error obteniendo firma");
-        })
-        .catch(err => {
-            console.error("💥 [FALLO FIRMA]: Error en la comunicación con la API:", err.message);
-            console.log(err)
-            reject(err);
-        });
-      })
-    });
+  // Configurar Firma
+  qz.security.setSignaturePromise((toSign) => {
+    console.group("🔐 QZ SIGNATURE FLOW");
+    console.log("📥 toSign recibido:", toSign);
+    console.log("📏 Longitud:", toSign.length);
 
-    isQzSecurityConfigured = true;
+    return axiosInstance.post(`/posinnovate/siigo/qz/sign`, {toSign} )
+      .then((res) => {
+        console.log("✅ Respuesta del backend:", res);
+        isQzSecurityConfigured = true;
+        return res.data;
+      })
+      .catch((error) => {
+      console.error("❌ Error en firma QZ:", error);
+      throw error;
+    });
+  })
 };
 
 // 2. DISEÑO DEL TICKET
