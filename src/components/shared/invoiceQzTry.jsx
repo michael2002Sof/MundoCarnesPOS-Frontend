@@ -85,47 +85,50 @@ const InvoiceDesign = ({ invoice }) => {
   const showIVA19 = invoiceItem.some(it => Number(it.tax19) > 0);
 
   return (
-    <div style={{ width: "80mm", margin: "2mm", fontFamily: "Arial, sans-serif", fontSize: "11px", lineHeight: "1.2", color: "#000" }}>
+    <div style={{ width: "80mm", marginLeft: "4mm", fontFamily: "Arial, sans-serif", fontSize: "10px", lineHeight: "1.2", color: "#000" }}>
       
       {/* CABECERA */}
       <header style={{ textAlign: "center", marginBottom: "8px" }}>
-        <img src="https://mundocarnespos.vercel.app/logo_mundocarnes.svg" style={{ width: "40mm", bottom: "2px" }} />
-        <h2 style={{ fontSize: "15px", fontWeight: "bold", margin: "0" }}>MUNDO CARNES SAS</h2>
-        <p style={{ margin: "2px 0" }}>NIT: 901586875-0</p>
-        <p style={{ margin: "2px 0", fontSize: "10px" }}>CALLE 123 # 45-67 - CÚCUTA</p>
-        <p style={{ margin: "2px 0", fontSize: "10px" }}>TEL: 310 000 0000</p>
+        <img 
+          src="https://mundocarnespos.vercel.app/logo_mundocarnes.svg" 
+          style={{ width: "38mm", marginBottom: "4px" }} 
+        />
+        <h2 style={{ fontSize: "13px", fontWeight: "bold" }}>MUNDO CARNES SAS</h2>
+        <p style={{ fontSize: "10px" }}>NIT: 901586875-0</p>
+        <p style={{ fontSize: "10px" }}>CALLE 123 # 45-67 - CÚCUTA</p>
+        <p style={{ fontSize: "10px" }}>TEL: 310 000 0000</p>
         
         <div style={{ borderBottom: "1px dashed #000", margin: "5px 0" }}></div>
         
-        <h3 style={{ fontSize: "13px", fontWeight: "bold", margin: "5px 0" }}>
-          {code}
+        <h3 style={{ fontSize: "12px", fontWeight: "bold"}}>
+          FACTURA {code}
         </h3>
       </header>
 
       {/* DATOS CLIENTE */}
       <div style={{ marginBottom: "8px", fontSize: "10px" }}>
-        <p style={{ margin: "1px 0" }}><strong>Fecha:</strong> {created_at}</p>
-        <p style={{ margin: "1px 0" }}><strong>Cliente:</strong> {customerName || "CONSUMIDOR FINAL"}</p>
-        <p style={{ margin: "1px 0" }}><strong>NIT/CC:</strong> {customerCC || "222222222222"}</p>
-        <p style={{ margin: "1px 0" }}><strong>Dirección:</strong> {customerAddress || "CÚCUTA"}</p>
-        <p style={{ margin: "1px 0" }}><strong>Vendedor:</strong> {vendedor || "CAJA PRINCIPAL"}</p>
+        <p><strong>Fecha:</strong> {created_at}</p>
+        <p><strong>Cliente:</strong> {customerName || "CONSUMIDOR FINAL"}</p>
+        <p><strong>NIT/CC:</strong> {customerCC || "222222222222"}</p>
+        <p><strong>Dirección:</strong> {customerAddress || "CÚCUTA"}</p>
+        <p><strong>Vendedor:</strong> {vendedor || "CAJA PRINCIPAL"}</p>
       </div>
 
       {/* TABLA DE PRODUCTOS */}
       <table style={{ width: "100%", borderCollapse: "collapse", fontSize: "10px" }}>
         <thead>
-          <tr style={{ borderBottom: "1px solid #000" }}>
-            <th style={{ textAlign: "left", padding: "4px 0" }}>DESCRIPCIÓN</th>
-            <th style={{ textAlign: "center", padding: "4px 0" }}>CANT</th>
-            <th style={{ textAlign: "right", padding: "4px 0" }}>TOTAL</th>
+          <tr style={{ borderBottom: "1px dashed #000" }}>
+            <th style={{ textAlign: "left" }}>DESCRIPCIÓN</th>
+            <th style={{ textAlign: "center" }}>CANT</th>
+            <th style={{ textAlign: "right" }}>TOTAL</th>
           </tr>
         </thead>
         <tbody>
           {invoiceItem.map((it, i) => (
             <tr key={i}>
-              <td style={{ padding: "3px 0", verticalAlign: "top" }}>{it.product_name}</td>
-              <td style={{ textAlign: "center", verticalAlign: "top" }}>{it.quantity}</td>
-              <td style={{ textAlign: "right", verticalAlign: "top" }}>{formatDecimal(it.total, true)}</td>
+              <td>{it.product_name}</td>
+              <td style={{ textAlign: "center" }}>{it.quantity}</td>
+              <td style={{ textAlign: "right" }}>{formatDecimal(it.total, true)}</td>
             </tr>
           ))}
         </tbody>
@@ -157,7 +160,7 @@ const InvoiceDesign = ({ invoice }) => {
       </div>
 
       {/* MEDIOS DE PAGO */}
-      <div style={{ marginTop: "8px", border: "1px solid #000", padding: "4px" }}>
+      <div style={{ marginTop: "8px", border: "1px solid #000" }}>
         <p style={{ margin: "0 0 2px 0", fontSize: "9px" }}><strong>FORMA DE PAGO:</strong></p>
         {receipt_cash > 0 && (
           <div style={{ display: "flex", justifyContent: "space-between", fontSize: "10px" }}>
@@ -181,11 +184,11 @@ const InvoiceDesign = ({ invoice }) => {
         <div style={{ marginBottom: "8px" }}>
           <QRCode value={cufe || code || "MundoCarnes"} size={90} />
         </div>
-        <p style={{ fontSize: "7px", wordBreak: "break-all", margin: "5px 0" }}>
+        <p style={{ fontSize: "10px", wordBreak: "break-all" }}>
           <strong>CUFE:</strong> {cufe || "PROCESANDO FIRMA ELECTRÓNICA..."}
         </p>
         <p style={{ fontSize: "10px", fontWeight: "bold" }}>*** GRACIAS POR PREFERIRNOS ***</p>
-        <p style={{ fontSize: "9px" }}>Desarrollado por POSinnovate</p>
+        <p style={{ fontSize: "9px" }}>-- Desarrollado por POSinnovate --</p>
       </div>
     </div>
   );
