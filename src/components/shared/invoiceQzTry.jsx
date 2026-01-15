@@ -118,20 +118,20 @@ const InvoiceDesign = ({ invoice }) => {
       <table style={{ width: "100%", borderCollapse: "collapse", fontSize: "10px" }}>
         <thead>
           <tr style={{ borderBottom: "1px dashed #000" }}>
-            <th style={{ textAlign: "left" }}>DESCRIPCIÓN</th>
-            <th style={{ textAlign: "center" }}>CANT</th>
+            <th style={{ textAlign: "left" }}>Producto</th>
+            <th style={{ textAlign: "center" }}>Cant.</th>
             <th style={{ textAlign: "left" }}>V.Unit</th>
             {showIVA0 && <th style={{ textAlign: "center" }}>IVA 0%</th>}
             {showIVA5 && <th style={{ textAlign: "center" }}>IVA 5%</th>}
             {showIVA19 && <th style={{ textAlign: "center" }}>IVA 19%</th>}
-            <th style={{ textAlign: "right" }}>TOTAL</th>
+            <th style={{ textAlign: "right" }}>Total</th>
           </tr>
         </thead>
         <tbody>
           {invoiceItem.map((it, i) => (
             <tr key={i}>
               <td>{it.product_name}</td>
-              <td style={{ textAlign: "center" }}>{it.quantity} Kg</td>
+              <td style={{ textAlign: "center" }}>{it.quantity}</td>
               <td style={{ textAlign: "left" }}>
                 {formatDecimal(it.unit_price, true)}
               </td>
@@ -186,7 +186,7 @@ const InvoiceDesign = ({ invoice }) => {
         <p style={{ margin: "0 0 2px 0", fontSize: "9px" }}><strong>FORMA DE PAGO:</strong></p>
         {receipt_cash > 0 && (
           <div style={{ display: "flex", justifyContent: "space-between", fontSize: "10px" }}>
-            <span>Efectivo:</span> <span>{formatDecimal(receipt_cash + repay, true)}</span>
+            <span>Efectivo:</span> <span>{formatDecimal(receipt_cash, true)}</span>
           </div>
         )}
         {receipt_transfer > 0 && (
@@ -209,7 +209,7 @@ const InvoiceDesign = ({ invoice }) => {
         <p style={{ fontSize: "10px", wordBreak: "break-all" }}>
           <strong>CUFE:</strong> {cufe || "PROCESANDO FIRMA ELECTRÓNICA..."}
         </p>
-        <p style={{ fontWeight: "bold" }}>*** GRACIAS POR PREFERIRNOS ***</p>
+        <p style={{ fontWeight: "bold", margin: "1px 0" }}>*** GRACIAS POR PREFERIRNOS ***</p>
         <p style={{ fontSize: "10px" }}>-- Desarrollado por POSinnovate --</p>
       </div>
     </div>
