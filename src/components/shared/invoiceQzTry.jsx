@@ -79,8 +79,13 @@ const InvoiceDesign = ({ invoice }) => {
     vendedor 
   } = invoice;
 
+  // Detectar los IVAs activos antes del render
+  const showIVA0 = invoiceItem.some(it => Number(it.tax5) === 0 && Number(it.tax19) === 0);
+  const showIVA5 = invoiceItem.some(it => Number(it.tax5) > 0);
+  const showIVA19 = invoiceItem.some(it => Number(it.tax19) > 0);
+
   return (
-    <div style={{ width: "80mm", padding: "2mm", fontFamily: "Arial, sans-serif", fontSize: "11px", lineHeight: "1.2", color: "#000" }}>
+    <div style={{ width: "80mm", margin: "2mm", fontFamily: "Arial, sans-serif", fontSize: "11px", lineHeight: "1.2", color: "#000" }}>
       
       {/* CABECERA */}
       <header style={{ textAlign: "center", marginBottom: "8px" }}>
@@ -131,12 +136,17 @@ const InvoiceDesign = ({ invoice }) => {
         <div style={{ display: "flex", justifyContent: "space-between" }}>
           <span>Subtotal:</span> <span>{formatDecimal(subtotal, true)}</span>
         </div>
-        {tax5 > 0 && (
+        {showIVA0 && (
+          <div style={{ display: "flex", justifyContent: "space-between" }}>
+            <span>IVA (0%):</span> <span>{formatDecimal(tax5, true)}</span>
+          </div>
+        )}
+        {showIVA5 && (
           <div style={{ display: "flex", justifyContent: "space-between" }}>
             <span>IVA (5%):</span> <span>{formatDecimal(tax5, true)}</span>
           </div>
         )}
-        {tax19 > 0 && (
+        {showIVA19 && (
           <div style={{ display: "flex", justifyContent: "space-between" }}>
             <span>IVA (19%):</span> <span>{formatDecimal(tax19, true)}</span>
           </div>
