@@ -89,8 +89,8 @@ const InvoiceDesign = ({ invoice }) => {
       
       {/* CABECERA */}
       <header style={{ textAlign: "center", marginBottom: "8px", position: "relative" }}>
-        <div style={{ bottom: "20px", left: "0", position: "absolute" }}>
-          <QRCode value={cufe || code || "MundoCarnes"} size={55} />
+        <div style={{ bottom: "30px", left: "0", position: "absolute" }}>
+          <QRCode value={cufe || code || "MundoCarnes"} size={60} />
         </div>
         <img 
           src="https://mundocarnespos.vercel.app/logo_mundocarnes.svg" 
