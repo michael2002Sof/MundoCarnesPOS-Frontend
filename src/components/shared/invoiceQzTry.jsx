@@ -46,9 +46,9 @@ QPaP+tXAMtcm5OQtiVuURG916Gu5QmHXRg==
 
   // Configurar Firma
   qz.security.setSignaturePromise(async (toSign) => {
-    const res = await axiosInstance.post("/posinnovate/siigo/qz/sign", { toSign });
-    console.log("El backend devolvio la clave", res.data)
-    return res.data;
+    const res = await axiosInstance.post("/posinnovate/siigo/qz/sign", { toSign }, { responseType: "text" });
+    console.log("El backend devolvio la clave", res)
+    return res;
   });
 
   isQzSecurityConfigured = true;
