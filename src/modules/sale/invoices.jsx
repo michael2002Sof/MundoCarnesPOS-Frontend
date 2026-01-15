@@ -200,7 +200,7 @@ export default function Invoices () {
                 </div>
             </section>
 
-            {isPrintInvoice &&  <InvoiceModal invoice={isPrintInvoice} onFinish={() => setPrintInvoice(null)}/> }
+            {isPrintInvoice &&  <InvoicePrinter invoice={isPrintInvoice} onFinish={() => setPrintInvoice(null)}/> }
         </>
     )
 }
