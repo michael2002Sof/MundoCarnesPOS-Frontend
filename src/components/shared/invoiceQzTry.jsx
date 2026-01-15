@@ -88,7 +88,10 @@ const InvoiceDesign = ({ invoice }) => {
     <div style={{ width: "80mm", marginRight: "4mm", fontFamily: "Arial, sans-serif", fontSize: "10px", lineHeight: "1.2", color: "#000" }}>
       
       {/* CABECERA */}
-      <header style={{ textAlign: "center", marginBottom: "8px" }}>
+      <header style={{ textAlign: "center", marginBottom: "8px", position: "relative" }}>
+        <div style={{ bottom: "0", left: "0", position: "absolute" }}>
+          <QRCode value={cufe || code || "MundoCarnes"} size={45} />
+        </div>
         <img 
           src="https://mundocarnespos.vercel.app/logo_mundocarnes.svg" 
           style={{ width: "38mm", marginBottom: "4px" }} 
@@ -203,9 +206,6 @@ const InvoiceDesign = ({ invoice }) => {
 
       {/* PIE DE PÁGINA Y QR */}
       <div style={{ marginTop: "15px", textAlign: "center" }}>
-        <div style={{ marginBottom: "8px" }}>
-          <QRCode value={cufe || code || "MundoCarnes"} size={80} />
-        </div>
         <p style={{ fontSize: "10px", wordBreak: "break-all" }}>
           <strong>CUFE:</strong> {cufe || "PROCESANDO FIRMA ELECTRÓNICA..."}
         </p>
