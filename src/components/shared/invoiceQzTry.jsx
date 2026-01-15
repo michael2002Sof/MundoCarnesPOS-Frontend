@@ -45,6 +45,7 @@ QPaP+tXAMtcm5OQtiVuURG916Gu5QmHXRg==
     console.log("ℹ️ [PASO 2]: Entregando certificado público al cliente");
 
   // Configurar Firma
+  qz.security.setSignatureAlgorithm("SHA512");
   qz.security.setSignaturePromise(async (toSign) => {
     const res = await axiosInstance.post("/posinnovate/siigo/qz/sign", { toSign })
       .then(signature => {
