@@ -85,7 +85,7 @@ const InvoiceDesign = ({ invoice }) => {
   const showIVA19 = invoiceItem.some(it => Number(it.tax19) > 0);
 
   return (
-    <div style={{ width: "80mm", marginLeft: "4mm", fontFamily: "Arial, sans-serif", fontSize: "10px", lineHeight: "1.2", color: "#000" }}>
+    <div style={{ width: "80mm", marginRight: "4mm", fontFamily: "Arial, sans-serif", fontSize: "10px", lineHeight: "1.2", color: "#000" }}>
       
       {/* CABECERA */}
       <header style={{ textAlign: "center", marginBottom: "8px" }}>
@@ -93,10 +93,10 @@ const InvoiceDesign = ({ invoice }) => {
           src="https://mundocarnespos.vercel.app/logo_mundocarnes.svg" 
           style={{ width: "38mm", marginBottom: "4px" }} 
         />
-        <h2 style={{ fontSize: "13px", fontWeight: "bold" }}>MUNDO CARNES SAS</h2>
-        <p style={{ fontSize: "10px" }}>NIT: 901586875-0</p>
-        <p style={{ fontSize: "10px" }}>CALLE 123 # 45-67 - CÚCUTA</p>
-        <p style={{ fontSize: "10px" }}>TEL: 310 000 0000</p>
+        <h2 style={{ fontSize: "13px", fontWeight: "bold", margin: "0" }}>MUNDO CARNES SAS</h2>
+        <p style={{ fontSize: "10px", margin: "2px 0" }}>NIT: 901586875-0</p>
+        <p style={{ fontSize: "10px", margin: "2px 0" }}>CALLE 123 # 45-67 - CÚCUTA</p>
+        <p style={{ fontSize: "10px", margin: "2px 0" }}>TEL: 310 000 0000</p>
         
         <div style={{ borderBottom: "1px dashed #000", margin: "5px 0" }}></div>
         
@@ -107,11 +107,11 @@ const InvoiceDesign = ({ invoice }) => {
 
       {/* DATOS CLIENTE */}
       <div style={{ marginBottom: "8px", fontSize: "10px" }}>
-        <p><strong>Fecha:</strong> {created_at}</p>
-        <p><strong>Cliente:</strong> {customerName || "CONSUMIDOR FINAL"}</p>
-        <p><strong>NIT/CC:</strong> {customerCC || "222222222222"}</p>
-        <p><strong>Dirección:</strong> {customerAddress || "CÚCUTA"}</p>
-        <p><strong>Vendedor:</strong> {vendedor || "CAJA PRINCIPAL"}</p>
+        <p style={{ margin: "1px 0" }}><strong>Fecha:</strong> {created_at}</p>
+        <p style={{ margin: "1px 0" }}><strong>Cliente:</strong> {customerName || "CONSUMIDOR FINAL"}</p>
+        <p style={{ margin: "1px 0" }}><strong>NIT/CC:</strong> {customerCC || "222222222222"}</p>
+        <p style={{ margin: "1px 0" }}><strong>Dirección:</strong> {customerAddress || "CÚCUTA"}</p>
+        <p style={{ margin: "1px 0" }}><strong>Vendedor:</strong> {vendedor || "CAJA PRINCIPAL"}</p>
       </div>
 
       {/* TABLA DE PRODUCTOS */}
@@ -120,6 +120,10 @@ const InvoiceDesign = ({ invoice }) => {
           <tr style={{ borderBottom: "1px dashed #000" }}>
             <th style={{ textAlign: "left" }}>DESCRIPCIÓN</th>
             <th style={{ textAlign: "center" }}>CANT</th>
+            <th style={{ textAlign: "left" }}>V.Unit</th>
+            {showIVA0 && <th style={{ textAlign: "center" }}>IVA 0%</th>}
+            {showIVA5 && <th style={{ textAlign: "center" }}>IVA 5%</th>}
+            {showIVA19 && <th style={{ textAlign: "center" }}>IVA 19%</th>}
             <th style={{ textAlign: "right" }}>TOTAL</th>
           </tr>
         </thead>
@@ -127,7 +131,25 @@ const InvoiceDesign = ({ invoice }) => {
           {invoiceItem.map((it, i) => (
             <tr key={i}>
               <td>{it.product_name}</td>
-              <td style={{ textAlign: "center" }}>{it.quantity}</td>
+              <td style={{ textAlign: "center" }}>{it.quantity} Kg</td>
+              <td style={{ textAlign: "left" }}>
+                {formatDecimal(it.unit_price, true)}
+              </td>
+              {showIVA0 && (
+                <td style={{ textAlign: "center" }}>
+                  {Number(it.tax5) === 0 && Number(it.tax19) === 0 ? "$ 0" : "-"}
+                </td>
+              )}
+              {showIVA5 && (
+                <td style={{ textAlign: "center" }}>
+                  {it.tax5 > 0 ? formatDecimal(it.tax5, true) : "-"}
+                </td>
+              )}
+              {showIVA19 && (
+              <td style={{ textAlign: "center" }}>
+                {it.tax19 > 0 ? formatDecimal(it.tax19, true) : "-"}
+              </td>
+              )}
               <td style={{ textAlign: "right" }}>{formatDecimal(it.total, true)}</td>
             </tr>
           ))}
@@ -160,7 +182,7 @@ const InvoiceDesign = ({ invoice }) => {
       </div>
 
       {/* MEDIOS DE PAGO */}
-      <div style={{ marginTop: "8px", border: "1px solid #000" }}>
+      <div style={{ marginTop: "8px", border: "1px solid #000", padding: "2px" }}>
         <p style={{ margin: "0 0 2px 0", fontSize: "9px" }}><strong>FORMA DE PAGO:</strong></p>
         {receipt_cash > 0 && (
           <div style={{ display: "flex", justifyContent: "space-between", fontSize: "10px" }}>
@@ -182,13 +204,13 @@ const InvoiceDesign = ({ invoice }) => {
       {/* PIE DE PÁGINA Y QR */}
       <div style={{ marginTop: "15px", textAlign: "center" }}>
         <div style={{ marginBottom: "8px" }}>
-          <QRCode value={cufe || code || "MundoCarnes"} size={90} />
+          <QRCode value={cufe || code || "MundoCarnes"} size={80} />
         </div>
         <p style={{ fontSize: "10px", wordBreak: "break-all" }}>
           <strong>CUFE:</strong> {cufe || "PROCESANDO FIRMA ELECTRÓNICA..."}
         </p>
-        <p style={{ fontSize: "10px", fontWeight: "bold" }}>*** GRACIAS POR PREFERIRNOS ***</p>
-        <p style={{ fontSize: "9px" }}>-- Desarrollado por POSinnovate --</p>
+        <p style={{ fontWeight: "bold" }}>*** GRACIAS POR PREFERIRNOS ***</p>
+        <p style={{ fontSize: "10px" }}>-- Desarrollado por POSinnovate --</p>
       </div>
     </div>
   );
