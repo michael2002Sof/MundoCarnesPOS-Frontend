@@ -14,7 +14,7 @@ export default function InvoiceResolution () {
     const {salePoints} = useSalePoint()
     console.log("Resoluciones del POS:", invoicesResolution)
     const [isAction, setAction] = useState("Resoluciones")
-    const initialData = { id: "", sale_point: "", cost_center_default: "", code: "", name: "", type: "", electronic_type: "", active: "", description: ""}
+    const initialData = { siigo_id: "", sale_point: "", cost_center_default: "", code: "", name: "", type: "", electronic_type: "", active: "", description: ""}
     const [isResolution, setResolution] = useState(initialData)
 
     useEffect(() => {
@@ -29,11 +29,11 @@ export default function InvoiceResolution () {
             setResolution(found)  // SOLO SE EJECUTA AL CAMBIAR EL SELECT
         }
     }
-
+    
     const SubmitResolution = async (e) => {
         e.preventDefault()
-        console.log(isResolution)
-        POST_InvoiceResolution(isResolution)
+        const payload = { ...isResolution, siigo_id: isResolution.id }
+        POST_InvoiceResolution(payload)
         setResolution(initialData)
     }
 
@@ -93,7 +93,7 @@ export default function InvoiceResolution () {
                                 ) : (
                                     invoicesResolution?.map((r) => (
                                         <tr key={r.id} className="border-b border-gray-200">
-                                            <td className="p-4">{r.id}</td>
+                                            <td className="p-4">{r.siigo_id}</td>
                                             <td className="p-4">{r.type}</td>
                                             <td className="p-4">{r.code}</td>
                                             <td className="p-4">{r.description}</td>

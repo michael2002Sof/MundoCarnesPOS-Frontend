@@ -368,7 +368,7 @@ export default function CashSale() {
     const [isInvoicePrinting, setIsInvoicePrinting] = useState(false);
 
     useEffect(() => {
-        useHandleInputChange(setBuildInvoice, "document.id", resolution?.id)
+        useHandleInputChange(setBuildInvoice, "document.id", resolution?.siigo_id)
         useHandleInputChange(setBuildInvoice, "customer", selectedCustomer)
         useHandleInputChange(setBuildInvoice, "cost_center", sp?.cost_center)
         useHandleInputChange(setBuildInvoice, "sale_point", sp?.id)
