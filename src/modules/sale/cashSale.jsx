@@ -32,6 +32,7 @@ export default function CashSale() {
     const {sessionId, GET_SessionId} = useSessionId() 
     const {invoicesResolution, GET_InvoiceResolution} = useInvoiceResolution()
 
+    const [isModeDatafono, setModeDatafono] = useState(false)
     const [loadingProduct, setLoadingProduct] = useState(false)
     const inputScannerRef = useRef()
     const cashInputRef = useRef(null); 
@@ -241,7 +242,7 @@ export default function CashSale() {
         if (barcode.length < 12 && prefix < 20 || prefix > 29) {
             setLoadingProduct(true)
             const productSiigo = await GET_ProductSiigoByCode(barcode)
-            product = useDecodeNormal(productSiigo, wh)
+            product = useDecodeNormal(productSiigo, wh, isModeDatafono)
         } else {
             setLoadingProduct(true)
             const productCode = barcode.slice(2, 7);
@@ -258,7 +259,7 @@ export default function CashSale() {
                 weight = parseInt(weightDigits, 10) / 1000;
                 console.log("peso", weight)
             }
-            product = useDecodeScale(productSiigo, weight, wh) 
+            product = useDecodeScale(productSiigo, weight, wh, isModeDatafono) 
         }
 
         if (!product) {
@@ -499,7 +500,13 @@ export default function CashSale() {
             ===================================================================*/}
             <div className="flex gap-6  container mx-auto max-w-7xl 2xl:max-w-[90%]">
                 <div className="w-2/3 space-y-4">
-                    <OpenCloseCash sp={sp} user={user} GET_SalePoint={GET_SalePoint}/>
+                    <OpenCloseCash 
+                        sp={sp} 
+                        user={user} 
+                        GET_SalePoint={GET_SalePoint}
+                        isModeDatafono={isModeDatafono}
+                        setModeDatafono={setModeDatafono}
+                    />
                     {/* Pestañas */}
                     <section className="flex gap-2 w-full justify-center">
                         <div className={`px-3 py-2 rounded ${tabs[0].id === activeTabId ? "bg-[#841A1A] text-amber-100" : "bg-amber-200 text-[#841A1A]"}`}>

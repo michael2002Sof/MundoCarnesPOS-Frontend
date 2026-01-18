@@ -1,5 +1,5 @@
 
-export function useDecodeScale (productSiigo, weight, wh)  {
+export function useDecodeScale (productSiigo, weight, wh, isModeDatafono)  {
 
     const product = productSiigo
 
@@ -11,7 +11,12 @@ export function useDecodeScale (productSiigo, weight, wh)  {
     const isTax0 = taxObject === 0;
     const hasTax5 = taxObject === 5;
     const hasTax19 = taxObject === 19;
-    const base_price = product.prices[0].price_list[0].value // precio con iva incluido
+    let base_price
+    if (isModeDatafono) {
+        base_price = product.prices[0].price_list[1].value // precio con iva incluido
+    } else {
+        base_price = product.prices[0].price_list[0].value // precio con iva incluido
+    }
 
     let tax5 = 0;
     let tax19 = 0;
@@ -57,7 +62,7 @@ export function useDecodeScale (productSiigo, weight, wh)  {
 
 
  // Decodificar normal
-export function useDecodeNormal (productSiigo, wh) {
+export function useDecodeNormal (productSiigo, wh, isModeDatafono) {
 
     const product = productSiigo
 
@@ -68,8 +73,12 @@ export function useDecodeNormal (productSiigo, wh) {
     const isTax0 = taxObject === 0;
     const hasTax5 = taxObject === 5;
     const hasTax19 = taxObject === 19;
-
-    const base_price = product.prices[0].price_list[0].value  // Precio unit con iva
+    let base_price
+    if (isModeDatafono) {
+        base_price = product.prices[0].price_list[1].value // precio con iva incluido
+    } else {
+        base_price = product.prices[0].price_list[0].value // precio con iva incluido
+    }
     //console.log("Precio del producto en siigo con iva", base_price)
     
     const total = base_price;

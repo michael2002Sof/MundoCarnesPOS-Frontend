@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react"
-import { LockOpen, Lock, Loader2, Loader } from "lucide-react"
+import { LockOpen, Lock, Loader2, Loader, Check } from "lucide-react"
 
 import { ModulesHeader } from "../../../components/shared/headers"
 import handleInputChange from "../../../utils/useHandleInputChange"
@@ -10,7 +10,7 @@ import toast from "react-hot-toast"
 import ReportTemplate from "../../../components/shared/reportCashSession"
 
 
-export default function OpenCloseCash ({sp, user, GET_SalePoint}) {
+export default function OpenCloseCash ({sp, user, GET_SalePoint, isModeDatafono, setModeDatafono}) {
     const {isLoading, session, POST_CashSession, GET_SessionById, POST_CreditNote, PUT_CashSession} = useCashSession()
     const {sessionId, GET_SessionId} = useSessionId()
     const [printSession, setPrintSession] = useState(null);
@@ -316,6 +316,16 @@ export default function OpenCloseCash ({sp, user, GET_SalePoint}) {
                         <>
                           <Lock/> Cierre de Caja
                         </>
+                    )}
+                </button>
+                <button 
+                    onClick={() => setModeDatafono(!isModeDatafono)}
+                    className={`py-2 px-4 border rounded-xl flex gap-2 items-center font-semibold ${isModeDatafono ? "border-green-500/30 text-green-700 bg-green-500/20" : "border-[#841A1A] text-[#841A1A]"}`}>
+                    Activar modo Datafono
+                    {isModeDatafono && (
+                        <div className="text-white bg-green-500 rounded-full p-2">
+                            <Check size={14}/>
+                        </div>
                     )}
                 </button>
             </section>
