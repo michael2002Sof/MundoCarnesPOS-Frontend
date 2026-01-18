@@ -39,7 +39,7 @@ const ReportTemplate = ({ session, onFinish }) => {
 
   const {
     id, branch_name, sales_point_name, opened_by, opened_at, closed_at, closed_by,
-    initial_cash, total_cash, total_transfer, subtotal_method, total_return, total_method,
+    initial_cash, total_cash, total_transfer, total_datafono, subtotal_method, total_return, total_method,
     subtotal, tax0, tax5, tax19, total, totalSales
   } = session;
 
@@ -81,6 +81,7 @@ const ReportTemplate = ({ session, onFinish }) => {
             <section className="font-semibold text-left">
               <p>En efectivo: </p>
               <p>En transferencias:</p>
+              <p>En datáfono:</p>
               <p>Sub total pagos:</p>
               <p>Devoluciones: </p>
               <p>Total Pagos:</p>
@@ -89,6 +90,7 @@ const ReportTemplate = ({ session, onFinish }) => {
             <section className="text-right">
               <p>{formatDecimal(total_cash, true)}</p>
               <p>{formatDecimal(total_transfer, true)}</p>
+              <p>{formatDecimal(total_datafono, true)}</p>
               <p>{formatDecimal(subtotal_method, true)}</p>
               <p>{formatDecimal(total_return, true)}</p>
               <p>{formatDecimal(total_method, true)}</p>

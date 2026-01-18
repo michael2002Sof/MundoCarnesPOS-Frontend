@@ -167,6 +167,7 @@ export default function ReportSale() {
                     </h3>
                     <p><span className="font-semibold">Ingreso en Efectivo:</span> {formatDecimal(s.total_cash, true)}</p>
                     <p><span className="font-semibold">Ingreso en Transferencias:</span> {formatDecimal(s.total_transfer, true)}</p>
+                    <p><span className="font-semibold">Ingreso en Datáfono:</span> {formatDecimal(s.total_datafono, true)}</p>
                     <p><strong>Sub Total Pagos:</strong>{formatDecimal(s.subtotal_method, true)}</p>
                     <p><strong>Devoluciones:</strong>{formatDecimal(s.total_return, true)}</p>
                     <p className="text-lg font-bold mt-2 border-t border-[#841A1A]/20 pt-2">
