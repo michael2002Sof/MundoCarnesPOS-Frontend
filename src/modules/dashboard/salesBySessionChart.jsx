@@ -118,7 +118,7 @@ export default function SalesBySessionChart({ data = [], from, to }) {
                             key={sp}
                             dataKey={sp}
                             barSize={32}
-                            fill={idx === 0 ? "#841A1A" : "#c08608"}
+                            fill={idx === 0 ? "#841A1A" : idx === 1 ? "#c08608" : "#135fac" }
                         />
                     ))}
                 </BarChart>

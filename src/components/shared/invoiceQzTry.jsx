@@ -73,6 +73,7 @@ const InvoiceDesign = ({ invoice }) => {
     total,
     receipt_cash,
     receipt_transfer,
+    receipt_datafono,
     repay,
     cufe,
     // Datos adicionales que vienen en tu resolución/punto de venta
@@ -195,6 +196,11 @@ const InvoiceDesign = ({ invoice }) => {
         {receipt_transfer > 0 && (
           <div style={{ display: "flex", justifyContent: "space-between", fontSize: "10px" }}>
             <span>Transferencia:</span> <span>{formatDecimal(receipt_transfer, true)}</span>
+          </div>
+        )}
+        {receipt_datafono > 0 && (
+          <div style={{ display: "flex", justifyContent: "space-between", fontSize: "10px" }}>
+            <span>Datáfono:</span> <span>{formatDecimal(receipt_datafono, true)}</span>
           </div>
         )}
         {repay > 0 && (

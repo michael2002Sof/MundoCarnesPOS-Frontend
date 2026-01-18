@@ -157,8 +157,10 @@ export default function CashSale() {
         customerAddress: "",
         sale_point: "",
         cash_session: "",
+
         receipt_cash: 0,
         receipt_transfer: 0,
+        receipt_datafono: 0,
         total_payment: 0,
         repay: 0,
 
@@ -316,8 +318,13 @@ export default function CashSale() {
         if (!sp?.methods) return null;
         return sp?.methods?.find(m =>  m.name.toLowerCase().includes("bancolombia") )?.id || null;
     };
+    const getDatafonoMethodId = () => {
+        if (!sp?.methods) return null;
+        return sp?.methods?.find(m =>  m.name.toLowerCase().includes("datáfono") )?.id || null;
+    }
     const cashMethodId = getCashMethodId();
     const transferMethodId = getTransferMethodId();
+    const datafonoMethodId = getDatafonoMethodId()
 
     const formatMoney = (value) => {
         if (!value) return "0";
@@ -342,21 +349,28 @@ export default function CashSale() {
             [id]: clean
         }));
     };
-    //console.log("Valores del metodo de pago", paymentValues)
+    console.log("Valores del metodo de pago", paymentValues)
 
     const cash = paymentValues[cashMethodId] || 0;
     const transfer = paymentValues[transferMethodId] || 0;
+    const datafono = paymentValues[datafonoMethodId] || 0
 
-    const repay = Math.max((cash + transfer) - total, 0) // nunca negativo
+    const repay = Math.max((cash + transfer + datafono) - total, 0) // nunca negativo
 
     const receipt_cash =  parseFloat((cash - repay).toFixed(2)) === Math.round(total) ? total : parseFloat((cash - repay).toFixed(2))
+    //console.log("Recibido en efectivo: ", receipt_cash)
     const receipt_transfer = Math.round(total) === transfer ? total : transfer
-    const total_payment = receipt_cash + receipt_transfer
+    //console.log("Recibido en transferencia: ", receipt_transfer)
+    const receipt_datafono = Math.round(total) === datafono ? total : datafono
+    //console.log("Recibido por datafono", receipt_datafono)
+    const total_payment = receipt_cash + receipt_transfer + receipt_datafono
+    //console.log("Total recibido: ", total_payment)
 
     let payments = sp?.methods.map(m => {
         let value = 0;
         if (m.id === cashMethodId) value = receipt_cash 
         if (m.id === transferMethodId) value = receipt_transfer
+        if (m.id === datafonoMethodId) value = receipt_datafono
 
         return { id: m.id, value, due_date: today };
     }).filter(p => p.value > 0);
@@ -376,13 +390,15 @@ export default function CashSale() {
 
     // Confirmar pago: registrar venta + descontar stock + imprimir factura + limpiar carrito
     const handleConfirmPayment = async () => {
-        console.log(total_payment, total)
         if (total_payment < total) {
             toast.error("El monto recibido es menor al total");
             return;
         }
         if (receipt_transfer > total){
-            return toast.error("El ingreso de tranferencia no es exacto")
+            return toast.error("El ingreso de tranferencia es mayor al total")
+        }
+        if (receipt_datafono > total){
+            return toast.error("El ingreso de datafono es mayor al total")
         }
 
         if (!sessionId) {
@@ -439,6 +455,7 @@ export default function CashSale() {
             payments,
             receipt_cash: Math.round(receipt_cash),
             receipt_transfer: Math.round(receipt_transfer),
+            receipt_datafono: Math.round(receipt_datafono),
             repay: Math.round( (repay).toFixed(2) ),
             total_payment: Math.round(total_payment),
             cash_session: sessionId

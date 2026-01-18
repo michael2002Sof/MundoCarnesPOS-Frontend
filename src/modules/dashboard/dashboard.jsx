@@ -23,6 +23,7 @@ export default function Dashboard() {
     const totalGanancias = sessionStatic.reduce((sum, s) => sum + Number(s.total_sales), 0);
     const totalEfectivo = sessionStatic.reduce((sum, s) => sum + Number(s.total_cash), 0);
     const totalTransfer = sessionStatic.reduce((sum, s) => sum + Number(s.total_transfer), 0);
+    const totalDatafono = sessionStatic.reduce((sum, s) => sum + Number(s.total_datafono), 0);
     const totalVentas = sessionStatic.reduce((sum, s) => sum + Number(s.total_invoices), 0);
 
     const stats = [
@@ -42,6 +43,12 @@ export default function Dashboard() {
             icon: <DollarSign />,
             title: "Transferencias",
             valor: formatDecimal(totalTransfer, true),
+            color: "bg-[#841A1A] text-amber-100"
+        },
+        {
+            icon: <DollarSign />,
+            title: "Datafono",
+            valor: formatDecimal(totalDatafono, true),
             color: "bg-[#841A1A] text-amber-100"
         },
         {

@@ -59,7 +59,7 @@ export default function ReportSale() {
   const promedioVentas = sesiones.length ? totalVentas / sesiones.length : 0;
   const totalEfectivo = sesiones.reduce( (sum, s) => sum + safeNumber(s.total_cash), 0);
   const totalTransferencias = sesiones.reduce( (sum, s) => sum + safeNumber(s.total_transfer), 0);
-
+  const totalDatafono = sesiones.reduce( (sum, s) => sum + safeNumber(s.total_datafono), 0);
 
   const stats = [
     {
@@ -84,6 +84,12 @@ export default function ReportSale() {
       title: "Total en Transferencias",
       icon: <CreditCard />,
       valor: formatDecimal(totalTransferencias, true),
+      color: "bg-[#841A1A] text-amber-100",
+    },
+    {
+      title: "Total en Datafono",
+      icon: <CreditCard />,
+      valor: formatDecimal(totalDatafono, true),
       color: "bg-[#841A1A] text-amber-100",
     }
   ];

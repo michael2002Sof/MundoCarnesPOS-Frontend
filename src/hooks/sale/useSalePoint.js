@@ -52,7 +52,13 @@ export default function useSalePoint () {
         try {
             setLoading(true)
 
-            const res = await axiosInstance.put('/posinnovate/siigo/sale/point', data)
+            const token = DecodeToken()
+            if (!token) return
+
+            const company = token.company
+            const payload = {...data, company}
+
+            const res = await axiosInstance.put('/posinnovate/siigo/sale/point', payload)
             toast.success(res.message)
             GET_SalePoint()
         } catch (error) {

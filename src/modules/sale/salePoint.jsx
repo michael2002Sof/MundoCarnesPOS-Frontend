@@ -19,7 +19,7 @@ export default function SalePoint () {
     //console.log("Centro de Costos POS", costCenters)
     const {branchs} = useBranch()
     const {isLoading, salePoints, POST_SalePoint, PUT_SalePoint} = useSalePoint()
-    console.log("Punto de venta POS", salePoints)
+    //console.log("Punto de venta POS", salePoints)
     const {usersPOS} = useUser()
     const {paymentMethods} = usePaymentMethod()
     //console.log(paymentMethods)
@@ -38,6 +38,7 @@ export default function SalePoint () {
         methods: []
     }
     const [isSalePoint, setSalePoint] = useState(initialBaseSalesPoint) // control de datos de punto de venta
+    //console.log("Punto de preparado para enviar: ", isSalePoint)
     /* ===============================================================
         CREAR / ACTUALIZAR PUNTO DE VENTA
     =============================================================== */
@@ -51,6 +52,30 @@ export default function SalePoint () {
         setSalePoint(initialBaseSalesPoint)
         setAction("Sales Point")
     }
+
+   useEffect(() => {
+        if (!Array.isArray(isSalePoint.methods)) return;
+
+        // Si ya es array de números, no hacer nada
+        const isNumberArray = isSalePoint.methods.every(
+            m => typeof m === "number"
+        );
+
+        if (isNumberArray) return;
+
+        // Si es array de objetos → transformar a IDs
+        const normalized = isSalePoint.methods
+            .filter(m => m && typeof m === "object" && "id" in m)
+            .map(m => m.id);
+
+        setSalePoint(prev => ({
+            ...prev,
+            methods: normalized
+        }));
+
+    }, [isSalePoint.methods]);
+
+
 
     /* ===============================================================
         INTERFAZ
