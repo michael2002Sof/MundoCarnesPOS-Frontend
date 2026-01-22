@@ -63,9 +63,9 @@ const InvoiceDesign = ({ invoice }) => {
   const {
     code,
     created_at,
-    customerName,
-    customerCC,
-    customerAddress,
+    client,
+    cc,
+    address_client,
     invoiceItem = [],
     subtotal,
     tax5,
@@ -112,9 +112,9 @@ const InvoiceDesign = ({ invoice }) => {
       {/* DATOS CLIENTE */}
       <div style={{ marginBottom: "8px", fontSize: "10px" }}>
         <p style={{ margin: "1px 0" }}><strong>Fecha:</strong> {created_at}</p>
-        <p style={{ margin: "1px 0" }}><strong>Cliente:</strong> {customerName || "CONSUMIDOR FINAL"}</p>
-        <p style={{ margin: "1px 0" }}><strong>NIT/CC:</strong> {customerCC || "222222222222"}</p>
-        <p style={{ margin: "1px 0" }}><strong>Dirección:</strong> {customerAddress || "CÚCUTA"}</p>
+        <p style={{ margin: "1px 0" }}><strong>Cliente:</strong> {client || "CONSUMIDOR FINAL"}</p>
+        <p style={{ margin: "1px 0" }}><strong>NIT/CC:</strong> {cc || "222222222222"}</p>
+        <p style={{ margin: "1px 0" }}><strong>Dirección:</strong> {address_client || "CÚCUTA"}</p>
         <p style={{ margin: "1px 0" }}><strong>Vendedor:</strong> {vendedor || "CAJA PRINCIPAL"}</p>
       </div>
 
