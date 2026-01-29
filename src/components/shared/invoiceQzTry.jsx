@@ -99,8 +99,8 @@ const InvoiceDesign = ({ invoice }) => {
         />
         <h2 style={{ fontSize: "13px", fontWeight: "bold", margin: "0" }}>MUNDO CARNES SAS</h2>
         <p style={{ fontSize: "10px", margin: "2px 0" }}>NIT: 901586875-0</p>
-        <p style={{ fontSize: "10px", margin: "2px 0" }}>CALLE 123 # 45-67 - CÚCUTA</p>
-        <p style={{ fontSize: "10px", margin: "2px 0" }}>TEL: 310 000 0000</p>
+        <p style={{ fontSize: "10px", margin: "2px 0" }}>Local P1 27 Galpón azul - CENABASTOS</p>
+        <p style={{ fontSize: "10px", margin: "2px 0" }}>TEL: 313 5670567</p>
         
         <div style={{ borderBottom: "1px dashed #000", margin: "5px 0" }}></div>
         
