@@ -162,6 +162,12 @@ export default function OpenCloseCash ({sp, user, GET_SalePoint, isModeDatafono,
                                             {formatDecimal(session.total_transfer, true)}
                                         </span>
                                     </div>
+                                    <div className="flex justify-between text-sm">
+                                        <span>Por datafono:</span>
+                                        <span className="font-mono">
+                                            {formatDecimal(session.total_datafono, true)}
+                                        </span>
+                                    </div>
                                     
                                     <hr className="border-amber-200/30 my-2" />
                                     
