@@ -669,7 +669,7 @@ export default function CashSale() {
 
                 <hr className="border-amber-200/20 w-[90%]" />
 
-                <ClientSearch setCustomer={setSelectedCustomer}/>
+                <ClientSearch setCustomer={setSelectedCustomer} selectedCustomer={selectedCustomer}/>
 
                 <button onClick={() => handleConfirmPayment()} disabled={activeTab.cart.length === 0 || sp?.status === "closed"} className={`${sp?.status === "closed" && "cursor-not-allowed"} mt-4 bg-amber-200 text-[#841A1A] p-2 rounded font-semibold w-full`}>
                     {isLoading ? 

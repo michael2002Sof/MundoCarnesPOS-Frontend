@@ -27,7 +27,7 @@ const LOCAL_DEFAULT_CUSTOMER = {
 };
 
 
-export default function ClientSearch({ setCustomer }) {
+export default function ClientSearch({ setCustomer, selectedCustomer }) {
   const { GET_CustomerSiigoByIdentification } = useCustomerSiigo();
 
   const [searchTerm, setSearchTerm] = useState("");
@@ -105,10 +105,10 @@ export default function ClientSearch({ setCustomer }) {
 
 
   useEffect(() => {
-    if (!setCustomer) {
+    if (!selectedCustomer) {
       loadDefaultCustomer();
     }
-  }, [setCustomer]);
+  }, [selectedCustomer]);
 
 
 
