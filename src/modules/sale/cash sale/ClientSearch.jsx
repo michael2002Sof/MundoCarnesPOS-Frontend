@@ -4,6 +4,36 @@ import { toast } from "react-hot-toast";
 
 import useCustomerSiigo from "../../../hooks/siigo/useCustomer";
 
+const LOCAL_DEFAULT_CUSTOMER = {
+  person_type: "Person",
+  id_type: "13",
+  identification: "222222222222",
+  branch_office: 0,
+  name: ["Consumidor", "Final"],
+  address: {
+    address: "Sin Dirección",
+    city: {
+      country_code: "CO",
+      country_name: "Colombia",
+      state_code: null,
+      state_name: null,
+      city_code: null,
+      city_name: null,
+    },
+    postal_code: null,
+  },
+  phones: [],
+  contacts: [
+    {
+      first_name: "Consumidor",
+      last_name: "Final",
+      email: null,
+      phone: {},
+    },
+  ],
+};
+
+
 export default function ClientSearch({ setCustomer, selectedCustomer }) {
   const { GET_CustomerSiigoByIdentification } = useCustomerSiigo();
 
@@ -57,42 +87,65 @@ export default function ClientSearch({ setCustomer, selectedCustomer }) {
     };
   };
 
-  // Cargar "Consumidor Final" automáticamente al iniciar
-  useEffect(() => {
-    const loadDefaultCustomer = async () => {
+  const loadDefaultCustomer = async () => {
+    try {
       const result = await GET_CustomerSiigoByIdentification(CONSUMIDOR_FINAL_DOCUMENT);
-      if (result && result.length > 0 && selectedCustomer === null) {
+
+      if (result && result.length > 0) {
         const cf = mapCustomer(result[0]);
         setCustomer(cf);
         setSelectedClient(result[0]);
         setSearchTerm(CONSUMIDOR_FINAL_DOCUMENT);
+      } else {
+        throw new Error("No encontrado en Siigo");
       }
-    };
+    } catch (error) {
+      console.warn("Siigo no disponible, usando cliente local");
 
-    loadDefaultCustomer();
+      setCustomer(LOCAL_DEFAULT_CUSTOMER);
+      setSelectedClient(LOCAL_DEFAULT_CUSTOMER);
+      setSearchTerm(CONSUMIDOR_FINAL_DOCUMENT);
+
+      toast("Modo contingencia activado", { icon: "⚠️" });
+    }
+  };
+
+
+  useEffect(() => {
+    if (!selectedCustomer) {
+      loadDefaultCustomer();
+    }
   }, [selectedCustomer]);
+
+
+
+
 
   // Búsqueda manual con Enter
   const handleSearch = async () => {
     if (!searchTerm.trim()) return;
 
-    const result = await GET_CustomerSiigoByIdentification(searchTerm.trim());
+    try {
+      const result = await GET_CustomerSiigoByIdentification(searchTerm.trim());
 
-    if (!result || result.length === 0) {
-      toast.error("Cliente no registrado en Siigo");
+      if (!result || result.length === 0) {
+        toast.error("Cliente no registrado en Siigo");
+        await loadDefaultCustomer();
+        setCustomerList([]);
+        return;
+      }
 
-      // Volver a Consumidor Final si la búsqueda falló
-      const cf = await GET_CustomerSiigoByIdentification(CONSUMIDOR_FINAL_DOCUMENT);
-      setSelectedClient(cf[0]);
-      setCustomer(mapCustomer(cf[0]));
-      setSearchTerm(CONSUMIDOR_FINAL_DOCUMENT);
+      setCustomerList(result);
+
+    } catch (error) {
+      console.warn("Error consultando Siigo");
+
+      toast.error("Error conectando con Siigo");
+      await loadDefaultCustomer();
       setCustomerList([]);
-
-      return;
     }
-
-    setCustomerList(result);
   };
+
 
   // Seleccionar cliente
   const handleSelectClient = (client) => {
