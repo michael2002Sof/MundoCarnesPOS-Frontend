@@ -12,14 +12,7 @@ const LOCAL_DEFAULT_CUSTOMER = {
   name: ["Consumidor", "Final"],
   address: {
     address: "Sin Dirección",
-    city: {
-      country_code: "CO",
-      country_name: "Colombia",
-      state_code: null,
-      state_name: null,
-      city_code: null,
-      city_name: null,
-    },
+    city: {},
     postal_code: null,
   },
   phones: [],
@@ -34,7 +27,7 @@ const LOCAL_DEFAULT_CUSTOMER = {
 };
 
 
-export default function ClientSearch({ setCustomer, selectedCustomer }) {
+export default function ClientSearch({ setCustomer }) {
   const { GET_CustomerSiigoByIdentification } = useCustomerSiigo();
 
   const [searchTerm, setSearchTerm] = useState("");
@@ -112,10 +105,10 @@ export default function ClientSearch({ setCustomer, selectedCustomer }) {
 
 
   useEffect(() => {
-    if (!selectedCustomer) {
+    if (!setCustomer) {
       loadDefaultCustomer();
     }
-  }, [selectedCustomer]);
+  }, [setCustomer]);
 
 
 
