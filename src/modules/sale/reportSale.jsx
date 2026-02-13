@@ -5,7 +5,7 @@ import StatsView from '../../components/shared/stats_view';
 import axiosInstance from '../../api/axiosintance';
 import {formatDecimal} from "../../utils/formatData"
 import DecodeToken from '../../api/decode';
-import ReportTemplate from '../../components/shared/reportCashSession';
+import ReportPrinter from '../../components/shared/reportQzTry';
 
 /* --- Simulación de llamada a backend --- */
 const useFetchCashSessions = (fecha) => {
@@ -206,7 +206,7 @@ export default function ReportSale() {
       </div>
 
       {session && (
-        <ReportTemplate session={session} onFinish={() => setSession(null)} />
+        <ReportPrinter report={session} onFinish={() => setSession(null)} />
       )}
     </>
   );
