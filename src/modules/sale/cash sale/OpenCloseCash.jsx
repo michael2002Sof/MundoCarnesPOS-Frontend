@@ -7,7 +7,7 @@ import { formatDecimal, formatInputNumber } from "../../../utils/formatData"
 
 import {useCashSession, useSessionId} from "../../../hooks/sale/useCashSession"
 import toast from "react-hot-toast"
-import ReportTemplate from "../../../components/shared/reportCashSession"
+import ReportPrinter from "../../../components/shared/reportQzTry"
 
 
 export default function OpenCloseCash ({sp, user, GET_SalePoint, isModeDatafono, setModeDatafono}) {
@@ -336,7 +336,7 @@ export default function OpenCloseCash ({sp, user, GET_SalePoint, isModeDatafono,
                 </button>
             </section>
 
-            {printSession && <ReportTemplate session={session} onFinish={() => setPrintSession(false)}/>}
+            {printSession && <ReportPrinter report={session} onFinish={() => setPrintSession(false)}/>}
 
 
         </>
