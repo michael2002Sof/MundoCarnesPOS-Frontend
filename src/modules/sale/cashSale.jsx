@@ -249,15 +249,15 @@ export default function CashSale() {
             const adjust_code = productCode.padStart(6, "0")
             setBarcode(adjust_code)
             const productSiigo = await GET_ProductSiigoByCode(adjust_code)
-            console.log(productSiigo)
+            //console.log(productSiigo)
             const weightDigits = barcode.slice(7, 12); // ejemplo: 00655 -> 0.655 kg
             let weight
             if (["UND", "unidad"].includes(productSiigo.unit_label)) {
                 weight = parseInt(weightDigits, 10) 
-                console.log("unidad", weight)
+                //console.log("unidad", weight)
             } else {
                 weight = parseInt(weightDigits, 10) / 1000;
-                console.log("peso", weight)
+                //console.log("peso", weight)
             }
             product = useDecodeScale(productSiigo, weight, wh, isModeDatafono) 
         }
@@ -350,7 +350,7 @@ export default function CashSale() {
             [id]: clean
         }));
     };
-    console.log("Valores del metodo de pago", paymentValues)
+    //console.log("Valores del metodo de pago", paymentValues)
 
     const cash = paymentValues[cashMethodId] || 0;
     const transfer = paymentValues[transferMethodId] || 0;
