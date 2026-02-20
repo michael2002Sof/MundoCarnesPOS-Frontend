@@ -20,7 +20,7 @@ export default function useInvoiceSiigo() {
 
     // Datos base (los que se envían a Siigo)
     const baseData = { ...invoice, company, seller: token.id };
-    console.log("Factura generada", baseData );
+    //console.log("Factura generada", baseData );
 
     try {
       // 1) Crear factura en Siigo
@@ -28,7 +28,7 @@ export default function useInvoiceSiigo() {
       toast.success(resSiigo.message);
 
       const siigoInvoice = resSiigo.data ?? {};
-      console.log("Factura devuelta por siigo", siigoInvoice)
+      //console.log("Factura devuelta por siigo", siigoInvoice)
 
       const code = siigoInvoice?.name  ?? "Pendiente...";
       const client = siigoInvoice?.customer.id ?? "36faa3ab-12cf-45b8-b144-d3c91e6731d2";
@@ -37,12 +37,11 @@ export default function useInvoiceSiigo() {
       if (cufe === "Pendiente...") {
         await new Promise(r => setTimeout(r, 5000))
         const invoiceWithCufe = await axiosInstance.get(`/posinnovate/siigo/sale/invoice/by/${code}/${company}`)
-        console.log("Factura en intento por obtener cufe: ", invoiceWithCufe.data.stamp.cufe)
         cufe = invoiceWithCufe.data?.stamp?.cufe ?? "Documento en proceso de validación DIAN..."
       }
 
       const payloadPOS = { ...baseData, code, client, cufe };
-      console.log("Enviando a POS:", payloadPOS);
+      //console.log("Enviando a POS:", payloadPOS);
 
 
       // 3) Facturar en POS (payload mínimo)
