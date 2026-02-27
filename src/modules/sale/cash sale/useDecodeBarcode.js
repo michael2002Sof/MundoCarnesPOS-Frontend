@@ -37,7 +37,7 @@ export function useDecodeScale (productSiigo, weight, wh, isModeDatafono)  {
     if (hasTax19) {
     subtotal = Number( (total / 1.19).toFixed(2) )
     price = base_price / 1.19
-    tax19 = Number( (subtotal * 0.19).toFixed(2) )
+    tax19 = Number((Math.round(subtotal * 0.19 * 100) / 100).toFixed(2))
     }
 
 
