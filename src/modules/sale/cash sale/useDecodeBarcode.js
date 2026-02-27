@@ -114,7 +114,7 @@ export function useDecodeNormal (productSiigo, wh, isModeDatafono) {
         warehouse: wh,
         taxes: [ { id: product.taxes[0].id } ],
         name: product.name,
-        subtotal,
+        subtotal: Math.trunc(subtotal * 100) / 100,
         tax0: isTax0,
         tax5,
         tax19,

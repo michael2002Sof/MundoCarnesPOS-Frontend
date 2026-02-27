@@ -304,7 +304,7 @@ export default function CashSale() {
     // Totales del tab activo
     const activeTab = tabs.find((t) => t.id === activeTabId) || tabs[0]
     //console.log("Cariito activo", activeTab)
-    const subtotal = (activeTab?.cart || []).reduce((s, it) => s + (Number(it.price || 0)), 0);
+    const subtotal = (activeTab?.cart || []).reduce((s, it) => s + (Number(it.subtotal || 0)), 0);
     const tax5Total = (activeTab?.cart || []).reduce((s, it) => s + Number(it.tax5 || 0), 0);
     const tax19Total = (activeTab?.cart || []).reduce((s, it) => s + Number(it.tax19 || 0), 0);
     let total = subtotal + tax5Total + tax19Total;
