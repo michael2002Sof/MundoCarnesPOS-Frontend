@@ -8,7 +8,7 @@ import DecodeToken from "../../api/decode";
 export default function useInvoiceSiigo() {
   const [isLoading, setLoading] = useState(false);
 
-  const POST_InvoiceSiigo = async (invoice, retries = 2) => {
+  const POST_InvoiceSiigo = async (invoice) => {
     setLoading(true);
 
     const token = DecodeToken();
