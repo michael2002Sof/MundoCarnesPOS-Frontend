@@ -99,7 +99,8 @@ export function useDecodeNormal (productSiigo, wh, isModeDatafono) {
     // ✔ Si tiene IVA 19%
     if (hasTax19) {
         subtotal = Number((total / 1.19).toFixed(2))
-        tax19 = Number((Math.round(subtotal * 0.19 * 100) / 100).toFixed(2))
+        const rawSubtotal = Math.trunc(subtotal * 100) / 100
+        tax19 = Number((rawSubtotal * 0.19).toFixed(2))
     }
 
   
