@@ -19,6 +19,8 @@ import { useSessionId } from "../../hooks/sale/useCashSession"
 import toast from "react-hot-toast"
 import moment from "moment-timezone"
 
+import { Scanner } from "./cash sale/scanner"
+
 
 
 
@@ -27,7 +29,7 @@ export default function CashSale() {
       LLAMADA DE DATOS DEL SISTEMA
     ===================================================================*/
     const {isLoading, POST_InvoiceSiigo} = useInvoiceSiigo()
-    const {GET_ProductSiigoByCode} = useProductSiigo()
+    const {isLoadingSearch, products, GET_ProductSiigoByCode, GET_ProductSiigoByName} = useProductSiigo()
     const {salePoints, GET_SalePoint} = useSalePoint()      
     const {sessionId, GET_SessionId} = useSessionId() 
     const {invoicesResolution, GET_InvoiceResolution} = useInvoiceResolution()
@@ -202,6 +204,7 @@ export default function CashSale() {
     }, [tabs]);
     const [activeTabId, setActiveTabId] = useState(tabs[0].id) //Pestaña activa
     const [barcode, setBarcode] = useState("") // Codigo escaneado
+    const [name, setName] = useState("")
 
 
 
@@ -461,7 +464,7 @@ export default function CashSale() {
             total_payment: Math.round(total_payment),
             cash_session: sessionId
         }
-console.log(invoiceData)
+
         const invoice = await POST_InvoiceSiigo(invoiceData)
         // Guardar datos y disparar impresión
         if (invoice) {
@@ -524,10 +527,26 @@ console.log(invoiceData)
                     COLUMNA DE ESCANEO Y CARRITO
                     ==============================================================*/}
                     <div className="space-y-4">
-                    <section className="p-4 bg-[#841A1A] text-amber-100 rounded-xl">
+                    <section className="p-4 bg-[#841A1A] text-amber-100 rounded-xl space-y-1">
                         <div className="flex items-center gap-3 mb-3">
                         <Barcode /><h3 className="text-lg font-bold">Escáner</h3>
                         </div>
+                        <form>
+                            <Scanner
+                                value={name}
+                                results={products}
+                                loadingProduct={isLoadingSearch}
+                                placeholder="Buscar Producto por Nombre..."
+                                onChange={(value) => setName(value)}
+                                searchAction={GET_ProductSiigoByName}
+                                onSelect={(product) => {
+                                    setBarcode(product.code)
+                                    setTimeout(() => {
+                                        handleScan(product.code)
+                                    }, 100);
+                                }}
+                            />
+                        </form>
                         <form onSubmit={handleScan} className="flex gap-2 items-center relative">
                             <input 
                                 ref={inputScannerRef} 

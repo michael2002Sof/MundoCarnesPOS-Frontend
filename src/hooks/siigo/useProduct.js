@@ -5,11 +5,11 @@ import axiosInstance from "../../api/axiosintance";
 import DecodeToken from "../../api/decode";
 
 export default function useProductSiigo () {
-    const [isLoading, setLoading] = useState()
+    const [products, setProducts] = useState([])
+    const [isLoadingSearch, setLoadingSearch] = useState(false)
 
     const GET_ProductSiigoByCode = async (code) => {
         try {
-            setLoading(true);
 
             const token = DecodeToken()
             if (!token) return
@@ -20,12 +20,28 @@ export default function useProductSiigo () {
             return productSiigo
         } catch (error) {
             toast.error(error.message);
-        } finally {
-            setLoading(false);
         }
     };
 
+    const GET_ProductSiigoByName = async (name) => {
+        try {
+            setLoadingSearch(true);
+
+            const token = DecodeToken()
+            if (!token) return
+
+            const company = token.company
+            const res = await axiosInstance.get(`/posinnovate/siigo/product/search/${company}/${name}`);
+            
+            setProducts(res.data || [])
+        } catch (error) {
+            toast.error(error.message);
+        } finally {
+            setLoadingSearch(false)
+        }
+    }
 
 
-  return { isLoading, GET_ProductSiigoByCode}
+
+  return { isLoadingSearch, products, GET_ProductSiigoByCode, GET_ProductSiigoByName}
 }
