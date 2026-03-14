@@ -242,7 +242,7 @@ export default function CashSale() {
 
         const prefix = parseInt(barcode.slice(0, 2), 10);
         let product 
-        if (barcode.length < 12 && prefix < 20 || prefix > 29) {
+        if (barcode.length < 12 || prefix < 20 || prefix > 29) {
             setLoadingProduct(true)
             const productSiigo = await GET_ProductSiigoByCode(barcode)
             product = useDecodeNormal(productSiigo, wh, isModeDatafono)
