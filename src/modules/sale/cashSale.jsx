@@ -255,7 +255,7 @@ export default function CashSale() {
             //console.log(productSiigo)
             const weightDigits = barcode.slice(7, 12); // ejemplo: 00655 -> 0.655 kg
             let weight
-            if (["UND", "unidad"].includes(productSiigo.unit_label)) {
+            if (["UND", "unidad"].includes(productSiigo.unit)) {
                 weight = parseInt(weightDigits, 10) 
                 //console.log("unidad", weight)
             } else {

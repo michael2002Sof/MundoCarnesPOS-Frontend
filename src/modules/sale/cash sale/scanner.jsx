@@ -43,7 +43,6 @@ export function Scanner({
                 className="flex-1 p-2 w-full focus:outline-none rounded-lg bg-[#6E1515]"
                 placeholder={placeholder}
                 onChange={handleChange}
-                disabled={loadingProduct}
                 autoFocus
             />
 

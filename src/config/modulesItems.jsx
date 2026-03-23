@@ -1,4 +1,4 @@
-import { ShieldUser, ShoppingCart, Receipt, ScrollText, BarChart3, Settings, Store, FileCog, User, Undo2, Warehouse, CreditCard } from "lucide-react"
+import { ShieldUser, ShoppingCart, Receipt, ScrollText, BarChart3, Settings, Store, FileCog, User, Undo2, Warehouse, CreditCard, Package } from "lucide-react"
 
 const ModuleItems = {
     "Usuarios" : [
@@ -22,6 +22,12 @@ const ModuleItems = {
             to: "/inventory/warehouse",
             description: "Administra bodegas y centros de almacenamiento. Controla existencias, movimientos internos, transferencias y stock disponible en tiempo real.",
         },
+        {
+            icon: <Package/>,
+            name: "Productos",
+            to: "/inventory/product",
+            description: "Sincroniza productos con siigo y mante el cotrol de ellos teniendolos al dia"
+        }
     ],
 
     "Ventas" : [

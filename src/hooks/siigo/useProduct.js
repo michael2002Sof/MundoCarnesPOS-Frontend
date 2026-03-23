@@ -6,7 +6,41 @@ import DecodeToken from "../../api/decode";
 
 export default function useProductSiigo () {
     const [products, setProducts] = useState([])
+    const [loading, setLoading] = useState(false)
     const [isLoadingSearch, setLoadingSearch] = useState(false)
+
+    const create = async () => {
+        try {
+            setLoading(true)
+            const token = DecodeToken()
+            if (!token) return
+        
+            const company = token.company
+            const res = await axiosInstance.post('/posinnovate/siigo/product', {company})
+            toast.success(res.message)
+        } catch (error) {
+            toast.error(error.message)
+        } finally {
+            setLoading(false)
+        }
+    }
+
+    const fetchProduts = async (filters = {}) => {
+        try {
+            setLoading(true)
+            const token = DecodeToken()
+            if (!token) return
+        
+            const company = token.company
+            const params = new URLSearchParams(filters)
+            const res = await axiosInstance.get(`/posinnovate/siigo/product/${company}?${params.toString()}`)
+            return res
+        } catch (error) {
+            toast.error(error.message)
+        } finally {
+            setLoading(false)
+        }
+    }
 
     const GET_ProductSiigoByCode = async (code) => {
         try {
@@ -15,8 +49,9 @@ export default function useProductSiigo () {
             if (!token) return
         
             const company = token.company
-            const res = await axiosInstance.get(`/posinnovate/siigo/product/by/${company}/${code}`);
-            const productSiigo = res.data
+            const params = new URLSearchParams({code})
+            const res = await axiosInstance.get(`/posinnovate/siigo/product/${company}?${params.toString()}`);
+            const productSiigo = res.data[0]
             return productSiigo
         } catch (error) {
             toast.error(error.message);
@@ -31,7 +66,8 @@ export default function useProductSiigo () {
             if (!token) return
 
             const company = token.company
-            const res = await axiosInstance.get(`/posinnovate/siigo/product/search/${company}/${name}`);
+            const params = new URLSearchParams({name, page: 1, limit: 5})
+            const res = await axiosInstance.get(`/posinnovate/siigo/product/${company}?${params.toString()}`);
             
             setProducts(res.data || [])
         } catch (error) {
@@ -43,5 +79,5 @@ export default function useProductSiigo () {
 
 
 
-  return { isLoadingSearch, products, GET_ProductSiigoByCode, GET_ProductSiigoByName}
+  return { isLoadingSearch, products, loading, create, fetchProduts, GET_ProductSiigoByCode, GET_ProductSiigoByName}
 }

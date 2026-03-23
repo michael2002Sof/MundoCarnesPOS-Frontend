@@ -7,15 +7,15 @@ export function useDecodeScale (productSiigo, weight, wh, isModeDatafono)  {
     if (!wh) return null
 
     // ✔ Impuestos desde Siigo
-    const taxObject = product.taxes[0].percentage; // porcentaje del iva que tiene aplicado el precio
+    const taxObject = Number(product.tax); // porcentaje del iva que tiene aplicado el precio
     const isTax0 = taxObject === 0;
     const hasTax5 = taxObject === 5;
     const hasTax19 = taxObject === 19;
     let base_price
     if (isModeDatafono) {
-        base_price = product.prices[0].price_list[1].value // precio con iva incluido
+        base_price = Number(product.price2)  // precio con iva incluido
     } else {
-        base_price = product.prices[0].price_list[0].value // precio con iva incluido
+        base_price = Number(product.price1)  // precio con iva incluido
     }
 
     let tax5 = 0;
@@ -47,7 +47,7 @@ export function useDecodeScale (productSiigo, weight, wh, isModeDatafono)  {
     base_price,
     quantity: Math.trunc(weight * 100) /100,
     discount: 0,
-    taxes: [ { id: product.taxes[0].id } ],
+    taxes: [ { id: product.tax_id} ],
     name: product.name,
     price: Math.trunc(price * 100) / 100,
     subtotal,
@@ -69,15 +69,15 @@ export function useDecodeNormal (productSiigo, wh, isModeDatafono) {
     if (!product) return null;
     if (!wh) return null
 
-    const taxObject = product.taxes[0].percentage; // Impuesto que incluye base_price
+    const taxObject = Number(product.tax); // Impuesto que incluye base_price
     const isTax0 = taxObject === 0;
     const hasTax5 = taxObject === 5;
     const hasTax19 = taxObject === 19;
     let base_price
     if (isModeDatafono) {
-        base_price = product.prices[0].price_list[1].value // precio con iva incluido
+        base_price = Number(product.price2) // precio con iva incluido
     } else {
-        base_price = product.prices[0].price_list[0].value // precio con iva incluido
+        base_price = Number(product.price1) // precio con iva incluido
     }
     //console.log("Precio del producto en siigo con iva", base_price)
     
@@ -113,7 +113,7 @@ export function useDecodeNormal (productSiigo, wh, isModeDatafono) {
         discount: 0,
         price: Math.trunc(subtotal * 100) / 100,
         warehouse: wh,
-        taxes: [ { id: product.taxes[0].id } ],
+        taxes: [ { id: product.tax_id } ],
         name: product.name,
         subtotal: Math.trunc(subtotal * 100) / 100,
         tax0: isTax0,
