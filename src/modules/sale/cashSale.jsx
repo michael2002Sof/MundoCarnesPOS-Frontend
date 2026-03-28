@@ -394,16 +394,6 @@ export default function CashSale() {
 
     // Confirmar pago: registrar venta + descontar stock + imprimir factura + limpiar carrito
     const handleConfirmPayment = async () => {
-        if (Math.round(total_payment) < Math.round(total)) {
-            toast.error("El monto recibido es menor al total");
-            return;
-        }
-        if (receipt_transfer > total){
-            return toast.error("El ingreso de tranferencia es mayor al total")
-        }
-        if (Math.round(receipt_datafono) > Math.round(total)){
-            return toast.error("El ingreso de datafono es mayor al total")
-        }
 
         if (!sessionId) {
             await retrySession()
