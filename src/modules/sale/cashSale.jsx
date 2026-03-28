@@ -401,7 +401,7 @@ export default function CashSale() {
         if (receipt_transfer > total){
             return toast.error("El ingreso de tranferencia es mayor al total")
         }
-        if (receipt_datafono > total){
+        if (Math.round(receipt_datafono) > Math.round(total)){
             return toast.error("El ingreso de datafono es mayor al total")
         }
 
