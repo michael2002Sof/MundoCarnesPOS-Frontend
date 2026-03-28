@@ -394,7 +394,7 @@ export default function CashSale() {
 
     // Confirmar pago: registrar venta + descontar stock + imprimir factura + limpiar carrito
     const handleConfirmPayment = async () => {
-        if (total_payment < total) {
+        if (Math.round(total_payment) < Math.round(total)) {
             toast.error("El monto recibido es menor al total");
             return;
         }
