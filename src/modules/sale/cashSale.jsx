@@ -432,7 +432,9 @@ export default function CashSale() {
             tax0: it.tax0,
             tax5: it.tax5,
             tax19: it.tax19,
-            total: it.total
+            total: it.total,
+            dian: it.dian,
+            has_stock: it.has_stock,
         }));
 
         const invoiceData = {
