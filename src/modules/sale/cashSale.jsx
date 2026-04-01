@@ -411,7 +411,7 @@ export default function CashSale() {
 
         // Crear los ítems
         const itemsPayload = (activeTab?.cart || [])
-        .filter(it => it.dian === 1 && it.has_stock === 0)
+        .filter(it => it.dian === 1)
         .map((it) => ({
             code: it.code,
             description: it.description,
