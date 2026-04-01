@@ -56,6 +56,8 @@ export function useDecodeScale (productSiigo, weight, wh, isModeDatafono)  {
     tax5,
     tax19,
     total,
+    has_stock: product.has_stock,
+    dian: product.dian,
     isScale: true,
     };
 };
@@ -120,6 +122,8 @@ export function useDecodeNormal (productSiigo, wh, isModeDatafono) {
         tax5,
         tax19,
         total,
+        has_stock: product.has_stock,
+        dian: product.dian,
         isScale: false
     };
 };

@@ -77,7 +77,20 @@ export default function useProductSiigo () {
         }
     }
 
+    const update = async (data) => {
+        try {
+            setLoading(true)
+
+            const res = await axiosInstance.put(`/posinnovate/siigo/product`, data)
+            toast.success(res.message)
+        } catch (error) {
+            toast.error(error.message)
+        } finally {
+            setLoading(false)
+        }
+    }
 
 
-  return { isLoadingSearch, products, loading, create, fetchProduts, GET_ProductSiigoByCode, GET_ProductSiigoByName}
+
+  return { isLoadingSearch, products, loading, create, update, fetchProduts, GET_ProductSiigoByCode, GET_ProductSiigoByName}
 }

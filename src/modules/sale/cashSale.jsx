@@ -270,7 +270,7 @@ export default function CashSale() {
             return
         }
 
-        //console.log("Producto codificado de siigo", product)
+        console.log("Producto codificado de siigo", product)
 
    
 
@@ -410,7 +410,9 @@ export default function CashSale() {
         
 
         // Crear los ítems
-        const itemsPayload = (activeTab?.cart || []).map((it) => ({
+        const itemsPayload = (activeTab?.cart || [])
+        .filter(it => it.dian === 1 && it.has_stock === 0)
+        .map((it) => ({
             code: it.code,
             description: it.description,
             quantity: it.quantity,

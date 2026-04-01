@@ -1,4 +1,4 @@
-import { ShieldUser, ShoppingCart, Receipt, ScrollText, BarChart3, Settings, Store, FileCog, User, Undo2, Warehouse, CreditCard, Package } from "lucide-react"
+import { ShieldUser, ShoppingCart, Receipt, ScrollText, BarChart3, Settings, Store, FileCog, User, Undo2, Warehouse, CreditCard, Package, Boxes } from "lucide-react"
 
 const ModuleItems = {
     "Usuarios" : [
@@ -27,6 +27,12 @@ const ModuleItems = {
             name: "Productos",
             to: "/inventory/product",
             description: "Sincroniza productos con siigo y mante el cotrol de ellos teniendolos al dia"
+        },
+        {
+            icon: <Boxes/>,
+            name: "Stock de Productos",
+            to: "/inventory/stock",
+            description: "Convertir producto de pos inventariable"
         }
     ],
 
