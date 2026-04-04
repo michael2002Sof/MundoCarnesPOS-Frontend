@@ -86,7 +86,7 @@ const InvoiceDesign = ({ invoice }) => {
   const showIVA19 = invoiceItem.some(it => Number(it.tax19) > 0);
 
   return (
-    <div style={{ width: "80mm", marginRight: "4mm", fontFamily: "Arial, sans-serif", fontSize: "10px", lineHeight: "1.2", color: "#000" }}>
+    <div style={{ width: "80mm", marginRight: "4mm", fontFamily: "Arial, sans-serif", fontSize: "12px", lineHeight: "1.2", color: "#000" }}>
       
       {/* CABECERA */}
       <header style={{ textAlign: "center", marginBottom: "8px", position: "relative" }}>
@@ -110,7 +110,7 @@ const InvoiceDesign = ({ invoice }) => {
       </header>
 
       {/* DATOS CLIENTE */}
-      <div style={{ marginBottom: "8px", fontSize: "10px" }}>
+      <div style={{ marginBottom: "8px", fontSize: "12px" }}>
         <p style={{ margin: "1px 0" }}><strong>Fecha:</strong> {created_at}</p>
         <p style={{ margin: "1px 0" }}><strong>Cliente:</strong> {client || "CONSUMIDOR FINAL"}</p>
         <p style={{ margin: "1px 0" }}><strong>NIT/CC:</strong> {cc || "222222222222"}</p>
@@ -119,7 +119,7 @@ const InvoiceDesign = ({ invoice }) => {
       </div>
 
       {/* TABLA DE PRODUCTOS */}
-      <table style={{ width: "100%", borderCollapse: "collapse", fontSize: "10px" }}>
+      <table style={{ width: "100%", borderCollapse: "collapse", fontSize: "12px" }}>
         <thead>
           <tr style={{ borderBottom: "1px dashed #000" }}>
             <th style={{ textAlign: "left" }}>Producto</th>

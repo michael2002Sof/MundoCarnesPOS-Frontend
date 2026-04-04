@@ -70,7 +70,7 @@ const ReportDesign = ({ report }) => {
 
 
   return (
-    <div style={{ width: "80mm", marginRight: "4mm", fontFamily: "Arial, sans-serif", fontSize: "10px", lineHeight: "1.2", color: "#000" }}>
+    <div style={{ width: "80mm", marginRight: "4mm", fontFamily: "Arial, sans-serif", fontSize: "12px", lineHeight: "1.2", color: "#000" }}>
       
         {/* CABECERA */}
         <header style={{ textAlign: "center", marginBottom: "8px", position: "relative" }}>
@@ -82,7 +82,7 @@ const ReportDesign = ({ report }) => {
         </header>
 
         {/* DATOS META */}
-        <div style={{ marginBottom: "8px", fontSize: "10px" }}>
+        <div style={{ marginBottom: "8px", fontSize: "12px" }}>
             <p style={{ margin: "1px 0" }}><strong>Sucursal:</strong> {branch_name}</p>
             <p style={{ margin: "1px 0" }}><strong>Turno:</strong> {id}</p>
             <p style={{ margin: "1px 0" }}><strong>Abierto Por:</strong> {opened_by}</p>

@@ -4,6 +4,14 @@ import toast from "react-hot-toast";
 import axiosInstance from "../../api/axiosintance";
 import DecodeToken from "../../api/decode";
 
+const generateCode = () => {
+  const prefix = "FV";          // tipo documento
+  const branch = "10";          // sucursal (puede venir de estado)
+  const random = Math.floor(1000 + Math.random() * 9000); // 4 dígitos
+
+  return `${prefix}-${branch}-${random}`;
+};
+
 
 export default function useInvoiceSiigo() {
   const [isLoading, setLoading] = useState(false);
@@ -72,5 +80,15 @@ export default function useInvoiceSiigo() {
     }
   };
 
-  return { isLoading, POST_InvoiceSiigo };
+  const POST_InvoicePOS = async (invoice) => {
+    try {
+      const code = "FV-10-5008"
+      const client = "36faa3ab-12cf-45b8-b144-d3c91e6731d2"
+      let cufe = "....."
+    } catch (error) {
+      
+    }
+  }
+
+  return { isLoading, POST_InvoiceSiigo, POST_InvoicePOS };
 }
