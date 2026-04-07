@@ -1,4 +1,6 @@
 import { Clock, MapPin, MessageCircle } from "lucide-react";
+import { useRef } from "react"
+import * as htmlToImage from "html-to-image"
 
 export default function MenuCarnes() {
   const data = {
@@ -79,10 +81,24 @@ export default function MenuCarnes() {
     ]
   };
 
+  const ref = useRef()
+
+    const exportImage = async () => {
+        const dataUrl = await htmlToImage.toPng(ref.current, {
+            quality: 1,
+            pixelRatio: 3, // 🔥 ESTO ES LA CLAVE (HD)
+        })
+
+        const link = document.createElement("a")
+        link.download = "menu-carnes.png"
+        link.href = dataUrl
+        link.click()
+    }
+
   return (
     <div className="min-h-screen bg-black flex justify-center p-2">
       
-      <div className="w-full h-fit max-w-7xl bg-gradient-to-br from-[#5A0F1C] to-[#2A080E] border-4 border-[#B8962E] rounded-lg p-4">
+      <div ref={ref} className="w-full h-fit max-w-7xl bg-gradient-to-br from-[#5A0F1C] to-[#2A080E] border-4 border-[#B8962E] rounded-lg p-4">
 
         {/* HEADER COMPACTO */}
         <header className="text-center mb-4">
@@ -153,6 +169,13 @@ export default function MenuCarnes() {
         </footer>
 
       </div>
+
+        <button
+            onClick={exportImage}
+            className="fixed bottom-4 right-4 bg-[#B8962E] text-black px-4 py-2 rounded-lg font-bold"
+        >
+            Descargar imagen
+        </button>
     </div>
   );
 }
