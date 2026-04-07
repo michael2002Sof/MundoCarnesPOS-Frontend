@@ -1,4 +1,5 @@
 import Login from "./pages/login"
+import MenuCarnes from "./pages/menuMC"
 
 import ModuleItems from "./config/modulesItems"
 
@@ -34,6 +35,7 @@ import InvoiceResolution from "./modules/sale/invoiceResolution"
 
 const MundoCarnesPosRoutes = [
     { path: "/", element: <Login/> },
+    {path: "/menu", element: <MenuCarnes/> },
 
     { element: <AppLayout/>, 
         children: [
