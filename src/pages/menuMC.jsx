@@ -82,7 +82,7 @@ export default function MenuCarnes() {
   return (
     <div className="min-h-screen bg-black flex justify-center p-2">
       
-      <div className="w-full h-fit max-w-6xl bg-gradient-to-br from-[#5A0F1C] to-[#2A080E] border-4 border-[#B8962E] rounded-lg p-4">
+      <div className="w-full h-fit max-w-[90%] bg-gradient-to-br from-[#5A0F1C] to-[#2A080E] border-4 border-[#B8962E] rounded-lg p-4">
 
         {/* HEADER COMPACTO */}
         <header className="text-center mb-4">
@@ -124,23 +124,23 @@ export default function MenuCarnes() {
               key={idx}
               className="break-inside-avoid bg-black/30 border border-[#B8962E]/40 rounded-lg p-2"
             >
-              <h3 className="text-[#D4AF37] text-xs font-bold text-center mb-2 uppercase">
+              <h3 className="text-[#D4AF37] font-bold text-center mb-2 uppercase">
                 {cat.titulo}
               </h3>
 
-              <div className="space-y-1">
-                {cat.productos.map((prod, i) => (
-                  <div
-                    key={i}
-                    className="flex justify-between text-[10px] border-b border-[#B8962E]/20"
-                  >
-                    <span className="text-white">{prod.n}</span>
-                    <span className="text-[#D4AF37] font-bold">
-                      ${prod.p}
-                    </span>
-                  </div>
-                ))}
-              </div>
+                <div className="grid grid-cols-2 gap-x-6 gap-y-1">
+                    {cat.productos.map((prod, i) => (
+                        <div
+                        key={i}
+                        className="flex justify-between text-[13px] border-b border-[#B8962E]/20"
+                        >
+                        <span className="text-white truncate">{prod.n}</span>
+                        <span className="text-[#D4AF37] font-bold ml-2">
+                            ${prod.p}
+                        </span>
+                        </div>
+                    ))}
+                </div>
             </section>
           ))}
         </div>
