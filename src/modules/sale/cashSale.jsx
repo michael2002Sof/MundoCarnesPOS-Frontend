@@ -444,15 +444,29 @@ export default function CashSale() {
         
 
         // Crear los ítems para siigo
-        const items = (activeTab?.cart || []).filter(it => it.dian === 1 && receipt_transfer === 0).map((it) => ({
-            code: it.code,
-            description: it.description,
-            quantity: it.quantity,
-            price: it.price,
-            discount: it.discount,
-            warehouse: it.warehouse,
-            taxes: it.taxes,
-        }));
+        let items = []
+            if (receipt_transfer > 0) {
+                items = (activeTab?.cart || []).map((it) => ({
+                code: it.code,
+                description: it.description,
+                quantity: it.quantity,
+                price: it.price,
+                discount: it.discount,
+                warehouse: it.warehouse,
+                taxes: it.taxes,
+            }));
+        } else {
+            items = (activeTab?.cart || []).filter(it => it.dian === 1 ).map((it) => ({
+                code: it.code,
+                description: it.description,
+                quantity: it.quantity,
+                price: it.price,
+                discount: it.discount,
+                warehouse: it.warehouse,
+                taxes: it.taxes,
+            }));
+        }
+   
 
 
         // Crear los ítems para el pos
