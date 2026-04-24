@@ -71,7 +71,7 @@ export default function useInvoiceSiigo() {
 
 
       // 3) Facturar en POS (payload mínimo)
-      //const resPOS = await axiosInstance.post(`/posinnovate/siigo/sale/invoice/pos`, payloadPOS);
+      const resPOS = await axiosInstance.post(`/posinnovate/siigo/sale/invoice/pos`, payloadPOS);
       toast.success(resPOS?.message);
 
       return resPOS?.data;
