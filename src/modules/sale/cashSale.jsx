@@ -445,8 +445,8 @@ export default function CashSale() {
 
         // Crear los ítems para siigo
         let items = []
-            if (receipt_transfer > 0) {
-                items = (activeTab?.cart || []).map((it) => ({
+        if (receipt_transfer > 0) {
+            items = (activeTab?.cart || []).map((it) => ({
                 code: it.code,
                 description: it.description,
                 quantity: it.quantity,
@@ -509,8 +509,8 @@ export default function CashSale() {
         const invoice = await POST_InvoiceSiigo(invoiceData)
         // Guardar datos y disparar impresión
         if (invoice) {
-            console.log("Factura a imprimir: ", {...invoice, itemsPOS})
-            setIsInvoicePrinting({...invoice, itemsPOS});
+            console.log("Factura a imprimir: ", {...invoice, invoiceItem: itemsPOS})
+            setIsInvoicePrinting({...invoice, invoiceItem: itemsPOS});
             // Limpiar carrito y cliente
             setTabs((prev) =>
                 prev.map((t) =>
