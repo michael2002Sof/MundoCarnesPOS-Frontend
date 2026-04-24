@@ -401,16 +401,50 @@ export default function CashSale() {
                 return toast.error("No hay sesión de caja activa");
             }
         }
+
+        if (!payments.length) {
+            return toast.error("No hay métodos de pago")
+        }
+
         if (!isBuildInvoice.document.id) {
             await retryResolution()
         }
         if (!selectedCustomer){
             return toast.error("No hay cliente seleccionado, intentalo de nuevo")
         }
+
+        const itemsNotDian = activeTab.cart.filter(it => it.dian === 0)
+        let paymentDian = payments
+        if (itemsNotDian.length) {
+            //console.log("Items que no van a la DIAN", itemsNotDian)
+            const totalNotDian = itemsNotDian.reduce(
+                (s, it) => s + (Number(it.total || 0)), 
+                0
+            )
+
+            // 1. Encontrar el valor máximo
+            const maxValue = Math.max(...payments.map(p => p.value))
+
+            //console.log("Pago no DIAN", totalNotDian)
+            //console.log("payments sin modificar: ", payments)
+
+            // 2. Modificar solo el payment con mayor valor
+            paymentDian = payments.map(p => {
+                if (p.value === maxValue) {
+                return {
+                    ...p,
+                    value: p.value - totalNotDian
+                }
+                }
+                return p
+            })
+
+            console.log("payments modificados: ", paymentDian)
+        }
         
 
-        // Crear los ítems
-        const itemsPayload = (activeTab?.cart || []).map((it) => ({
+        // Crear los ítems para siigo
+        const items = (activeTab?.cart || []).filter(it => it.dian === 1).map((it) => ({
             code: it.code,
             description: it.description,
             quantity: it.quantity,
@@ -421,8 +455,8 @@ export default function CashSale() {
         }));
 
 
-        // Crear los ítems
-        const invoiceItem = (activeTab?.cart || []).map((it) => ({
+        // Crear los ítems para el pos
+        const itemsPOS = (activeTab?.cart || []).map((it) => ({
             product_name: it.name,
             product_barcode: it.code,
             quantity: it.quantity,
@@ -441,14 +475,14 @@ export default function CashSale() {
             customerName: selectedCustomer?.name?.join(" ") || "Consumidor Final",
             customerCC: selectedCustomer?.identification || "222222222222",
             customerAddress: selectedCustomer?.address?.address || "Sin Direccioón",
-            items: itemsPayload, 
-            invoiceItem, 
+            items, 
+            invoiceItem: itemsPOS, 
             subtotal: Math.round(subtotal), 
             tax0: 0, 
             tax5: tax5Total, 
             tax19: tax19Total, 
             total: Math.round(total),
-            payments,
+            payments: paymentDian,
             receipt_cash: Math.round(receipt_cash),
             receipt_transfer: Math.round(receipt_transfer),
             receipt_datafono: Math.round(receipt_datafono),
@@ -457,6 +491,7 @@ export default function CashSale() {
             cash_session: sessionId
         }
 
+        //console.log("Factura a imprimir: ", invoiceData)
         const invoice = await POST_InvoiceSiigo(invoiceData)
         // Guardar datos y disparar impresión
         if (invoice) {
@@ -682,7 +717,7 @@ export default function CashSale() {
 
                 <ClientSearch setCustomer={setSelectedCustomer} selectedCustomer={selectedCustomer}/>
 
-                <button onClick={() => handleConfirmPayment()} disabled={activeTab.cart.length === 0 || sp?.status === "closed"} className={`${sp?.status === "closed" && "cursor-not-allowed"} mt-4 bg-amber-200 text-[#841A1A] p-2 rounded font-semibold w-full`}>
+                <button onClick={() => handleConfirmPayment()} disabled={activeTab.cart.length === 0} className={`${sp?.status === "closed" && "cursor-not-allowed"} mt-4 bg-amber-200 text-[#841A1A] p-2 rounded font-semibold w-full`}>
                     {isLoading ? 
                         <div className="flex justify-center items-center gap-2">
                             <Loader2 className="animate-spin mr-2 inline-block" />
