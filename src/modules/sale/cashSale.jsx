@@ -415,7 +415,7 @@ export default function CashSale() {
 
         const itemsNotDian = activeTab.cart.filter(it => it.dian === 0)
         let paymentDian = payments
-        if (itemsNotDian.length) {
+        if (itemsNotDian.length > 0 && receipt_transfer === 0) {
             //console.log("Items que no van a la DIAN", itemsNotDian)
             const totalNotDian = itemsNotDian.reduce(
                 (s, it) => s + (Number(it.total || 0)), 
@@ -444,7 +444,7 @@ export default function CashSale() {
         
 
         // Crear los ítems para siigo
-        const items = (activeTab?.cart || []).filter(it => it.dian === 1).map((it) => ({
+        const items = (activeTab?.cart || []).filter(it => it.dian === 1 && receipt_transfer === 0).map((it) => ({
             code: it.code,
             description: it.description,
             quantity: it.quantity,
@@ -495,8 +495,8 @@ export default function CashSale() {
         const invoice = await POST_InvoiceSiigo(invoiceData)
         // Guardar datos y disparar impresión
         if (invoice) {
-            console.log("Factura a imprimir: ", {...invoice, invoiceItem})
-            setIsInvoicePrinting({...invoice, invoiceItem});
+            console.log("Factura a imprimir: ", {...invoice, itemsPOS})
+            setIsInvoicePrinting({...invoice, itemsPOS});
             // Limpiar carrito y cliente
             setTabs((prev) =>
                 prev.map((t) =>

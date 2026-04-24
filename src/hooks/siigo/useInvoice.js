@@ -62,9 +62,9 @@ export default function useInvoiceSiigo() {
         cufe = "......"
       }
 
-      // const code = "FV-10-5008"
+      // const code = "FV-10-7541"
       // const client = "36faa3ab-12cf-45b8-b144-d3c91e6731d2"
-      // let cufe = "d192539b25e54a0cc36f5d5d6e227bd566cc84008482f91f4824e8fc68031607cd5ff9dfa04c0b8fee99b5707cc5a4bd "
+      // cufe = "3f5eadf381cb9d71c3e5f9cad11c61fae591097da57af49734ee89fea3aa3585a768874c208382562eb6c92338ad6f2e"
 
       const payloadPOS = { ...baseData, code, client, cufe };
       console.log("Enviando a POS:", payloadPOS);
