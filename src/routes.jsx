@@ -20,6 +20,7 @@ import User from "./modules/user/user"
 import Warehouse from "./modules/inventory/warehouse"
 import Product from "./modules/inventory/product"
 import Stock from "./modules/inventory/stock"
+import Movement from "./modules/inventory/movement"
 
 import ManageBranch from "./modules/sale/manageBranch"
 import SalePoint from "./modules/sale/salePoint"
@@ -61,6 +62,7 @@ const MundoCarnesPosRoutes = [
             { path: "/inventory/warehouse", element: <Warehouse/>},
             { path: "/inventory/product", element: <Product/> },
             { path: "/inventory/stock", element: <Stock/> },
+            { path: "/inventory/movement", element: <Movement/> },
 
             /*========================================================
                 RUTAS PARA EL MODULO DE VENTAS

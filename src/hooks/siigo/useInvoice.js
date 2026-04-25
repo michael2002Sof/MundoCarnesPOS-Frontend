@@ -43,7 +43,7 @@ export default function useInvoiceSiigo() {
         if (cufe === "Pendiente...") {
           try {
 
-            await new Promise(r => setTimeout(r, 5000));
+            await new Promise(r => setTimeout(r, 3000));
 
             const invoiceWithCufe = await axiosInstance.get(
               `/posinnovate/siigo/sale/invoice/by/${code}/${company}`

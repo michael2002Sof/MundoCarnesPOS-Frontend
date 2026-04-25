@@ -415,7 +415,7 @@ export default function CashSale() {
 
         const itemsNotDian = activeTab.cart.filter(it => it.dian === 0)
         let paymentDian = payments
-        if (itemsNotDian.length > 0 && receipt_transfer === 0) {
+        if (itemsNotDian.length > 0 && receipt_transfer === 0 && receipt_datafono === 0) {
             //console.log("Items que no van a la DIAN", itemsNotDian)
             const totalNotDian = itemsNotDian.reduce(
                 (s, it) => s + (Number(it.total || 0)), 
@@ -445,7 +445,7 @@ export default function CashSale() {
 
         // Crear los ítems para siigo
         let items = []
-        if (receipt_transfer > 0) {
+        if (receipt_transfer > 0 || receipt_datafono > 0) {
             items = (activeTab?.cart || []).map((it) => ({
                 code: it.code,
                 description: it.description,

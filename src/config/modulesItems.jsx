@@ -1,4 +1,4 @@
-import { ShieldUser, ShoppingCart, Receipt, ScrollText, BarChart3, Settings, Store, FileCog, User, Undo2, Warehouse, CreditCard, Package, Boxes } from "lucide-react"
+import { ShieldUser, ShoppingCart, Receipt, ScrollText, BarChart3, Settings, Store, FileCog, User, Undo2, Warehouse, CreditCard, Package, Boxes, ArrowLeftRight } from "lucide-react"
 
 const ModuleItems = {
     "Usuarios" : [
@@ -33,6 +33,12 @@ const ModuleItems = {
             name: "Stock de Productos",
             to: "/inventory/stock",
             description: "Convertir producto de pos inventariable"
+        },
+        {
+            icon: <ArrowLeftRight/>,
+            name: "Movimiento de Inventario",
+            to: "/inventory/movement",
+            description: "Observa el movimiento de existencias de productos detalladamente"
         }
     ],
 
