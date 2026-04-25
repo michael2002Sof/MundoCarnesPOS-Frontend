@@ -35,14 +35,14 @@ const flattenInvoices = (invoices) => {
       invoice.client || "N/A",
       invoice.vendedor || "N/A",
       // Asegurando que los valores numéricos sean tratados como números
-      invoice.subtotal || 0, 
-      invoice.tax0 || 0,
-      invoice.tax5 || 0,
-      invoice.tax19 || 0,
-      invoice.total || 0,
-      invoice.receipt_cash || 0,
-      invoice.receipt_transfer || 0,
-      invoice.total_payment || 0,
+      Number(invoice.subtotal) || 0, 
+      Number(invoice.tax0) || 0,
+      Number(invoice.tax5) || 0,
+      Number(invoice.tax19) || 0,
+      Number(invoice.total) || 0,
+      Number(invoice.receipt_cash) || 0,
+      Number(invoice.receipt_transfer) || 0,
+      Number(invoice.total_payment) || 0,
     ]);
   });
 
