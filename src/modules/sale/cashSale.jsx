@@ -392,6 +392,7 @@ export default function CashSale() {
         useHandleInputChange(setBuildInvoice, "sale_point", sp?.id)
     }, [selectedCustomer, resolution, sp])
 
+    console.log(activeTab.cart)
     // Confirmar pago: registrar venta + descontar stock + imprimir factura + limpiar carrito
     const handleConfirmPayment = async () => {
 
@@ -481,6 +482,7 @@ export default function CashSale() {
             total: it.total,
             dian: it.dian,
             has_stock: it.has_stock,
+            warehouse: it.warehouse
         }));
 
         const invoiceData = {
