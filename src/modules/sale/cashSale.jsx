@@ -472,6 +472,7 @@ export default function CashSale() {
 
         // Crear los ítems para el pos
         const itemsPOS = (activeTab?.cart || []).map((it) => ({
+            id: it.id,
             product_name: it.name,
             product_barcode: it.code,
             quantity: it.quantity,
