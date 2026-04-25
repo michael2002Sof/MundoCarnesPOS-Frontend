@@ -42,23 +42,24 @@ export function useDecodeScale (productSiigo, weight, wh, isModeDatafono)  {
 
 
     return {
-    code: product.code,
-    description: product.name,
-    base_price,
-    quantity: Math.trunc(weight * 100) /100,
-    discount: 0,
-    taxes: [ { id: product.tax_id} ],
-    name: product.name,
-    price: Math.trunc(price * 100) / 100,
-    subtotal,
-    warehouse: wh,
-    tax0: isTax0,
-    tax5,
-    tax19,
-    total,
-    has_stock: product.has_stock,
-    dian: product.dian,
-    isScale: true,
+        id: product.id,
+        code: product.code,
+        description: product.name,
+        base_price,
+        quantity: Math.trunc(weight * 100) /100,
+        discount: 0,
+        taxes: [ { id: product.tax_id} ],
+        name: product.name,
+        price: Math.trunc(price * 100) / 100,
+        subtotal,
+        warehouse: wh,
+        tax0: isTax0,
+        tax5,
+        tax19,
+        total,
+        has_stock: product.has_stock,
+        dian: product.dian,
+        isScale: true,
     };
 };
 
@@ -108,6 +109,7 @@ export function useDecodeNormal (productSiigo, wh, isModeDatafono) {
   
 
     return {
+        id: product.id,
         code: product.code,
         description: product.name,
         base_price,
