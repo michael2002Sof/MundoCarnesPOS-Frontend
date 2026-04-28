@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { Loader, Eye, Printer, FileDown, ChevronLeft, ChevronRight } from "lucide-react";
 import moment from "moment-timezone";
+import clsx from "clsx";
 
 import {ModulesHeader} from "../../components/shared/headers"
 import  {formatDecimal} from "../../utils/formatData"
@@ -11,7 +12,7 @@ import DecodeToken from "../../api/decode";
 import useMovement from "../../hooks/inventory/useMovement";
 
 export default function Movement () {
-    const {isLoading, movements, pages, FetchMovement} = useMovement();
+    const {isLoading, movements, movementProducts, pages, FetchMovement, FetchMovementProduct} = useMovement();
     const token = DecodeToken()
     console.log(movements)
 
@@ -20,10 +21,15 @@ export default function Movement () {
     const [isPrintInvoice, setPrintInvoice] = useState(null);
     const [page, setPage] = useState(1);
     const [selectedMovement, setSelectedMovement] = useState(null);
+    const [activeTab, setActiveTab] = useState("movement")
 
     useEffect(() => {
-        FetchMovement({page, from: isDate});
-    }, [isDate, page]);
+        if (activeTab === "movement") {
+            FetchMovement({page, from: isDate});
+        } else if (activeTab === "product") {
+            FetchMovementProduct({page, from: isDate})
+        }
+    }, [isDate, page, activeTab]);
 
     const handlePrevPage = () => {
         setPage(prev => Math.max(1, prev - 1));
@@ -55,16 +61,48 @@ export default function Movement () {
                         </div>
                     </section>
                 </div>
+
+                <section className="flex items-center mt-4">
+                    <button 
+                    onClick={() => setActiveTab("movement")}
+                    className={clsx(
+                        "font-semibold px-4 py-2 cursor-pointer transition-colors duration-300",
+                        activeTab === "movement" && "bg-foreground text-amber-100"
+                    )}>
+                        Por Movimiento
+                    </button>
+                    <button 
+                    onClick={() => setActiveTab("product")}
+                    className={clsx(
+                        "font-semibold px-4 py-2 cursor-pointer transition-colors duration-300",
+                        activeTab === "product" && "bg-foreground text-amber-100"
+                    )}>
+                        Por Producto
+                    </button>
+                </section>
+
                 <div className="overflow-x-auto mt-6">
                     <table className="w-full text-sm text-left border-collapse">
                         <thead className="bg-[#841A1A] text-white uppercase text-xs">
-                        <tr>
-                            <th className="px-4 py-3">Factura</th>
-                            <th className="px-4 py-3">Vendedor</th>
-                            <th className="px-4 py-3">Cliente</th>
-                            <th className="px-4 py-3">Fecha</th>
-                            <th className="px-4 py-3 rounded-tr-lg text-center">Acciones</th>
-                        </tr>
+                        {activeTab === "movement" ? (
+                            <tr>
+                                <th className="px-4 py-3">Factura</th>
+                                <th className="px-4 py-3">Vendedor</th>
+                                <th className="px-4 py-3">Cliente</th>
+                                <th className="px-4 py-3">Fecha</th>
+                                <th className="px-4 py-3 rounded-tr-lg text-center">Acciones</th>
+                            </tr>
+                        ) : (
+                            <tr>
+                                <th className="px-4 py-3">Producto</th>
+                                <th className="px-4 py-3">Bodega</th>
+                                <th className="px-4 py-3">Invetario inicial</th>
+                                <th className="px-4 py-3">Entradas</th>
+                                <th className="px-4 py-3">Salidas</th>
+                                <th className="px-4 py-3">Invetario Final</th>
+                                <th className="px-4 py-3">Fecha</th>
+                            </tr>
+                        )}
                         </thead>
                         <tbody className="text-gray-700">
                         {isLoading ? (
@@ -76,9 +114,8 @@ export default function Movement () {
                                 </div>
                             </td>
                             </tr>
-                        ): (
-                            <>
-                            {movements?.map((inv, idx) => (
+                        ): activeTab === "movement" ? (
+                            movements?.map((inv, idx) => (
                                 <tr
                                 key={idx}
                                 className={`border-b hover:bg-gray-50 transition ${
@@ -100,9 +137,24 @@ export default function Movement () {
                                     </button>
                                 </td>
                                 </tr>
-                            ))}
-                            </>
-
+                            ))
+                        ) : (
+                            movementProducts?.map((inv, idx) => (
+                                <tr
+                                key={idx}
+                                className={`border-b hover:bg-gray-50 transition ${
+                                    idx % 2 === 0 ? "bg-gray-50/30" : "bg-white"
+                                }`}
+                                >
+                                <td className="px-4 py-2 text-gray-700">{inv.name}</td>
+                                <td className="px-4 py-2">{inv.warehouse || "—"}</td>
+                                <td className="px-4 py-2">{Number(inv.start) || "—"}</td>
+                                <td className="px-4 py-2">{Number(inv.entries)}</td>
+                                <td className="px-4 py-2">{Number(inv.exits)}</td>
+                                <td className="px-4 py-2">{Number(inv.end)}</td>
+                                <td className="px-4 py-2">{moment(inv.date).format("YYYY-MM-DD")}</td>
+                                </tr>
+                            ))
                         )}
                         </tbody>
                     </table>
