@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 import { Loader, Eye, Printer, FileDown, ChevronLeft, ChevronRight } from "lucide-react";
 import moment from "moment-timezone";
 import clsx from "clsx";
@@ -38,6 +38,20 @@ export default function Movement () {
     const handleNextPage = () => {
         setPage(prev => Math.min(pages, prev + 1));
     };
+
+    const salesBySeller = useMemo(() => {
+        if (!movements) return {};
+
+        return movements.reduce((acc, mov) => {
+            const seller = mov.seller || "Sin vendedor";
+
+            if (!acc[seller]) acc[seller] = 0;
+
+            acc[seller] += Number(mov.total || 0);
+
+            return acc;
+        }, {});
+    }, [movements]);
 
     return (
         <>
@@ -80,6 +94,22 @@ export default function Movement () {
                         Por Producto
                     </button>
                 </section>
+
+                {activeTab === "movement" && Object.keys(salesBySeller).length > 0 && (
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
+                        {Object.entries(salesBySeller).map(([seller, total]) => (
+                            <div key={seller} className="bg-white shadow-md rounded-2xl p-5 border">
+                                <p className="text-xs text-gray-500 uppercase">Vendedor</p>
+                                <h3 className="text-lg font-semibold text-gray-800">{seller}</h3>
+
+                                <p className="text-xs text-gray-400 mt-3">Total vendido</p>
+                                <p className="text-2xl font-bold text-[#841A1A]">
+                                    {formatDecimal(total, true)}
+                                </p>
+                            </div>
+                        ))}
+                    </div>
+                )}
 
                 <div className="overflow-x-auto mt-6">
                     <table className="w-full text-sm text-left border-collapse">
@@ -215,9 +245,9 @@ export default function Movement () {
                                 <thead className="bg-gray-100">
                                     <tr>
                                         <th className="text-left p-2">Producto</th>
-                                        <th className="text-center p-2">Código</th>
                                         <th className="text-center p-2">Cantidad</th>
-                                        <th className="text-center p-2">DIAN</th>
+                                        <th className="text-center p-2">Precio</th>
+                                        <th className="text-center p-2">Total</th>
                                     </tr>
                                 </thead>
 
@@ -225,10 +255,12 @@ export default function Movement () {
                                     {selectedMovement.items.map((item, idx) => (
                                         <tr key={idx} className="border-t">
                                             <td className="p-2">{item.name}</td>
-                                            <td className="text-center">{item.code}</td>
-                                            <td className="text-center">-{item.quantity}</td>
+                                            <td className="text-center">{item.quantity}</td>
                                             <td className="text-center">
-                                                {item.dian ? "Sí" : "No"}
+                                                {formatDecimal(item.unit_price, true)}
+                                            </td>
+                                            <td className="text-center font-semibold">
+                                                {formatDecimal(item.total, true)}
                                             </td>
                                         </tr>
                                     ))}
