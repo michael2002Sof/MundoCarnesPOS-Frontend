@@ -23,32 +23,39 @@ export default function MenuCarnes() {
           { n: "FAJITAS MADURADAS", p: "35.000" }, { n: "ASADO DE TIRA", p: "25.000" },
           { n: "MILANESA", p: "32.000" }, { n: "CARNE HAMBURGUESA", p: "5.000" },
           { n: "CARNE CHATA PREMIUN", p: "50.000" }, { n: "CARNE PUNTA PREMIUN", p: "50.000" },
-          { n: "TUETANO", p: "2.000" }
+          { n: "TUETANO", p: "2.000" },
+          { n: "CH DE RES", p: "19.000" },
         ]
       },
       {
         titulo: "ASADURA DE RES",
         productos: [
-          { n: "PATA DE RES MEDIANA", p: "14.000" }, { n: "TRIPA", p: "6.000" },
           { n: "CALLO", p: "14.000" }, { n: "BOFE", p: "8.000" },
           { n: "CHINCHULLA", p: "13.000" }, { n: "LENGUA CON AGALLAS", p: "23.000" },
-          { n: "CARNE DE PICOS", p: "11.000" }, { n: "HIGADO", p: "19.000" },
+          { n: "CARNE DE PICOS", p: "12.500" }, { n: "HIGADO", p: "19.000" },
           { n: "ASADURA", p: "14.000" }, { n: "ENTRAÑA", p: "21.000" },
-          { n: "PATAS DE RES GRANDE", p: "16.000" }, { n: "LENGUA SIN AGALLAS", p: "29.000" },
-          { n: "PATA DE RES PEQUEÑA", p: "10.000" }
+          { n: "PATAS DE RES", p: "14.000" }, { n: "LENGUA SIN AGALLAS", p: "29.000" }
         ]
       },
       {
         titulo: "PESCADO",
         productos: [
-          { n: "TRUCHA", p: "24.900" }, { n: "FILETE DE TILAPIA", p: "18.800" },
-          { n: "ALMEJA CONCHA", p: "8.700" }, { n: "MEJILLONES NEGROS X KILO", p: "19.100" },
-          { n: "FILETE DE SALMON 4-6", p: "81.200" }, { n: "BASA KILIADA", p: "12.500" },
-          { n: "CAMARON PRECOCIDO", p: "60.000" }, { n: "ANILLOS DE CALAMAR", p: "38.250" },
-          { n: "TENTACULO ECONOMICO", p: "20.000" }, { n: "CACHAMA", p: "13.000" },
-          { n: "MOJARRA", p: "17.000" }, { n: "BAGRE", p: "35.000" },
-          { n: "CABEZA DE BAGRE", p: "15.000" }, { n: "DORADA", p: "16.000" },
-          { n: "BAGRE MATO", p: "18.000" }, { n: "LANGOSTINO", p: "20.000" }
+          { n: "TRUCHA", p: "24.900" }, 
+          { n: "FILETE DE TILAPIA", p: "21.200" },
+          { n: "ALMEJA CONCHA", p: "8.700" }, 
+          { n: "MEJILLONES NEGROS X KILO", p: "19.100" },
+          { n: "FILETE DE SALMON 4-6", p: "75000" }, 
+          { n: "BASA KILIADA", p: "9.500" },
+          { n: "CAMARON PRECOCIDO", p: "60.000" }, 
+          { n: "ANILLOS DE CALAMAR", p: "38.250" },
+          { n: "TENTACULO ECONOMICO", p: "20.000" }, 
+          { n: "CACHAMA", p: "16.700" },
+          { n: "MOJARRA", p: "18.000" }, 
+          { n: "BAGRE", p: "35.000" },
+          { n: "CABEZA DE BAGRE", p: "15.000" }, 
+          { n: "DORADA", p: "16.000" },
+          { n: "BAGRE MATO", p: "20.000" }, 
+          { n: "LANGOSTINO", p: "20.000" }
         ]
       },
       {
@@ -59,22 +66,29 @@ export default function MenuCarnes() {
           { n: "RABADILLA DE POLLO", p: "6.000" }, { n: "BOMBOM DE POLLO", p: "12.700" },
           { n: "CONTRAMUSLO DE POLLO", p: "12.700" }, { n: "MENUDENCIA DE POLLO", p: "1.000" },
           { n: "PATAS DE POLLO", p: "6.000" }, { n: "CORAZON DE POLLO", p: "10.500" },
-          { n: "HIGADOS DE POLLO", p: "7.000" }, { n: "MOLLEJAS DE POLLO", p: "11.000" },
-          { n: "BANDEJA DE MOLLEJAS", p: "5.000" }
+          { n: "HIGADOS DE POLLO", p: "7.000" }
         ]
       },
       {
         titulo: "CERDO",
         productos: [
-          { n: "LOMO DE CERDO", p: "21.000" }, { n: "PULPA DE CERDO", p: "18.000" },
-          { n: "COSTILLA DE CERDO", p: "18.000" }, { n: "ESPINAZO", p: "4.000" },
-          { n: "PEZUÑA", p: "10.000" }, { n: "TOCINO", p: "10.000" },
-          { n: "GARRA", p: "4.000" }, { n: "CABEZA DE CERDO", p: "2.500" },
-          { n: "EMPELLA", p: "12.000" }, { n: "PAPADA", p: "16.000" },
-          { n: "PANCETA", p: "22.000" }, { n: "CHULETA AHUMADA", p: "20.000" },
-          { n: "CHULETA DE CERDO", p: "18.000" }, { n: "CH DE RES", p: "19.000" },
-          { n: "CH DE CERDO", p: "21.000" }, { n: "LOMO AHUMADO", p: "21.000" },
-          { n: "MRC DE CERDO", p: "14.000" }, { n: "CARETA AHUMADA", p: "15.000" },
+          { n: "LOMO DE CERDO", p: "21.000" }, 
+          { n: "PULPA DE CERDO", p: "18.000" },
+          { n: "COSTILLA DE CERDO", p: "19.000" }, 
+          { n: "ESPINAZO", p: "4.000" },
+          { n: "PEZUÑA", p: "10.000" }, 
+          { n: "TOCINO", p: "10.000" },
+          { n: "GARRA", p: "4.000" }, 
+          { n: "CABEZA DE CERDO", p: "2.500" },
+          { n: "EMPELLA", p: "12.000" }, 
+          { n: "PAPADA", p: "16.000" },
+          { n: "PANCETA", p: "22.000" }, 
+          { n: "CHULETA AHUMADA", p: "20.000" },
+          { n: "CHULETA DE CERDO", p: "18.000" }, 
+          { n: "CH DE CERDO", p: "21.000" }, 
+          { n: "LOMO AHUMADO", p: "21.000" },
+          { n: "MRC DE CERDO", p: "14.000" }, 
+          { n: "CARETA AHUMADA", p: "18.000" },
           { n: "PANCETA AHUMADA", p: "32.000" }
         ]
       }
@@ -98,7 +112,7 @@ export default function MenuCarnes() {
   return (
     <div className="min-h-screen bg-black flex justify-center p-2">
       
-      <div ref={ref} className="w-full h-fit max-w-7xl bg-gradient-to-br from-[#5A0F1C] to-[#2A080E] border-4 border-[#B8962E] rounded-lg p-4">
+      <div ref={ref} className="w-full h-fit max-w-7xl bg-linear-to-br from-[#5A0F1C] to-[#2A080E] border-4 border-[#B8962E] rounded-lg p-4">
 
         {/* HEADER COMPACTO */}
         <header className="text-center mb-4">

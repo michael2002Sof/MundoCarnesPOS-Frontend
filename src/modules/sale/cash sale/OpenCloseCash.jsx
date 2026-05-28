@@ -157,9 +157,15 @@ export default function OpenCloseCash ({sp, user, GET_SalePoint, isModeDatafono,
                                         </span>
                                     </div>
                                     <div className="flex justify-between text-sm">
-                                        <span>Por transferencia:</span>
+                                        <span>Por transferencia Bancolombia:</span>
                                         <span className="font-mono">
                                             {formatDecimal(session.total_transfer, true)}
+                                        </span>
+                                    </div>
+                                     <div className="flex justify-between text-sm">
+                                        <span>Por transferencia Davivienda:</span>
+                                        <span className="font-mono">
+                                            {formatDecimal(0, true)}
                                         </span>
                                     </div>
                                     <div className="flex justify-between text-sm">

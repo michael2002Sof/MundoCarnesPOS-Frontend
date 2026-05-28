@@ -108,7 +108,10 @@ const ReportDesign = ({ report }) => {
                 <span>En Efectivo:</span> <span>{formatDecimal(total_cash, true)}</span>
             </div>
             <div style={{ display: "flex", justifyContent: "space-between" }}>
-                <span>En Transferencia:</span> <span>{formatDecimal(total_transfer, true)}</span>
+                <span>En Transferencia Bancolombia:</span> <span>{formatDecimal(total_transfer, true)}</span>
+            </div>
+            <div style={{ display: "flex", justifyContent: "space-between" }}>
+                <span>En Transferencia Davivienda:</span> <span>{formatDecimal(0, true)}</span>
             </div>
             <div style={{ display: "flex", justifyContent: "space-between" }}>
                 <span>En Datáfono:</span> <span>{formatDecimal(total_datafono, true)}</span>
