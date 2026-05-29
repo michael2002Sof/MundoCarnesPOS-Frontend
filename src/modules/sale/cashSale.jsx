@@ -519,8 +519,8 @@ export default function CashSale() {
             cash_session: sessionId
         }
 
-        console.log("Factura a imprimir: ", invoiceData)
-        //const invoice = await POST_InvoiceSiigo(invoiceData)
+        //console.log("Factura a imprimir: ", invoiceData)
+        const invoice = await POST_InvoiceSiigo(invoiceData)
         // Guardar datos y disparar impresión
         if (invoice) {
             console.log("Factura a imprimir: ", {...invoice, invoiceItem: itemsPOS})
