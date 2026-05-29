@@ -59,6 +59,7 @@ export default function ReportSale() {
   const promedioVentas = sesiones.length ? totalVentas / sesiones.length : 0;
   const totalEfectivo = sesiones.reduce( (sum, s) => sum + safeNumber(s.total_cash), 0);
   const totalTransferencias = sesiones.reduce( (sum, s) => sum + safeNumber(s.total_transfer), 0);
+  const totalDavivienda = sesiones.reduce( (sum, s) => sum + safeNumber(s.total_davivienda), 0);
   const totalDatafono = sesiones.reduce( (sum, s) => sum + safeNumber(s.total_datafono), 0);
 
   const stats = [
@@ -81,10 +82,16 @@ export default function ReportSale() {
       color: "bg-[#841A1A] text-amber-100",
     },
     {
-      title: "Total en Transferencias",
+      title: "Total en Bancolombia",
       icon: <CreditCard />,
       valor: formatDecimal(totalTransferencias, true),
       color: "bg-[#841A1A] text-amber-100",
+    },
+    {
+      title: "Total en Davivienda",
+      icon: <CreditCard/>,
+      valor: formatDecimal(totalDavivienda, true),
+      color: "bg-[#841A1A] text-amber-100"
     },
     {
       title: "Total en Datafono",
@@ -101,10 +108,24 @@ export default function ReportSale() {
         description={"Análisis, métricas y tendencias de ventas"}
       />
 
-      <StatsView designStats={stats} />
+      <section className="grid grid-cols-1 sm:grid-cols-3 gap-4 w-full">
+        {stats.map((design, index) => (
+          <div key={index} className={`${design.color} rounded-lg shadow p-6 w-full`}>
+              <div className="flex items-center">
+                  <div className={`${design.iconColor} p-2  rounded-lg `}>
+                      {design.icon}
+                  </div>
+                  <div className="ml-4">
+                      <p className="text-sm text-nowrap font-medium">{design.title}</p>
+                      <p className="text-2xl font-bold">{design.valor}</p>
+                  </div>
+              </div>
+          </div>
+        ))}
+      </section>
 
       {/* Filtro de fecha */}
-      <div className="bg-[#841A1A] text-amber-100 container rounded-lg shadow p-6 mb-6">
+      <div className="bg-foreground text-amber-100 container rounded-lg shadow p-6 mb-6">
         <h1 className="text-lg font-semibold">Búsqueda por Fecha</h1>
         <p className="text-xs">Selecciona la fecha de las sesiones de caja</p>
         <input
@@ -116,7 +137,7 @@ export default function ReportSale() {
       </div>
 
       {/* Tabla de sesiones */}
-      <div className="bg-[#841A1A] text-amber-100 container rounded-lg shadow p-6 mb-6">
+      <div className="bg-foreground text-amber-100 container rounded-lg shadow p-6 mb-6">
         <h3 className="text-lg font-semibold  mb-4">
           Sesiones de Caja – {filterFechaInicio}
         </h3>
@@ -126,11 +147,11 @@ export default function ReportSale() {
         ) : sesiones.length === 0 ? (
           <p>No hay sesiones registradas para esta fecha.</p>
         ) : (
-          <div className="grid grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
             {sesiones.map((s) => (
                 <section
                 key={s.id}
-                className="bg-amber-100 text-[#841A1A] p-6 mb-6 rounded-2xl shadow-md flex flex-col items-center text-center space-y-2 border border-[#841A1A]/30"
+                className="bg-amber-100 text-foreground p-6 mb-6 rounded-2xl shadow-md flex flex-col items-center text-center space-y-2 border border-foreground/30"
                 >
                 <h1 className="font-bold text-3xl mb-4 tracking-wide">REPORTE DIARIO</h1>
 
@@ -154,30 +175,31 @@ export default function ReportSale() {
                 </div>
 
                 {/* --- Sección de movimiento de caja --- */}
-                <div className="w-full max-w-md mt-6 border-t border-[#841A1A]/30 pt-4 space-y-3">
-                    <h2 className="text-2xl font-semibold mb-2">Movimiento de Caja</h2>
+                <div className="w-full max-w-md mt-6 border-t border-foreground/30 pt-4 space-y-3">
+                  <h2 className="text-2xl font-semibold mb-2">Movimiento de Caja</h2>
                     <p><span className="font-semibold">Base Inicial:</span> {formatDecimal(s.initial_cash, true)}</p>
                     <p className='-mt-3'><span className="font-semibold ">Ventas del día:</span> {s.totalSales}</p>
 
 
                     {/* Totales por métodos de pago */}
-                    <div className="bg-[#841A1A]/10 rounded-xl py-3 mt-4 border border-[#841A1A]/20 shadow-sm">
-                    <h3 className="font-bold text-xl mb-2">
-                      Totales por Método de Pago
-                    </h3>
-                    <p><span className="font-semibold">Ingreso en Efectivo:</span> {formatDecimal(s.total_cash, true)}</p>
-                    <p><span className="font-semibold">Ingreso en Transferencias:</span> {formatDecimal(s.total_transfer, true)}</p>
-                    <p><span className="font-semibold">Ingreso en Datáfono:</span> {formatDecimal(s.total_datafono, true)}</p>
-                    <p><strong>Sub Total Pagos:</strong>{formatDecimal(s.subtotal_method, true)}</p>
-                    <p><strong>Devoluciones:</strong>{formatDecimal(s.total_return, true)}</p>
-                    <p className="text-lg font-bold mt-2 border-t border-[#841A1A]/20 pt-2">
-                        <span className="font-semibold">Total (Efectivo + Transferencias):</span>{" "}
-                        {formatDecimal(s.total_method, true)}
-                    </p>
+                    <div className="bg-foreground/10 rounded-xl py-3 mt-4 border border-foreground/20 shadow-sm">
+                      <h3 className="font-bold text-xl mb-2">
+                        Totales por Método de Pago
+                      </h3>
+                      <p className='flex justify-between px-4'><span className="font-semibold">Ingreso en Efectivo:</span> {formatDecimal(s.total_cash, true)}</p>
+                      <p className='flex justify-between px-4'><span className="font-semibold">Ingreso en Bancolombia:</span> {formatDecimal(s.total_transfer, true)}</p>
+                      <p className='flex justify-between px-4'><span className="font-semibold">Ingreso en Davivienda:</span> {formatDecimal(s.total_davivienda, true)}</p>
+                      <p className='flex justify-between px-4'><span className="font-semibold">Ingreso en Datáfono:</span> {formatDecimal(s.total_datafono, true)}</p>
+                      <p className='flex justify-between px-4'><strong>Sub Total Pagos:</strong>{formatDecimal(s.subtotal_method, true)}</p>
+                      <p className='flex justify-between px-4'><strong>Devoluciones:</strong>{formatDecimal(s.total_return, true)}</p>
+                      <p className="text-lg font-bold mt-2 border-t border-foreground/20 pt-2">
+                          <span className="font-semibold">Total (Efectivo + Transferencias):</span>{" "}
+                          {formatDecimal(s.total_method, true)}
+                      </p>
                     </div>
 
                     {/* Totales Generales */}
-                    <div className="bg-[#841A1A]/10 rounded-xl py-3 mt-6 border border-[#841A1A]/20 shadow-sm">
+                    <div className="bg-foreground/10 rounded-xl py-3 mt-6 border border-foreground/20 shadow-sm">
                     <h3 className="font-bold text-xl mb-2">
                         Totales Generales
                     </h3>
@@ -185,7 +207,7 @@ export default function ReportSale() {
                     <p><span className="font-semibold">Total IVA 0%:</span> {formatDecimal(s.tax0, true)}</p>
                     <p><span className="font-semibold">Total IVA 5%:</span> {formatDecimal(s.tax5, true)}</p>
                     <p><span className="font-semibold">Total IVA 19%:</span> {formatDecimal(s.tax19, true)}</p>
-                    <p className="text-lg font-bold mt-2 border-t border-[#841A1A]/20 pt-2">
+                    <p className="text-lg font-bold mt-2 border-t border-foreground/20 pt-2">
                         <span className="font-semibold">Total Ventas:</span>{" "}
                         {formatDecimal(s.total, true)}
                     </p>
@@ -194,7 +216,7 @@ export default function ReportSale() {
 
                 <button
                     onClick={() => setSession(s)}
-                    className="bg-[#841A1A] hover:bg-[#6b1414] transition-colors text-amber-100 px-6 py-2 mt-6 rounded-lg flex items-center shadow-md"
+                    className="bg-foreground hover:bg-[#6b1414] transition-colors text-amber-100 px-6 py-2 mt-6 rounded-lg flex items-center shadow-md"
                 >
                     <Printer className="h-5 w-5 mr-2" />
                     Imprimir Reporte

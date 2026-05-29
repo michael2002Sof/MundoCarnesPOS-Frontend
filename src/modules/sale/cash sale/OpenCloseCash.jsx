@@ -103,7 +103,7 @@ export default function OpenCloseCash ({sp, user, GET_SalePoint, isModeDatafono,
             ===================================================================*/}
             {showOpenModal && (
                 <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 min-h-screen">
-                    <form onSubmit={handleOpenRegister} className="bg-[#841A1A] text-amber-100 p-12 rounded-xl flex flex-col">
+                    <form onSubmit={handleOpenRegister} className="bg-foreground text-amber-100 p-12 rounded-xl flex flex-col">
                         <h1 className="text-xl font-semibold">Ingresa el Valor Inicial de la Caja</h1>
                         <input 
                             value={cashDisplay} 
@@ -121,7 +121,7 @@ export default function OpenCloseCash ({sp, user, GET_SalePoint, isModeDatafono,
                             <button type="button" onClick={() => setShowOpenModal(false)} className="border-amber-200 border text-amber-200 hover:bg-amber-200/10 rounded-lg px-4 py-2 cursor-pointer mt-8 font-semibold">
                                 Cancelar
                             </button>
-                            <button type="submit" disabled={isLoading} className="bg-amber-200 text-[#841A1A] rounded-lg px-4 py-2 cursor-pointer mt-8 font-semibold">
+                            <button type="submit" disabled={isLoading} className="bg-amber-200 text-foreground rounded-lg px-4 py-2 cursor-pointer mt-8 font-semibold">
                                 {isLoading ? "Abriendo..." : "Iniciar Sesión de Caja"}
                             </button>
                         </div>
@@ -260,7 +260,7 @@ export default function OpenCloseCash ({sp, user, GET_SalePoint, isModeDatafono,
                             <button
                                 onClick={handleCloseRegister}
                                 disabled={isLoading}
-                                className="flex-1 bg-amber-200 text-[#841A1A] rounded-lg px-4 py-2 font-semibold hover:bg-amber-300 transition disabled:opacity-50"
+                                className="flex-1 bg-amber-200 text-foreground rounded-lg px-4 py-2 font-semibold hover:bg-amber-300 transition disabled:opacity-50"
                             >
                                 {isLoading ? (
                                    <div className="flex items-center justify-center gap-2">

@@ -23,6 +23,7 @@ export default function Dashboard() {
     const totalGanancias = sessionStatic.reduce((sum, s) => sum + Number(s.total_sales), 0);
     const totalEfectivo = sessionStatic.reduce((sum, s) => sum + Number(s.total_cash), 0);
     const totalTransfer = sessionStatic.reduce((sum, s) => sum + Number(s.total_transfer), 0);
+    const totalDavivienda = sessionStatic.reduce((sum, s) => sum + Number(s.total_davivienda), 0);
     const totalDatafono = sessionStatic.reduce((sum, s) => sum + Number(s.total_datafono), 0);
     const totalVentas = sessionStatic.reduce((sum, s) => sum + Number(s.total_invoices), 0);
 
@@ -41,8 +42,14 @@ export default function Dashboard() {
         },
         {
             icon: <DollarSign />,
-            title: "Transferencias",
+            title: "Transferencias Bancolombia",
             valor: formatDecimal(totalTransfer, true),
+            color: "bg-[#841A1A] text-amber-100"
+        },
+        {
+            icon: <DollarSign />,
+            title: "Transferencias Davivienda",
+            valor: formatDecimal(totalDavivienda, true),
             color: "bg-[#841A1A] text-amber-100"
         },
         {
@@ -69,7 +76,7 @@ export default function Dashboard() {
             <section className="container mx-auto max-w-7xl 2xl:max-w-[90%] space-y-6">
 
                 {/* Filtros */}
-                <div className="bg-[#841A1A] text-amber-100  rounded-xl shadow p-6 flex justify-between gap-4 items-end">
+                <div className="bg-foreground text-amber-100  rounded-xl shadow p-6 flex justify-between gap-4 items-end">
                     <div className="flex gap-4">
                         <section className="flex flex-col">
                             <label className="text-sm font-semibold">Desde</label>
@@ -82,7 +89,7 @@ export default function Dashboard() {
                         </section>
                     </div>
 
-                    <button onClick={() => GET_SessionStatic(from, to)} className="bg-amber-200 text-[#841A1A] px-4 py-2 rounded-md cursor-pointer font-semibold">
+                    <button onClick={() => GET_SessionStatic(from, to)} className="bg-amber-200 text-foreground px-4 py-2 rounded-md cursor-pointer font-semibold">
                         {loading ? (
                             <div className="flex gap-2 items-center">
                                 <Loader/>
@@ -95,7 +102,21 @@ export default function Dashboard() {
                 </div>
 
                 {/* Stats */}
-                <StatsView designStats={stats}/>
+                <section className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                    {stats.map((design, index) => (
+                        <div key={index} className={`${design.color} w-full rounded-lg shadow p-6`}>
+                            <div className="flex items-center">
+                                <div className={`${design.iconColor} p-2  rounded-lg `}>
+                                    {design.icon}
+                                </div>
+                                <div className="ml-4">
+                                    <p className="text-sm text-nowrap font-medium">{design.title}</p>
+                                    <p className="text-2xl font-bold">{design.valor}</p>
+                                </div>
+                            </div>
+                        </div>
+                    ))}
+                </section>
 
                 {/* Gráfica principal */}
                 <SalesBySessionChart data={sessionStatic} from={from} to={to} />

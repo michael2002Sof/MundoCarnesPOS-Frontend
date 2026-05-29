@@ -65,7 +65,7 @@ export default function CashSale() {
     }, [loadingProduct]);
     // ... useEffect para el focus del escáner (existing)
 
-    // 🆕 NUEVO useEffect PARA ATAJOS DE PAGO
+    // NUEVO useEffect PARA ATAJOS DE PAGO
     useEffect(() => {
         const handlePaymentShortcuts = (e) => {
             // Asegúrate de que Ctrl (o Cmd en Mac) esté presionado
@@ -163,6 +163,7 @@ export default function CashSale() {
 
         receipt_cash: 0,
         receipt_transfer: 0,
+        receipt_davivienda: 0,
         receipt_datafono: 0,
         total_payment: 0,
         repay: 0,
@@ -322,12 +323,17 @@ export default function CashSale() {
         if (!sp?.methods) return null;
         return sp?.methods?.find(m =>  m.name.toLowerCase().includes("bancolombia") )?.id || null;
     };
+    const getDaviviendaMethodId = () => {
+        if (!sp?.methods) return null;
+        return sp?.methods?.find(m =>  m.name.toLowerCase().includes("davivienda") )?.id || null;
+    };
     const getDatafonoMethodId = () => {
         if (!sp?.methods) return null;
         return sp?.methods?.find(m =>  m.name.toLowerCase().includes("datáfono") )?.id || null;
     }
     const cashMethodId = getCashMethodId();
     const transferMethodId = getTransferMethodId();
+    const daviviendaMethodId = getDaviviendaMethodId();
     const datafonoMethodId = getDatafonoMethodId()
 
     const formatMoney = (value) => {
@@ -356,24 +362,28 @@ export default function CashSale() {
     //console.log("Valores del metodo de pago", paymentValues)
 
     const cash = paymentValues[cashMethodId] || 0;
+    const davivienda = paymentValues[daviviendaMethodId] || 0;
     const transfer = paymentValues[transferMethodId] || 0;
     const datafono = paymentValues[datafonoMethodId] || 0
 
-    const repay = Math.max((cash + transfer + datafono) - total, 0) // nunca negativo
+    const repay = Math.max((cash + transfer + datafono + davivienda) - total, 0) // nunca negativo
 
     const receipt_cash =  parseFloat((cash - repay).toFixed(2)) === Math.round(total) ? total : parseFloat((cash - repay).toFixed(2))
     //console.log("Recibido en efectivo: ", receipt_cash)
     const receipt_transfer = Math.round(total) === transfer ? total : transfer
     //console.log("Recibido en transferencia: ", receipt_transfer)
+    const receipt_davivienda = Math.round(total) === davivienda ? total : davivienda
+    //console.log("Recibido en davivienda: ", receipt_davivienda)
     const receipt_datafono = Math.round(total) === datafono ? total : datafono
     //console.log("Recibido por datafono", receipt_datafono)
-    const total_payment = receipt_cash + receipt_transfer + receipt_datafono
+    const total_payment = receipt_cash + receipt_transfer + receipt_datafono + receipt_davivienda
     //console.log("Total recibido: ", total_payment)
 
     let payments = sp?.methods.map(m => {
         let value = 0;
         if (m.id === cashMethodId) value = receipt_cash 
         if (m.id === transferMethodId) value = receipt_transfer
+        if (m.id === daviviendaMethodId) value = receipt_davivienda
         if (m.id === datafonoMethodId) value = receipt_datafono
 
         return { id: m.id, value, due_date: today };
@@ -416,7 +426,7 @@ export default function CashSale() {
 
         const itemsNotDian = activeTab.cart.filter(it => it.dian === 0)
         let paymentDian = payments
-        if (itemsNotDian.length > 0 && receipt_transfer === 0 && receipt_datafono === 0) {
+        if (itemsNotDian.length > 0 && receipt_transfer === 0 && receipt_datafono === 0 && receipt_davivienda === 0) {
             //console.log("Items que no van a la DIAN", itemsNotDian)
             const totalNotDian = itemsNotDian.reduce(
                 (s, it) => s + (Number(it.total || 0)), 
@@ -446,7 +456,7 @@ export default function CashSale() {
 
         // Crear los ítems para siigo
         let items = []
-        if (receipt_transfer > 0 || receipt_datafono > 0) {
+        if (receipt_transfer > 0 || receipt_datafono > 0 || receipt_davivienda > 0) {
             items = (activeTab?.cart || []).map((it) => ({
                 code: it.code,
                 description: it.description,
@@ -500,7 +510,8 @@ export default function CashSale() {
             tax19: tax19Total, 
             total: Math.round(total),
             payments: paymentDian,
-            receipt_cash: Math.round(receipt_cash),
+            receipt_cash: Math.max(Math.round(receipt_cash), 0),
+            receipt_davivienda: Math.round(receipt_davivienda),
             receipt_transfer: Math.round(receipt_transfer),
             receipt_datafono: Math.round(receipt_datafono),
             repay: Math.round( (repay).toFixed(2) ),
@@ -508,8 +519,8 @@ export default function CashSale() {
             cash_session: sessionId
         }
 
-        //console.log("Factura a imprimir: ", invoiceData)
-        const invoice = await POST_InvoiceSiigo(invoiceData)
+        console.log("Factura a imprimir: ", invoiceData)
+        //const invoice = await POST_InvoiceSiigo(invoiceData)
         // Guardar datos y disparar impresión
         if (invoice) {
             console.log("Factura a imprimir: ", {...invoice, invoiceItem: itemsPOS})
@@ -556,11 +567,11 @@ export default function CashSale() {
                     />
                     {/* Pestañas */}
                     <section className="flex gap-2 w-full justify-center">
-                        <div className={`px-3 py-2 rounded ${tabs[0].id === activeTabId ? "bg-[#841A1A] text-amber-100" : "bg-amber-200 text-[#841A1A]"}`}>
+                        <div className={`px-3 py-2 rounded ${tabs[0].id === activeTabId ? "bg-foreground text-amber-100" : "bg-amber-200 text-foreground"}`}>
                             <button onClick={() => setActiveTabId(tabs[0].id)}>{tabs[0].name}</button>
                         </div>
                         {tabs.slice(1).map((t) => (
-                        <div key={t.id} className={`px-3 py-2 rounded ${t.id === activeTabId ? "bg-[#841A1A] text-amber-100" : "bg-amber-200 text-[#841A1A]"}`}>
+                        <div key={t.id} className={`px-3 py-2 rounded ${t.id === activeTabId ? "bg-foreground text-amber-100" : "bg-amber-200 text-foreground"}`}>
                             <button onClick={() => setActiveTabId(t.id)}>{t.name}</button>
                             <button onClick={() => closeTab(t.id)} className="ml-2 text-sm">x</button>
                         </div>
@@ -571,7 +582,7 @@ export default function CashSale() {
                     COLUMNA DE ESCANEO Y CARRITO
                     ==============================================================*/}
                     <div className="space-y-4">
-                    <section className="p-4 bg-[#841A1A] text-amber-100 rounded-xl space-y-1">
+                    <section className="p-4 bg-foreground text-amber-100 rounded-xl space-y-1">
                         <div className="flex items-center gap-3 mb-3">
                         <Barcode /><h3 className="text-lg font-bold">Escáner</h3>
                         </div>
@@ -610,7 +621,7 @@ export default function CashSale() {
                         </form>
                     </section>
 
-                    <section className="p-4 bg-[#841A1A] text-amber-100 rounded-xl">
+                    <section className="p-4 bg-foreground text-amber-100 rounded-xl">
                         <h4 className="font-semibold mb-2 flex items-center">
                             {tabs.length !== 0 && (
                                 <div className="mr-4 flex justify-between w-full">
@@ -631,7 +642,7 @@ export default function CashSale() {
                         ) : (
                         <div className="overflow-x-auto">
                             <table className="w-full text-sm">
-                            <thead className="bg-amber-200 text-[#841A1A]">
+                            <thead className="bg-amber-200 text-foreground">
                                 <tr className="border-b text-nowrap">
                                 <th className="text-center px-4 py-2">Producto</th>
                                 <th className="text-center px-4 border-l">Cant / Peso</th>
@@ -679,7 +690,7 @@ export default function CashSale() {
                 {/*============================================================
                     RESUMEN DE VENTA Y FACUTRACION 
                 ==============================================================*/}
-                <div className="p-4 bg-[#841A1A] text-amber-100 space-y-3 flex flex-col items-center justify-center rounded-xl w-1/3">
+                <div className="p-4 bg-foreground text-amber-100 space-y-3 flex flex-col items-center justify-center rounded-xl w-1/3">
                 <div className="text-center">
                     {/*Tipo de Facuración */}
                     <p className="font-bold text-lg">{resolution?.type} - {resolution?.code} - {resolution?.name}</p>
@@ -734,7 +745,7 @@ export default function CashSale() {
 
                 <ClientSearch setCustomer={setSelectedCustomer} selectedCustomer={selectedCustomer}/>
 
-                <button onClick={() => handleConfirmPayment()} disabled={activeTab.cart.length === 0} className={`${sp?.status === "closed" && "cursor-not-allowed"} mt-4 bg-amber-200 text-[#841A1A] p-2 rounded font-semibold w-full`}>
+                <button onClick={() => handleConfirmPayment()} disabled={activeTab.cart.length === 0} className={`${sp?.status === "closed" && "cursor-not-allowed"} mt-4 bg-amber-200 text-foreground p-2 rounded font-semibold w-full`}>
                     {isLoading ? 
                         <div className="flex justify-center items-center gap-2">
                             <Loader2 className="animate-spin mr-2 inline-block" />
