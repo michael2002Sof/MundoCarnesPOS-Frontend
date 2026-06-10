@@ -182,20 +182,112 @@ export default function ReportSale() {
 
 
                     {/* Totales por métodos de pago */}
-                    <div className="bg-foreground/10 rounded-xl py-3 mt-4 border border-foreground/20 shadow-sm">
-                      <h3 className="font-bold text-xl mb-2">
+                    <div className="bg-foreground/10 rounded-xl p-4 mt-4 border border-foreground/20 shadow-sm">
+                      <h3 className="font-bold text-xl mb-4">
                         Totales por Método de Pago
                       </h3>
-                      <p className='flex justify-between px-4'><span className="font-semibold">Ingreso en Efectivo:</span> {formatDecimal(s.total_cash, true)}</p>
-                      <p className='flex justify-between px-4'><span className="font-semibold">Ingreso en Bancolombia:</span> {formatDecimal(s.total_transfer, true)}</p>
-                      <p className='flex justify-between px-4'><span className="font-semibold">Ingreso en Davivienda:</span> {formatDecimal(s.total_davivienda, true)}</p>
-                      <p className='flex justify-between px-4'><span className="font-semibold">Ingreso en Datáfono:</span> {formatDecimal(s.total_datafono, true)}</p>
-                      <p className='flex justify-between px-4'><strong>Sub Total Pagos:</strong>{formatDecimal(s.subtotal_method, true)}</p>
-                      <p className='flex justify-between px-4'><strong>Devoluciones:</strong>{formatDecimal(s.total_return, true)}</p>
-                      <p className="text-lg font-bold mt-2 border-t border-foreground/20 pt-2">
-                          <span className="font-semibold">Total (Efectivo + Transferencias):</span>{" "}
-                          {formatDecimal(s.total_method, true)}
-                      </p>
+
+                      <div className="space-y-3">
+                        <div className="bg-foreground/5 rounded-lg p-3">
+                          <p className="flex justify-between">
+                            <span className="font-semibold">Ingreso en Efectivo</span>
+                            <span>{formatDecimal(s.total_cash, true)}</span>
+                          </p>
+
+                          <p className="flex justify-between mt-1 text-sm">
+                            <span>Devolución en Efectivo</span>
+                            <span>{formatDecimal(0, true)}</span>
+                          </p>
+
+                          <p className="flex justify-between mt-1 text-sm">
+                            <b>Total en Ingreso</b>
+                            <span>{formatDecimal(s.total_cash - 0, true)}</span>
+                          </p>
+                        </div>
+
+                        <div className="bg-foreground/5 rounded-lg p-3">
+                          <p className="flex justify-between">
+                            <span className="font-semibold">Ingreso en Bancolombia</span>
+                            <span>{formatDecimal(s.total_transfer, true)}</span>
+                          </p>
+
+                          <p className="flex justify-between mt-1 text-sm">
+                            <span>Devolución en Bancolombia</span>
+                            <span>{formatDecimal(0, true)}</span>
+                          </p>
+
+                          <p className="flex justify-between mt-1 text-sm">
+                            <b>Total en Ingreso</b>
+                            <span>{formatDecimal(s.total_transfer - 0, true)}</span>
+                          </p>
+                        </div>
+
+                        <div className="bg-foreground/5 rounded-lg p-3">
+                          <p className="flex justify-between">
+                            <span className="font-semibold">Ingreso en Davivienda</span>
+                            <span>{formatDecimal(s.total_davivienda, true)}</span>
+                          </p>
+
+                          <p className="flex justify-between mt-1 text-sm">
+                            <span>Devolución en Davivienda</span>
+                            <span>{formatDecimal(0, true)}</span>
+                          </p>
+
+                          <p className="flex justify-between mt-1 text-sm">
+                            <b>Total en Ingreso</b>
+                            <span>{formatDecimal(s.total_davivienda - 0, true)}</span>
+                          </p>
+                        </div>
+
+                        <div className="bg-foreground/5 rounded-lg p-3">
+                          <p className="flex justify-between">
+                            <span className="font-semibold">Ingreso en Datáfono</span>
+                            <span>{formatDecimal(s.total_datafono, true)}</span>
+                          </p>
+
+                          <p className="flex justify-between mt-1 text-sm">
+                            <span>Devolución en Datáfono</span>
+                            <span>{formatDecimal(0, true)}</span>
+                          </p>
+
+                          <p className="flex justify-between mt-1 text-sm">
+                            <b>Total en Ingreso</b>
+                            <span>{formatDecimal(s.total_datafono - 0, true)}</span>
+                          </p>
+                        </div>
+
+                      </div>
+
+                      <div className="mt-4 pt-4 border-t border-foreground/20 space-y-2">
+
+                        <div className="flex justify-between">
+                          <span className="font-semibold">
+                            Subtotal Ingresos
+                          </span>
+
+                          <span>
+                            {formatDecimal(s.subtotal_method, true)}
+                          </span>
+                        </div>
+
+                        <div className="flex justify-between">
+                          <span className="font-semibold">
+                            Total Devoluciones
+                          </span>
+
+                          <span>
+                            {formatDecimal(s.total_return, true)}
+                          </span>
+                        </div>
+
+                        <div className="flex justify-between text-lg font-bold pt-2 border-t border-foreground/20">
+                          <span>Total Neto</span>
+                          <span>
+                            {formatDecimal(s.total_method, true)}
+                          </span>
+                        </div>
+
+                      </div>
                     </div>
 
                     {/* Totales Generales */}
