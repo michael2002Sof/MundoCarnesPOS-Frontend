@@ -63,7 +63,7 @@ const ReportDesign = ({ report }) => {
     id,
     branch_name, sales_point_name,
     opened_by, opened_at, closed_at, closed_by,
-    initial_cash, total_cash, total_transfer, total_datafono, 
+    initial_cash, total_cash, total_transfer, total_davivienda, total_datafono, 
     subtotal_method, total_return, total_method,
     subtotal, tax0, tax5, tax19, total, totalSales
   } = report;
@@ -109,10 +109,10 @@ const ReportDesign = ({ report }) => {
                     <span>Ingreso en Efectivo:</span> <span>{formatDecimal(total_cash, true)}</span>
                 </div>
                 <div style={{ display: "flex", justifyContent: "space-between" }}>
-                    <span>Devolución en Efectivo:</span> <span>{formatDecimal(total_cash, true)}</span>
+                    <span>Devolución en Efectivo:</span> <span>{formatDecimal(total_return, true)}</span>
                 </div>
                 <div style={{ display: "flex", justifyContent: "space-between" }}>
-                    <span>Total Ingreso:</span> <span>{formatDecimal(total_cash, true)}</span>
+                    <span>Total Ingreso:</span> <span>{formatDecimal(total_cash - total_return, true)}</span>
                 </div>
             </section>
             <section style={{ marginBottom: "4px" }}>
@@ -120,21 +120,21 @@ const ReportDesign = ({ report }) => {
                     <span>Ingreso en Bancolombia:</span> <span>{formatDecimal(total_transfer, true)}</span>
                 </div>
                  <div style={{ display: "flex", justifyContent: "space-between" }}>
-                    <span>Devolución en Bancolombia:</span> <span>{formatDecimal(total_transfer, true)}</span>
+                    <span>Devolución en Bancolombia:</span> <span>{formatDecimal(0, true)}</span>
                 </div>
                  <div style={{ display: "flex", justifyContent: "space-between" }}>
-                    <span>En Transferencia Bancolombia:</span> <span>{formatDecimal(total_transfer, true)}</span>
+                    <span>En Transferencia Bancolombia:</span> <span>{formatDecimal(total_transfer - 0, true)}</span>
                 </div>
             </section>
             <section style={{ marginBottom: "4px" }}>
                 <div style={{ display: "flex", justifyContent: "space-between" }}>
-                    <span>Ingreso en Davivienda:</span> <span>{formatDecimal(0, true)}</span>
+                    <span>Ingreso en Davivienda:</span> <span>{formatDecimal(total_davivienda, true)}</span>
                 </div>
                  <div style={{ display: "flex", justifyContent: "space-between" }}>
-                    <span>Devolución en Davivienda:</span> <span>{formatDecimal(total_transfer, true)}</span>
+                    <span>Devolución en Davivienda:</span> <span>{formatDecimal(0, true)}</span>
                 </div>
                 <div style={{ display: "flex", justifyContent: "space-between" }}>
-                    <span>Total Ingreso:</span> <span>{formatDecimal(total_transfer, true)}</span>
+                    <span>Total Ingreso:</span> <span>{formatDecimal(total_davivienda - 0, true)}</span>
                 </div>
             </section>
             <section style={{ marginBottom: "4px" }}>
@@ -142,10 +142,10 @@ const ReportDesign = ({ report }) => {
                     <span>Ingreso en Datáfono:</span> <span>{formatDecimal(total_datafono, true)}</span>
                 </div>
                 <div style={{ display: "flex", justifyContent: "space-between" }}>
-                    <span>Devolucion en Datáfono:</span> <span>{formatDecimal(total_transfer, true)}</span>
+                    <span>Devolucion en Datáfono:</span> <span>{formatDecimal(0, true)}</span>
                 </div>
                  <div style={{ display: "flex", justifyContent: "space-between" }}>
-                    <span>Total Ingreso:</span> <span>{formatDecimal(total_transfer, true)}</span>
+                    <span>Total Ingreso:</span> <span>{formatDecimal(total_datafono - 0, true)}</span>
                 </div>
             </section>
             <div style={{ display: "flex", justifyContent: "space-between" }}>

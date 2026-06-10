@@ -196,12 +196,12 @@ export default function ReportSale() {
 
                           <p className="flex justify-between mt-1 text-sm">
                             <span>Devolución en Efectivo</span>
-                            <span>{formatDecimal(0, true)}</span>
+                            <span>{formatDecimal(s.total_return, true)}</span>
                           </p>
 
                           <p className="flex justify-between mt-1 text-sm">
                             <b>Total en Ingreso</b>
-                            <span>{formatDecimal(s.total_cash - 0, true)}</span>
+                            <span>{formatDecimal(s.total_cash - s.total_return, true)}</span>
                           </p>
                         </div>
 
