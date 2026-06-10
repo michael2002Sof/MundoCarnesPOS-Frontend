@@ -104,7 +104,7 @@ const ReportDesign = ({ report }) => {
             <h2 style={{ fontSize: "11px", fontWeight: "bold", margin: "0" }}>TOTALES POR METODOS DE PAGO</h2>
         </div>
         <div style={{ marginBottom: "8px", paddingTop: "5px" }}>
-            <section style={{ marginBottom: "4px" }}>
+            <section style={{ marginBottom: "4px", borderBottom: "1px", padding: "4px" }}>
                 <div style={{ display: "flex", justifyContent: "space-between" }}>
                     <span>Ingreso en Efectivo:</span> <span>{formatDecimal(total_cash, true)}</span>
                 </div>
@@ -112,10 +112,10 @@ const ReportDesign = ({ report }) => {
                     <span>Devolución en Efectivo:</span> <span>{formatDecimal(total_return, true)}</span>
                 </div>
                 <div style={{ display: "flex", justifyContent: "space-between" }}>
-                    <span>Total Ingreso:</span> <span>{formatDecimal(total_cash - total_return, true)}</span>
+                    <b>Total Ingreso:</b> <span>{formatDecimal(total_cash - total_return, true)}</span>
                 </div>
             </section>
-            <section style={{ marginBottom: "4px" }}>
+            <section style={{ marginBottom: "4px", borderBottom: "1px", padding: "4px" }}>
                 <div style={{ display: "flex", justifyContent: "space-between" }}>
                     <span>Ingreso en Bancolombia:</span> <span>{formatDecimal(total_transfer, true)}</span>
                 </div>
@@ -123,10 +123,10 @@ const ReportDesign = ({ report }) => {
                     <span>Devolución en Bancolombia:</span> <span>{formatDecimal(0, true)}</span>
                 </div>
                  <div style={{ display: "flex", justifyContent: "space-between" }}>
-                    <span>En Transferencia Bancolombia:</span> <span>{formatDecimal(total_transfer - 0, true)}</span>
+                    <b>Total Ingreso:</b> <span>{formatDecimal(total_transfer - 0, true)}</span>
                 </div>
             </section>
-            <section style={{ marginBottom: "4px" }}>
+            <section style={{ marginBottom: "4px", borderBottom: "1px", padding: "4px" }}>
                 <div style={{ display: "flex", justifyContent: "space-between" }}>
                     <span>Ingreso en Davivienda:</span> <span>{formatDecimal(total_davivienda, true)}</span>
                 </div>
@@ -134,10 +134,10 @@ const ReportDesign = ({ report }) => {
                     <span>Devolución en Davivienda:</span> <span>{formatDecimal(0, true)}</span>
                 </div>
                 <div style={{ display: "flex", justifyContent: "space-between" }}>
-                    <span>Total Ingreso:</span> <span>{formatDecimal(total_davivienda - 0, true)}</span>
+                    <b>Total Ingreso:</b> <span>{formatDecimal(total_davivienda - 0, true)}</span>
                 </div>
             </section>
-            <section style={{ marginBottom: "4px" }}>
+            <section style={{ marginBottom: "4px", borderBottom: "1px", padding: "4px" }}>
                 <div style={{ display: "flex", justifyContent: "space-between" }}>
                     <span>Ingreso en Datáfono:</span> <span>{formatDecimal(total_datafono, true)}</span>
                 </div>
@@ -145,7 +145,7 @@ const ReportDesign = ({ report }) => {
                     <span>Devolucion en Datáfono:</span> <span>{formatDecimal(0, true)}</span>
                 </div>
                  <div style={{ display: "flex", justifyContent: "space-between" }}>
-                    <span>Total Ingreso:</span> <span>{formatDecimal(total_datafono - 0, true)}</span>
+                    <b>Total Ingreso:</b> <span>{formatDecimal(total_datafono - 0, true)}</span>
                 </div>
             </section>
             <div style={{ display: "flex", justifyContent: "space-between" }}>
