@@ -92,7 +92,7 @@ const ReportDesign = ({ report }) => {
         </div>
 
         <div style={{ textAlign: "center", marginBottom: "8px", position: "relative" }}>
-            <h2 style={{ fontWeight: "bold", margin: "0" }}>MOVIMINETO DE CAJA</h2>
+            <h2 style={{ fontWeight: "bold", fontSize: "11px", margin: "0" }}>MOVIMINETO DE CAJA</h2>
         </div>
         <div style={{ marginBottom: "8px", paddingTop: "5px" }}>
             <p style={{ margin: "1px 0" }}><strong>Base Inicial:</strong>{formatDecimal(initial_cash, true)}</p>
@@ -101,7 +101,7 @@ const ReportDesign = ({ report }) => {
 
 
         <div style={{ textAlign: "center", marginBottom: "8px", position: "relative" }}>
-            <h2 style={{ fontWeight: "bold", margin: "0" }}>TOTALES POR METODOS DE PAGO</h2>
+            <h2 style={{ fontWeight: "bold", fontSize: "11px", margin: "0" }}>TOTALES POR METODOS DE PAGO</h2>
         </div>
         <div style={{ marginBottom: "8px", paddingTop: "5px" }}>
             <section style={{ marginBottom: "4px"}}>
@@ -172,7 +172,7 @@ const ReportDesign = ({ report }) => {
         </div>
 
         <div style={{ textAlign: "center", marginBottom: "8px", position: "relative" }}>
-            <h2 style={{ fontWeight: "bold", margin: "0" }}>TOTALES GENERALES</h2>
+            <h2 style={{ fontWeight: "bold", fontSize: "11px", margin: "0" }}>TOTALES GENERALES</h2>
         </div>
         <div style={{ marginBottom: "8px", paddingTop: "5px" }}>
             <div style={{ display: "flex", justifyContent: "space-between" }}>
