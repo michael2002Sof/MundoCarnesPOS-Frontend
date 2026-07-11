@@ -32,6 +32,8 @@ import CostCenter from "./modules/sale/cost_center"
 import PaymentMethod from "./modules/sale/payment_method"
 import InvoiceResolution from "./modules/sale/invoiceResolution"
 
+import InvoicePOS from "./modules/synchronization/invoicePOS"
+
 
 
 const MundoCarnesPosRoutes = [
@@ -76,7 +78,10 @@ const MundoCarnesPosRoutes = [
             { path: "/sale/credit-note", element: <CreditNote/>},
             { path: "/sale/cost-center", element: <CostCenter/>},
             { path: "/sale/payment-method", element: <PaymentMethod/>},
-            { path: "/sale/invoice-resolution", element: <InvoiceResolution/> }
+            { path: "/sale/invoice-resolution", element: <InvoiceResolution/> },
+
+            { path: "/synchronization", element: <ModuleIndex items={ModuleItems["Sincronización"]} title={"Sincrionizacion con Siigo"}/> },
+            { path: "/synchronization/invoice", element: <InvoicePOS/> }
         ]
     }
 ]

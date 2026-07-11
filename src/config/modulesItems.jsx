@@ -97,6 +97,15 @@ const ModuleItems = {
             to: "/sale/invoice-resolution",
             description: "Registra, gestiona y controla las resoluciones de facturación autorizadas por la DIAN. Configura rangos, fechas de vigencia, numeración y valida automáticamente su uso en el punto de venta.",
         }
+    ],
+
+    "Sincronización" : [
+        {
+            icon: <ScrollText />,
+            name: "Facturas POS",
+            to: "/synchronization/invoice",
+            description: "Consulta facturas POS y sincroniza con siigo.",
+        },
     ]
 }
 

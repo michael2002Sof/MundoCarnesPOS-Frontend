@@ -18,18 +18,18 @@ export function formatDecimal(value, currency = false) {
 
   const number = Number(value) < 0 ? 0 : Number(value);
 
+  // Detectar si tiene decimales o si es menor a 1
+  const hasDecimals = number % 1 !== 0 || Math.abs(number) < 1;
+
   if (currency) {
-    // Mostrar moneda sin decimales
+    // Mostrar moneda con decimales si tiene centavos (hasta 2)
     return number.toLocaleString("es-CO", {
       style: "currency",
       currency: "COP",
-      minimumFractionDigits: 0,
-      maximumFractionDigits: 0,
+      minimumFractionDigits: hasDecimals ? 2 : 0,
+      maximumFractionDigits: hasDecimals ? 2 : 0,
     });
   } else {
-    // Detectar si tiene decimales o si es menor a 1
-    const hasDecimals = number % 1 !== 0 || Math.abs(number) < 1;
-
     return (
       number.toLocaleString("es-CO", {
         minimumFractionDigits: hasDecimals ? 2 : 0,

@@ -1,4 +1,4 @@
-import { Boxes, ShoppingCart, UserCog, LayoutDashboard } from "lucide-react"
+import { Boxes, ShoppingCart, UserCog, LayoutDashboard, ArrowLeftRight } from "lucide-react"
 
 const Modules = [
     {
@@ -25,7 +25,12 @@ const Modules = [
         description: "Gestiona tus ventas del sistema",
         to: "/sale"
     },
-
+    {
+        icon: <ArrowLeftRight/>,
+        name: "Sincronización",
+        description: "Sincroniza información del pos con Siigo",
+        to: "/synchronization"
+    }
 ]
 
 export default Modules

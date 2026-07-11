@@ -9,7 +9,7 @@ export default function useReport() {
   const [invoices, setInvoices] = useState([]);
   const [sessionStatic, setSessionStatic] = useState([])
 
-  const GET_InvoicesByDate = async (date, user, page = 1) => {
+  const GET_InvoicesByDate = async (filters = {}) => {
     try {
       setLoading(true);
 
@@ -18,7 +18,11 @@ export default function useReport() {
 
       const company = token.company;
 
-      const res = await axiosInstance.get(`/posinnovate/siigo/sale/report/invoice/pos/by/${date}/${company}/${user}/${page}`);
+      const params = new URLSearchParams({...filters, company})
+
+      const res = await axiosInstance.get(
+        `/posinnovate/siigo/sale/report/invoice/pos?${params.toString()}`
+      );
       const {invoices, totalCount, totalPages } = res.data
 
       setInvoices(invoices);

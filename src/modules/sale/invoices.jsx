@@ -25,7 +25,7 @@ export default function Invoices () {
     const [exporting, setExporting] = useState(false)
 
     useEffect(() => {
-        GET_InvoicesByDate(isDate, isUser, localPage);
+        GET_InvoicesByDate({date: isDate, user: isUser, page: localPage});
     }, [isDate, isUser, localPage]);
 
     const handleExport = async () => {

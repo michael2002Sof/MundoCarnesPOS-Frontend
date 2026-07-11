@@ -337,44 +337,84 @@ export default function CashSale() {
     const datafonoMethodId = getDatafonoMethodId()
 
     const formatMoney = (value) => {
-        if (!value) return "0";
-        return Number(value).toLocaleString("es-CO");
+        if (value === null || value === undefined || value === "") return "0";
+        const number = Number(value);
+        if (isNaN(number)) return "0";
+        const hasDecimals = number % 1 !== 0;
+        return number.toLocaleString("es-CO", {
+            minimumFractionDigits: hasDecimals ? 2 : 0,
+            maximumFractionDigits: hasDecimals ? 2 : 0,
+        });
     };
-    const cleanNumber = (value) => {
-        if (!value) return 0; // evita el error
 
-        return Number(
-            value.toString().replace(/\./g, "").replace(/,/g, "")
-        ) || 0;
-    }
+    const cleanNumber = (value) => {
+        if (value === null || value === undefined || value === "") return 0;
+        if (typeof value === "number") return value;
+
+        const normalized = value.toString().replace(/\./g, "").replace(",", ".");
+        return parseFloat(normalized) || 0;
+    };
+
+    const formatMoneyInput = (value) => {
+        if (value === null || value === undefined || value === "") return "";
+        
+        let str = value.toString();
+        
+        if (!str.includes(",")) {
+            const lastDotIdx = str.lastIndexOf(".");
+            if (lastDotIdx !== -1) {
+                const afterDot = str.slice(lastDotIdx + 1);
+                const isDecimalDot = afterDot === "" || /^\d{1,2}$/.test(afterDot);
+                if (isDecimalDot) {
+                    str = str.slice(0, lastDotIdx) + "," + afterDot;
+                }
+            }
+        }
+        
+        const parts = str.split(",");
+        let integerPart = parts[0].replace(/\D/g, "");
+        
+        if (integerPart) {
+            integerPart = Number(integerPart).toLocaleString("es-CO", {
+                minimumFractionDigits: 0,
+                maximumFractionDigits: 0
+            });
+        } else {
+            integerPart = "0";
+        }
+        
+        if (parts.length > 1) {
+            const decimalPart = parts[1].replace(/\D/g, "").slice(0, 2);
+            return integerPart + "," + decimalPart;
+        }
+        
+        return integerPart;
+    };
 
     const [paymentValues, setPaymentValues] = useState({}); //Valores ingresados en los metodos de pago
     const handlePaymentChange = (id, value) => {
-        const notFormat = cleanNumber(value); // número sin formato
-        const clean = Math.floor(notFormat * 100) / 100
-
-
+        const formatted = formatMoneyInput(value);
         setPaymentValues(prev => ({
             ...prev,
-            [id]: clean
+            [id]: formatted
         }));
     };
     //console.log("Valores del metodo de pago", paymentValues)
 
-    const cash = paymentValues[cashMethodId] || 0;
-    const davivienda = paymentValues[daviviendaMethodId] || 0;
-    const transfer = paymentValues[transferMethodId] || 0;
-    const datafono = paymentValues[datafonoMethodId] || 0
+    const cash = cleanNumber(paymentValues[cashMethodId]);
+    const davivienda = cleanNumber(paymentValues[daviviendaMethodId]);
+    const transfer = cleanNumber(paymentValues[transferMethodId]);
+    const datafono = cleanNumber(paymentValues[datafonoMethodId]);
 
     const repay = Math.max((cash + transfer + datafono + davivienda) - total, 0) // nunca negativo
 
-    const receipt_cash =  parseFloat((cash - repay).toFixed(2)) === Math.round(total) ? total : parseFloat((cash - repay).toFixed(2))
+    const receipt_cash =  parseFloat((cash - repay).toFixed(2)) === parseFloat(total.toFixed(2)) ? total : parseFloat((cash - repay).toFixed(2))
     //console.log("Recibido en efectivo: ", receipt_cash)
-    const receipt_transfer = Math.round(total) === transfer ? total : transfer
+    const receipt_transfer = parseFloat(total.toFixed(2)) === transfer ? total : transfer
     //console.log("Recibido en transferencia: ", receipt_transfer)
-    const receipt_davivienda = Math.round(total) === davivienda ? total : davivienda
+    const receipt_davivienda = parseFloat(total.toFixed(2)) === davivienda ? total : davivienda
     //console.log("Recibido en davivienda: ", receipt_davivienda)
-    const receipt_datafono = Math.round(total) === datafono ? total : datafono
+    const receipt_datafono = parseFloat(total.toFixed(2)) === datafono ? total : datafono
     //console.log("Recibido por datafono", receipt_datafono)
     const total_payment = receipt_cash + receipt_transfer + receipt_datafono + receipt_davivienda
     //console.log("Total recibido: ", total_payment)
@@ -386,7 +426,7 @@ export default function CashSale() {
         if (m.id === daviviendaMethodId) value = receipt_davivienda
         if (m.id === datafonoMethodId) value = receipt_datafono
 
-        return { id: m.id, value, due_date: today };
+        return { id: m.id, value: parseFloat(value.toFixed(2)), due_date: today };
     }).filter(p => p.value > 0);
 
 
@@ -402,7 +442,6 @@ export default function CashSale() {
         useHandleInputChange(setBuildInvoice, "sale_point", sp?.id)
     }, [selectedCustomer, resolution, sp])
 
-    console.log(activeTab.cart)
     // Confirmar pago: registrar venta + descontar stock + imprimir factura + limpiar carrito
     const handleConfirmPayment = async () => {
 
@@ -450,7 +489,7 @@ export default function CashSale() {
                 return p
             })
 
-            console.log("payments modificados: ", paymentDian)
+            //console.log("payments modificados: ", paymentDian)
         }
         
 
@@ -504,18 +543,18 @@ export default function CashSale() {
             customerAddress: selectedCustomer?.address?.address || "Sin Direccioón",
             items, 
             invoiceItem: itemsPOS, 
-            subtotal: Math.round(subtotal), 
+            subtotal: parseFloat(subtotal.toFixed(2)), 
             tax0: 0, 
-            tax5: tax5Total, 
-            tax19: tax19Total, 
-            total: Math.round(total),
+            tax5: parseFloat(tax5Total.toFixed(2)), 
+            tax19: parseFloat(tax19Total.toFixed(2)), 
+            total: parseFloat(total.toFixed(2)),
             payments: paymentDian,
-            receipt_cash: Math.max(Math.round(receipt_cash), 0),
-            receipt_davivienda: Math.round(receipt_davivienda),
-            receipt_transfer: Math.round(receipt_transfer),
-            receipt_datafono: Math.round(receipt_datafono),
-            repay: Math.round( (repay).toFixed(2) ),
-            total_payment: Math.round(total_payment),
+            receipt_cash: Math.max(parseFloat(receipt_cash.toFixed(2)), 0),
+            receipt_davivienda: parseFloat(receipt_davivienda.toFixed(2)),
+            receipt_transfer: parseFloat(receipt_transfer.toFixed(2)),
+            receipt_datafono: parseFloat(receipt_datafono.toFixed(2)),
+            repay: parseFloat(repay.toFixed(2)),
+            total_payment: parseFloat(total_payment.toFixed(2)),
             cash_session: sessionId
         }
 
@@ -724,7 +763,7 @@ export default function CashSale() {
                             ref={m.id === cashMethodId ? cashInputRef : m.id === transferMethodId ? transferInputRef : null}
                             type="text"
                             className="bg-[#6E1515] w-1/2 px-4 py-1 rounded-lg outline-none text-white"
-                            value={formatMoney(paymentValues[m.id] || "")}
+                            value={paymentValues[m.id] || ""}
                             onChange={(e) => handlePaymentChange(m.id, e.target.value)}
                             name="payment"
                         />
