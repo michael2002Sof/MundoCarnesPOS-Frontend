@@ -23,13 +23,17 @@ export function useDecodeScale (product, weight, wh, isModeDatafono)  {
     let tax19 = 0;
 
     const price = Number((base_price / divisor).toFixed(2))
-    const subtotal = Number((price * quantity).toFixed(2))
-    const tax_value = Number((subtotal * tax_rate).toFixed(2));
+    const subtotalRaw = price * quantity
+    const tax_value = Number((subtotalRaw * tax_rate).toFixed(2));
+
     if (hasTax5) tax5 = tax_value
     if (hasTax19) tax19 = tax_value
+
+    const subtotal = Number((subtotalRaw).toFixed(2))
     const total = Number((subtotal + tax_value).toFixed(2))
-  
+
     console.log(`Precio con IVA:`, base_price, `Precio sin IVA:`, price, `Subtotal:`, subtotal, `IVA:`, tax_value, `Total:`, total, `Cantidad:`, quantity)  
+
 
     
 
@@ -61,6 +65,7 @@ export function useDecodeNormal (product, wh, isModeDatafono) {
 
     if (!product) return null;
     if (!wh) return null
+    const quantity = 1
 
     const tax_rate = Number(product.tax) / 100
     const divisor = 1 + tax_rate
@@ -80,13 +85,17 @@ export function useDecodeNormal (product, wh, isModeDatafono) {
     let tax19 = 0;
 
     const price = Number((base_price / divisor).toFixed(2))
-    const subtotal = Number((price * 1).toFixed(2))
-    const tax_value = Number((subtotal * tax_rate).toFixed(2));
+    const subtotalRaw = price * quantity
+    const tax_value = Number((subtotalRaw * tax_rate).toFixed(2));
+
     if (hasTax5) tax5 = tax_value
     if (hasTax19) tax19 = tax_value
+
+    const subtotal = Number((subtotalRaw).toFixed(2))
     const total = Number((subtotal + tax_value).toFixed(2))
   
-    console.log(`Precio con IVA:`, base_price, `Precio sin IVA:`, price, `Subtotal:`, subtotal, `IVA:`, tax_value, `Total:`, total, )     
+    subtotal = Number((subtotal).toFixed(2))
+    console.log(`Precio con IVA:`, base_price, `Precio sin IVA:`, price, `Subtotal:`, subtotal, `IVA:`, tax_value, `Total:`, total )     
 
     return {
         id: product.id,
@@ -99,7 +108,7 @@ export function useDecodeNormal (product, wh, isModeDatafono) {
         warehouse: wh,
         taxes: [ { id: product.tax_id } ],
         name: product.name,
-        subtotal: Math.trunc(subtotal * 100) / 100,
+        subtotal,
         tax0: isTax0,
         tax5,
         tax19,
