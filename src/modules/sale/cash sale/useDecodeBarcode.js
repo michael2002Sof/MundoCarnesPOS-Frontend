@@ -1,16 +1,17 @@
 
-export function useDecodeScale (productSiigo, weight, wh, isModeDatafono)  {
-
-    const product = productSiigo
-
+export function useDecodeScale (product, weight, wh, isModeDatafono)  {
     if (!product) return null;
     if (!wh) return null
 
-    // ✔ Impuestos desde Siigo
-    const taxObject = Number(product.tax); // porcentaje del iva que tiene aplicado el precio
-    const isTax0 = taxObject === 0;
-    const hasTax5 = taxObject === 5;
-    const hasTax19 = taxObject === 19;
+    const quantity = Math.trunc(weight * 100) /100
+
+    const tax_rate = Number(product.tax) / 100
+    const divisor = 1 + tax_rate
+
+    const isTax0 = Number(product.tax) === 0;
+    const hasTax5 = Number(product.tax) === 5;
+    const hasTax19 = Number(product.tax) === 19;
+
     let base_price
     if (isModeDatafono) {
         base_price = Number(product.price2)  // precio con iva incluido
@@ -21,36 +22,27 @@ export function useDecodeScale (productSiigo, weight, wh, isModeDatafono)  {
     let tax5 = 0;
     let tax19 = 0;
 
-    const total = base_price * Math.trunc(weight * 100) /100;  // total con iva incluido
-    let subtotal = total
+    const price = Number((base_price / divisor).toFixed(2))
+    const subtotal = Number((price * quantity).toFixed(2))
+    const tax_value = Number((subtotal * tax_rate).toFixed(2));
+    if (hasTax5) tax5 = tax_value
+    if (hasTax19) tax19 = tax_value
+    const total = Number((subtotal + tax_value).toFixed(2))
+  
+    console.log(`Precio con IVA:`, base_price, `Precio sin IVA:`, price, `Subtotal:`, subtotal, `IVA:`, tax_value, `Total:`, total, `Cantidad:`, quantity)  
 
-    let price = base_price
-
-    // ✔ Si tiene IVA 5%
-    if (hasTax5) {
-    subtotal = Number( (total / 0.05).toFixed(2) )
-    price = base_price / 1.05
-    tax5 = Number( (subtotal * 0.05).toFixed(2) )
-    }
-
-    // ✔ Si tiene IVA 19%
-    if (hasTax19) {
-    subtotal = Number( (total / 1.19).toFixed(2) )
-    price = base_price / 1.19
-    tax19 = Number((Math.round(subtotal * 0.19 * 100) / 100).toFixed(2))
-    }
-
+    
 
     return {
         id: product.id,
         code: product.code,
         description: product.name,
         base_price,
-        quantity: Math.trunc(weight * 100) /100,
+        quantity,
         discount: 0,
         taxes: [ { id: product.tax_id} ],
         name: product.name,
-        price: Math.trunc(price * 100) / 100,
+        price,
         subtotal,
         warehouse: wh,
         tax0: isTax0,
@@ -65,48 +57,36 @@ export function useDecodeScale (productSiigo, weight, wh, isModeDatafono)  {
 
 
  // Decodificar normal
-export function useDecodeNormal (productSiigo, wh, isModeDatafono) {
-
-    const product = productSiigo
+export function useDecodeNormal (product, wh, isModeDatafono) {
 
     if (!product) return null;
     if (!wh) return null
 
-    const taxObject = Number(product.tax); // Impuesto que incluye base_price
-    const isTax0 = taxObject === 0;
-    const hasTax5 = taxObject === 5;
-    const hasTax19 = taxObject === 19;
+    const tax_rate = Number(product.tax) / 100
+    const divisor = 1 + tax_rate
+
+    const isTax0 = Number(product.tax) === 0;
+    const hasTax5 = Number(product.tax) === 5;
+    const hasTax19 = Number(product.tax) === 19;
+
     let base_price
     if (isModeDatafono) {
-        base_price = Number(product.price2) // precio con iva incluido
+        base_price = Number(product.price2)  // precio con iva incluido
     } else {
-        base_price = Number(product.price1) // precio con iva incluido
+        base_price = Number(product.price1)  // precio con iva incluido
     }
-    //console.log("Precio del producto en siigo con iva", base_price)
-    
-    const total = base_price;
-    let subtotal = total
 
     let tax5 = 0;
     let tax19 = 0;
 
-    // ✔ Si tiene IVA 5%
-    if (hasTax5) {
-        const rawSubtotal = total / 1.05
-        const rawTax = rawSubtotal * 0.05
-
-        subtotal = Number((rawSubtotal).toFixed(2))
-        tax5 = Number((rawTax).toFixed(2))
-    }
-
-    // ✔ Si tiene IVA 19%
-    if (hasTax19) {
-        subtotal = Number((total / 1.19).toFixed(2))
-        const rawSubtotal = Math.trunc(subtotal * 100) / 100
-        tax19 = Number((rawSubtotal * 0.19).toFixed(2))
-    }
-
+    const price = Number((base_price / divisor).toFixed(2))
+    const subtotal = Number((price * 1).toFixed(2))
+    const tax_value = Number((subtotal * tax_rate).toFixed(2));
+    if (hasTax5) tax5 = tax_value
+    if (hasTax19) tax19 = tax_value
+    const total = Number((subtotal + tax_value).toFixed(2))
   
+    console.log(`Precio con IVA:`, base_price, `Precio sin IVA:`, price, `Subtotal:`, subtotal, `IVA:`, tax_value, `Total:`, total, )     
 
     return {
         id: product.id,
@@ -115,7 +95,7 @@ export function useDecodeNormal (productSiigo, wh, isModeDatafono) {
         base_price,
         quantity: 1,
         discount: 0,
-        price: Math.trunc(subtotal * 100) / 100,
+        price,
         warehouse: wh,
         taxes: [ { id: product.tax_id } ],
         name: product.name,
