@@ -94,7 +94,6 @@ export function useDecodeNormal (product, wh, isModeDatafono) {
     const subtotal = Number((subtotalRaw).toFixed(2))
     const total = Number((subtotal + tax_value).toFixed(2))
   
-    subtotal = Number((subtotal).toFixed(2))
     console.log(`Precio con IVA:`, base_price, `Precio sin IVA:`, price, `Subtotal:`, subtotal, `IVA:`, tax_value, `Total:`, total )     
 
     return {
