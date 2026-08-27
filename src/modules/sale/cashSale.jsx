@@ -142,7 +142,7 @@ export default function CashSale() {
         customer: selectedCustomer,
         cost_center: "",
         stamp: { send: true },
-        mail: { send: true},
+        mail: { send: false },
         observations: "Venta realizada en punto de venta",
         payments: [],
         globaldiscounts: [
