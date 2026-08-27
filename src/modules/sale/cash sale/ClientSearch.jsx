@@ -69,7 +69,7 @@ export default function ClientSearch({ setCustomer, selectedCustomer }) {
         {
           first_name: client.contacts?.[0]?.first_name || "Consumidor",
           last_name: client.contacts?.[0]?.last_name || "Final",
-          email: client.contacts?.[0]?.email || null,
+          email: client.contacts?.[0]?.email || "consumidorfinal@gmail.com",
           phone: {
             indicative: client.contacts?.[0]?.phone?.indicative || null,
             number: client.contacts?.[0]?.phone?.number || null,
