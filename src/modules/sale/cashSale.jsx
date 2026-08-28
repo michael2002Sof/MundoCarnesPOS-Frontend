@@ -250,7 +250,7 @@ export default function CashSale() {
         } else {
             setLoadingProduct(true)
             const productCode = barcode.slice(2, 7);
-            const adjust_code = productCode.padStart(6, "0")
+            const adjust_mailcode = productCode.padStart(6, "0")
             setBarcode(adjust_code)
             const productSiigo = await GET_ProductSiigoByCode(adjust_code)
             //console.log(productSiigo)
@@ -536,6 +536,7 @@ export default function CashSale() {
 
         const invoiceData = {
             ...isBuildInvoice, 
+            mail: { send: selectedCustomer?.identification === "222222222222" ? false : true },
             customer: selectedCustomer,
             customerName: selectedCustomer?.name?.join(" ") || "Consumidor Final",
             customerCC: selectedCustomer?.identification || "222222222222",
