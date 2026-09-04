@@ -191,68 +191,68 @@ export default function ReportSale() {
                         <div className="bg-foreground/5 rounded-lg p-3">
                           <p className="flex justify-between">
                             <span className="font-semibold">Ingreso en Efectivo</span>
-                            <span>{formatDecimal(s.total_cash, true)}</span>
+                            <span>{formatDecimal(s.cash?.payment ?? s.total_cash, true)}</span>
                           </p>
 
                           <p className="flex justify-between mt-1 text-sm">
                             <span>Devolución en Efectivo</span>
-                            <span>{formatDecimal(s.total_return, true)}</span>
+                            <span>{formatDecimal(s.cash?.credit ?? s.total_return, true)}</span>
                           </p>
 
                           <p className="flex justify-between mt-1 text-sm">
                             <b>Total en Ingreso</b>
-                            <span>{formatDecimal(s.total_cash - s.total_return, true)}</span>
+                            <span>{formatDecimal(s.cash?.total ?? (s.total_cash - s.total_return), true)}</span>
                           </p>
                         </div>
 
                         <div className="bg-foreground/5 rounded-lg p-3">
                           <p className="flex justify-between">
                             <span className="font-semibold">Ingreso en Bancolombia</span>
-                            <span>{formatDecimal(s.total_transfer, true)}</span>
+                            <span>{formatDecimal(s.transfer?.payment ?? s.total_transfer, true)}</span>
                           </p>
 
                           <p className="flex justify-between mt-1 text-sm">
                             <span>Devolución en Bancolombia</span>
-                            <span>{formatDecimal(0, true)}</span>
+                            <span>{formatDecimal(s.transfer?.credit ?? 0, true)}</span>
                           </p>
 
                           <p className="flex justify-between mt-1 text-sm">
                             <b>Total en Ingreso</b>
-                            <span>{formatDecimal(s.total_transfer - 0, true)}</span>
+                            <span>{formatDecimal(s.transfer?.total ?? s.total_transfer, true)}</span>
                           </p>
                         </div>
 
                         <div className="bg-foreground/5 rounded-lg p-3">
                           <p className="flex justify-between">
                             <span className="font-semibold">Ingreso en Davivienda</span>
-                            <span>{formatDecimal(s.total_davivienda, true)}</span>
+                            <span>{formatDecimal(s.davivienda?.payment ?? s.total_davivienda, true)}</span>
                           </p>
 
                           <p className="flex justify-between mt-1 text-sm">
                             <span>Devolución en Davivienda</span>
-                            <span>{formatDecimal(0, true)}</span>
+                            <span>{formatDecimal(s.davivienda?.credit ?? 0, true)}</span>
                           </p>
 
                           <p className="flex justify-between mt-1 text-sm">
                             <b>Total en Ingreso</b>
-                            <span>{formatDecimal(s.total_davivienda - 0, true)}</span>
+                            <span>{formatDecimal(s.davivienda?.total ?? s.total_davivienda, true)}</span>
                           </p>
                         </div>
 
                         <div className="bg-foreground/5 rounded-lg p-3">
                           <p className="flex justify-between">
                             <span className="font-semibold">Ingreso en Datáfono</span>
-                            <span>{formatDecimal(s.total_datafono, true)}</span>
+                            <span>{formatDecimal(s.datafono?.payment ?? s.total_datafono, true)}</span>
                           </p>
 
                           <p className="flex justify-between mt-1 text-sm">
                             <span>Devolución en Datáfono</span>
-                            <span>{formatDecimal(0, true)}</span>
+                            <span>{formatDecimal(s.datafono?.credit ?? 0, true)}</span>
                           </p>
 
                           <p className="flex justify-between mt-1 text-sm">
                             <b>Total en Ingreso</b>
-                            <span>{formatDecimal(s.total_datafono - 0, true)}</span>
+                            <span>{formatDecimal(s.datafono?.total ?? s.total_datafono, true)}</span>
                           </p>
                         </div>
 

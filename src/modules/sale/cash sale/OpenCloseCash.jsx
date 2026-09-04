@@ -153,27 +153,62 @@ export default function OpenCloseCash ({sp, user, GET_SalePoint, isModeDatafono,
                                     <div className="flex justify-between text-sm">
                                         <span>En efectivo:</span>
                                         <span className="font-mono">
-                                            {formatDecimal(session.total_cash, true)}
+                                            {formatDecimal(session.cash?.payment ?? session.total_cash, true)}
                                         </span>
                                     </div>
+                                    {Number(session.cash?.credit) > 0 && (
+                                        <div className="flex justify-between text-xs text-amber-200/80 pl-2">
+                                            <span>↳ Devolución en efectivo:</span>
+                                            <span className="font-mono">
+                                                -{formatDecimal(session.cash.credit, true)}
+                                            </span>
+                                        </div>
+                                    )}
+
                                     <div className="flex justify-between text-sm">
                                         <span>Por transferencia Bancolombia:</span>
                                         <span className="font-mono">
-                                            {formatDecimal(session.total_transfer, true)}
+                                            {formatDecimal(session.transfer?.payment ?? session.total_transfer, true)}
                                         </span>
                                     </div>
+                                    {Number(session.transfer?.credit) > 0 && (
+                                        <div className="flex justify-between text-xs text-amber-200/80 pl-2">
+                                            <span>↳ Devolución Bancolombia:</span>
+                                            <span className="font-mono">
+                                                -{formatDecimal(session.transfer.credit, true)}
+                                            </span>
+                                        </div>
+                                    )}
+
                                      <div className="flex justify-between text-sm">
                                         <span>Por transferencia Davivienda:</span>
                                         <span className="font-mono">
-                                            {formatDecimal(0, true)}
+                                            {formatDecimal(session.davivienda?.payment ?? session.total_davivienda, true)}
                                         </span>
                                     </div>
+                                    {Number(session.davivienda?.credit) > 0 && (
+                                        <div className="flex justify-between text-xs text-amber-200/80 pl-2">
+                                            <span>↳ Devolución Davivienda:</span>
+                                            <span className="font-mono">
+                                                -{formatDecimal(session.davivienda.credit, true)}
+                                            </span>
+                                        </div>
+                                    )}
+
                                     <div className="flex justify-between text-sm">
                                         <span>Por datafono:</span>
                                         <span className="font-mono">
-                                            {formatDecimal(session.total_datafono, true)}
+                                            {formatDecimal(session.datafono?.payment ?? session.total_datafono, true)}
                                         </span>
                                     </div>
+                                    {Number(session.datafono?.credit) > 0 && (
+                                        <div className="flex justify-between text-xs text-amber-200/80 pl-2">
+                                            <span>↳ Devolución en datafono:</span>
+                                            <span className="font-mono">
+                                                -{formatDecimal(session.datafono.credit, true)}
+                                            </span>
+                                        </div>
+                                    )}
                                     
                                     <hr className="border-amber-200/30 my-2" />
                                     
